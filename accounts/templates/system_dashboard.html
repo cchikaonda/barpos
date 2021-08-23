@@ -1,0 +1,242 @@
+{% extends 'base_pos.html' %}
+{% load crispy_forms_tags %}
+
+{% block body %}
+  <style>
+    .dashboard_menu_item{
+      height: 175px;
+    }
+    #home_button{
+      visibility: hidden;
+    }
+  </style>
+ 
+
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content ml-2 mr-2 mt-2" style="max-height: 500px;">
+        <!-- Small Box (Stat card) -->
+        <div class="row">
+            <div class="col-lg-3 col-6">
+              <a href="{% url 'customers_list' %}">
+              <!-- small card -->
+                  <div class="small-box bg-light dashboard_menu_item">
+                  
+                      <div class="inner text-secondary">
+                      <h3>Customers</h3>
+
+                      <p>New Orders</p> <br> <br>
+                    
+                      </div>
+                      <div class="icon">
+                      <i class="fas fa-shopping-cart"></i>
+                      </div>
+                  </div>
+              </a>
+            </div>
+            <!-- ./col -->
+            <div class="col-lg-3 col-6">
+                <!-- small card -->
+                <a href="{% url 'pos_dashboard' %}">
+                <div class="small-box bg-light dashboard_menu_item">
+                <div class="inner text-secondary">
+                    <h3>Point Of Sale<sup style="font-size: 20px"></sup></h3>
+
+                    <p>POS</p><br> <br>
+                </div>
+                <div class="icon">
+                    <i class="ion ion-stats-bars"></i>
+                </div>
+                </div>
+            </a>
+            </div>
+            <div class="col-lg-3 col-6">
+              <a href="{% url 'customers_list' %}">
+              <!-- small card -->
+                  <div class="small-box bg-light dashboard_menu_item">
+                  
+                      <div class="inner text-secondary">
+                      <h3>Customers</h3>
+
+                      <p>New Orders</p>
+                      </div>
+                      <div class="icon">
+                      <i class="fas fa-shopping-cart"></i>
+                      </div>
+                  </div>
+              </a>
+            </div>
+            <!-- ./col -->
+            <div class="col-lg-3 col-6">
+                <!-- small card -->
+                <a href="{% url 'pos_dashboard' %}">
+                <div class="small-box bg-light dashboard_menu_item">
+                <div class="inner text-secondary">
+                    <h3>Register Sale<sup style="font-size: 20px"></sup></h3>
+ 
+                </div>
+                <div class="icon">
+                    <i class="fa fa-shopping-cart"></i>
+                </div>
+                </div>
+            </a>
+            </div>
+        </div>
+        <!-- ./col -->
+        <div class="row">
+          <div class="col-lg-3 col-6">
+              <!-- small card -->
+              <a href="">
+              <div class="small-box bg-light dashboard_menu_item">
+                  <div class="inner text-secondary">
+                  <h3>44</h3>
+
+                  <p>User Registrations</p>
+                  </div>
+                  <div class="icon">
+                  <i class="fas fa-user-plus"></i>
+                  </div>
+              </div>
+              </a>
+          </div>
+          <!-- ./col -->
+          <div class="col-lg-3 col-6">
+              <!-- small card -->
+              <a href="{% url 'inventory_dashboard' %}">
+              <div class="small-box bg-light dashboard_menu_item">
+                  <div class="inner text-secondary">
+                  <h3>Inventory</h3>
+
+                  
+                  </div>
+                  <div class="icon">
+                  <i class="fas fa-chart-pie"></i>
+                  </div>
+              </div>
+              </a>
+          </div>
+          <!-- ./col -->
+          <div class="col-lg-3 col-6">
+            <!-- small card -->
+            <a href="#">
+            <div class="small-box bg-light dashboard_menu_item">
+                <div class="inner text-secondary">
+                <h3>Manage Users</h3>
+                </div>
+                <div class="icon">
+                <i class="fas fa-user-plus"></i>
+                </div>
+            </div>
+            </a>
+        </div>
+        <!-- ./col -->
+        <div class="col-lg-3 col-6">
+            <!-- small card -->
+            <a href="{% url 'inventory_dashboard' %}">
+            <div class="small-box bg-light dashboard_menu_item">
+                <div class="inner text-secondary">
+                <h3>Inventory</h3>
+
+                
+                </div>
+                <div class="icon">
+                <i class="fa fa-warehouse"></i>
+                </div>
+            </div>
+            </a>
+        </div>
+        <!-- ./col -->
+    </div>
+
+    <!-- /.row -->
+    <!-- Small Box (Stat card) -->
+    <div class="row">
+        <div class="col-lg-3 col-6">
+          <!-- small card -->
+          <a href="">
+            <div class="small-box bg-light dashboard_menu_item">
+              
+              <div class="inner text-secondary">
+                <h3>150</h3>
+
+                <p>New Orders</p> 
+              </div>
+              <div class="icon">
+                <i class="fas fa-shopping-cart"></i>
+              </div>
+            </div>
+          </a>
+        </div>
+        <!-- ./col -->
+        <div class="col-lg-3 col-6">
+          <!-- small card -->
+          <a href="{% url 'reports_dashboard' %}">
+            <div class="small-box bg-light dashboard_menu_item">
+              <div class="inner text-secondary">
+                
+                <p><h3>Reports<sup style="font-size: 20px"></sup></h3></p> 
+              </div>
+              <div class="icon">
+                <i class="fa fa-chart-bar"></i>
+              </div>
+            </div>
+          </a>
+        </div>
+        <!-- ./col -->
+        <div class="col-lg-3 col-6">
+          <!-- small card -->
+          <a href="{% url 'pos_dashboard' %}">
+            <div class="small-box bg-light dashboard_menu_item">
+              <div class="inner text-secondary">
+                <p> <h3>Admin<sup style="font-size: 20px"></sup></h3> </p>
+              </div>
+              <div class="icon">
+                <i class="fa fa-cogs"></i>
+              </div>
+            </div>
+          </a>
+        </div>
+        <!-- ./col -->
+
+
+        <div class="col-lg-3 col-6">
+          <div class="card-body">
+            <div class="card-header bg-secondary">
+              <h3 class="card-title"><i class="fa fa-calendar"></i> LAST 30 DAYS SALES</h3>
+            </div>
+          
+               <!-- small card -->
+              <a href="{% url 'pos_dashboard' %}">
+                <div class="small-box bg-light dashboard_menu_item">
+                  <div class="inner text-secondary">
+                    <p> <h3>Admin<sup style="font-size: 20px"></sup></h3> </p>
+                  </div>
+                  <div class="icon">
+                    <i class="fa fa-cogs"></i>
+                  </div>
+                </div>
+              </a>
+            
+          </div>
+  
+        </div>
+
+
+    </div>
+      <!-- /.row -->
+
+<script type="text/javascript">
+  $(window).on('load',function(){
+      setTimeout(function(){
+          if(!Cookies.get('modalShown')) {
+              $('#welcome_message').modal('show');
+            Cookies.set('modalShown', true);
+          } else {
+
+          }
+
+  },0.10);
+  });
+</script>
+
+
+{% endblock %}

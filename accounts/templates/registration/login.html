@@ -1,0 +1,209 @@
+{% load static %}
+{% load widget_tweaks %}
+{% load crispy_forms_tags %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="{% static '/plugins/fontawesome-free/css/all.min.css' %}" type="text/css">
+    <!-- overlayScrollbars -->
+    <link rel="stylesheet" href="{% static '/plugins/overlayScrollbars/css/OverlayScrollbars.min.css' %}" type="text/css">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="{% static '/dist/css/adminlte.min.css' %}" type="text/css">
+
+    <style>
+      body{
+        background: #c7c7c7;
+        font-family: "Lato", sans-serif;
+      }
+      .login-logo,
+      .register-logo {
+        font-size: 35px;
+        text-align: center;
+        margin-bottom: 25px;
+        font-weight: 300;
+      }
+      .login-logo a,
+      .register-logo a {
+        color: #444;
+      }
+    </style>
+
+<style>
+
+  body{
+      padding-top:4.2rem;
+      padding-bottom:4.2rem;
+      background: #c7c7c7;
+      font-family: "Lato", sans-serif;
+          }
+          a{
+           text-decoration:none !important;
+           }
+           h1,h2,h3{
+           font-family: 'Kaushan Script', cursive;
+           }
+            .myform{
+      position: relative;
+      display: -ms-flexbox;
+      display: flex;
+      padding: 1rem;
+      -ms-flex-direction: column;
+      flex-direction: column;
+      width: 100%;
+      pointer-events: auto;
+      background-color: #fff;
+      background-clip: padding-box;
+      border: 1px solid rgba(0,0,0,.2);
+      border-radius: 1.1rem;
+      outline: 0;
+      max-width: 500px;
+       }
+           .tx-tfm{
+           text-transform:uppercase;
+           }
+           .mybtn{
+           border-radius:50px;
+           }
+          
+           .login-or {
+           position: relative;
+           color: rgb(6, 88, 54);
+           margin-top: 15px;
+           margin-bottom: 10px;
+           padding-top: 10px;
+           padding-bottom: 15px;
+           }
+           .span-or {
+           display: block;
+           position: absolute;
+           right: 35%;
+           top: -2px;
+           margin-left: -25px;
+           background-color: #fff;
+           width: 100px;
+           text-align: center;
+           }
+           .hr-or {
+           height: 1px;
+           margin-top: 0px !important;
+           margin-bottom: 0px !important;
+           }
+           .login-form{
+              height: 100px !important;
+           }
+  </style>
+</head>
+
+<body class="login-page" style="min-height: 512.8px;">
+  
+    <!-- /.login-logo -->
+    <!-- <div class="login-logo"><img src="{% static '/images/epsilon_logo.jpg' %}" style="height: 100px; width: 200px;">
+    </div>  -->
+  <div class="container">
+    <div class="row">
+  <div class="col-md-5 mx-auto mt-8">
+  <div id="first">
+    <div class="myform form ">
+       <div class="logo mb-3">
+         <div class="col-md-12 text-center">
+          <h1>Login</h1>
+         </div>
+      </div>
+
+      <form action="#" method="POST" name="login">
+        {% csrf_token %}
+          <div class="input-group mb-3">
+            <input type="email" class="form-control" placeholder="Email" name="username" >
+            <div class="input-group-append">
+              <div class="input-group-text">
+                <span class="fas fa-envelope"></span>
+              </div>
+            </div>
+          </div>
+          <div class="input-group mb-3">
+            <input type="password" class="form-control" placeholder="Password" name="password">
+            <div class="input-group-append">
+              <div class="input-group-text">
+                <span class="fas fa-lock"></span>
+              </div>
+            </div>
+          </div>
+  
+          <div class="row">
+            <a href="" class="text-danger">{{form.errors}}</a>
+            <!-- /.col -->
+            <div class="col-12">
+              <button type="submit" class="btn btn-primary btn-block"><i class="fas fa-sign-in-alt"></i> Log In</button>
+            </div>
+            <!-- /.col -->
+          </div>
+          <div class="col-md-12 ">
+            <div class="login-or">
+               <hr class="hr-or">
+               <span class="span-or">MCA-TECH MIS</span>
+            </div>
+         </div>
+  
+            {% comment %} <div class="col-12 text-center">
+              <a href="#">Reset Password</a>
+            </div>  {% endcomment %}
+  
+            {% comment %} Display Messages {% endcomment %}
+            {% if messages %}
+            <div class="col-12">
+              {% for message in messages %}
+                {% if message.tags == "error" %}
+                  <div class="alert alert-danger alert-dismissible fade show" role="alert" style="margin-top: 10px;">
+                    {{ message }}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                {% endif %}
+              {% endfor %}
+            </div>
+            {% endif %}
+  
+            <!-- /.col -->
+          </div>
+        </form>
+             
+    </div>
+</div>
+  
+  
+    <!-- REQUIRED SCRIPTS -->
+    <!-- jQuery -->
+    <script src="{% static '/plugins/jquery/jquery.min.js' %}"></script>
+    <!-- Bootstrap -->
+    <script src="{% static '/plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+    <!-- overlayScrollbars -->
+    <script src="{% static '/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js' %}"></script>
+    <!-- AdminLTE App -->
+    <script src="{% static '/dist/js/adminlte.js' %}"></script>
+
+    
+    <!-- OPTIONAL SCRIPTS -->
+    <script src="{% static '/dist/js/demo.js' %}"></script>
+    
+    <!-- PAGE PLUGINS -->
+    <!-- jQuery Mapael -->
+    <script src="{% static '/plugins/jquery-mousewheel/jquery.mousewheel.js' %}"></script>  
+    <script src="{% static '/plugins/raphael/raphael.min.js' %}"></script>  
+    <script src="{% static '/plugins/jquery-mapael/jquery.mapael.min.js' %}"></script>  
+    <script src="{% static '/plugins/jquery-mapael/maps/usa_states.min.js' %}"></script>  
+    <!-- ChartJS -->
+    <script src="{% static '/plugins/chart.js/Chart.min.js' %}"></script>  
+    <!-- PAGE SCRIPTS -->
+    <script src="{% static '/dist/js/pages/dashboard2.js' %}"></script>
+</body>
+
+
+
+</html>

@@ -1,0 +1,35 @@
+
+{% load static %}
+
+<nav class="navbar-light navbar-expand-md bg-light justify-content-md-center justify-content-start border-bottom border-top"> 
+  <div class="navbar-collapse collapse justify-content-between align-items-center w-100">
+      <ul class="navbar-nav mx-left text-md-left text-left" id="home_button"> 
+        <li class="nav-item">
+          <a class="nav-link" role="button" href="{% url 'system_dashboard' %}">
+            <button class="btn btn-light"><i class="fas fa-home"></i> Home </button>
+          </a>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav flex-row justify-content-md-center justify-content-start flex-nowrap"> 
+          <li class="nav-item">
+            <div class="user-panel mt-2 pb-2 d-flex">
+              <div class="image">
+                <img src="{{user.image.url}}" class="img-circle elevation-2" alt="">
+              </div>
+              <div class="info text-info ">
+                <a class="d-block">{{user.full_name|title}}
+                  <!-- <i class="fa fa-fw fa-angle-down d-none d-sm-inline-block"></i> -->
+                </a>
+                
+              </div>
+            </div>
+          </li>
+          
+          <li class="nav-item">
+            <a class="nav-link" data-toggle="modal" data-target="#logout_confirm" role="button">
+              <button class="btn btn-light text-info "><i class="fas fa-sign-in-alt"></i> Logout </button>
+            </a>
+          </li>
+        </ul>     
+  </div>
+</nav>
