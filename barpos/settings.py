@@ -177,6 +177,9 @@ REST_FRAMEWORK = {
 CONSTANCE_ADDITIONAL_FIELDS = {
 'image_field': ['django.forms.ImageField', {}],
 'float_field': ['django.forms.FloatField', {}],
+'boolean_field': ['django.forms.BooleanField', {}],
+'yes_no_null_select': ['django.forms.fields.ChoiceField', {'widget': 'django.forms.Select','choices': (("yes", "Yes"), ("no", "No"))
+}],
 }
 
 CONSTANCE_CONFIG = {
@@ -194,11 +197,13 @@ CONSTANCE_CONFIG = {
 'SERVICE_FEE_A':(38.0,'FEE A','float_field'),
 'SERVICE_FEE_B':(35.0,'FEE B','float_field'),
 'SERVICE_FEE_C':(30.0,'FEE C','float_field'),
+'QUICK_SALE': ('yes', 'QUICK_SALE', 'yes_no_null_select'),
 }
 
 CONSTANCE_CONFIG_FIELDSETS = {
 'Shop Options': ('SHOP_NAME','LOGO_IMAGE','TAG_LINE','ADDRESS','LOCATION','TEL','FAX','EMAIL','CEL','COUNTRY'),
 'Invoice Options': ('TAX_NAME','SERVICE_FEE_A','SERVICE_FEE_B', 'SERVICE_FEE_C'),
+'Pos Settings':('QUICK_SALE',),
 }
 
 PHONENUMBER_DB_FORMAT = 'NATIONAL'

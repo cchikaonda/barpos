@@ -146,11 +146,8 @@
                   <a href="{% url 'print_receipt_only' %}"><button class="btn btn-secondary mr-2 ml-2 posoption_button" style="float: left;"><i class="fas fa-print"></i> Print Bill</button> </a>
                   {% if order.paid_amount.paid_amount %}
                   
-                  {% if order.paid_amount.paid_amount > order.order_total %}
-                  <!-- <a href="{% url 'complete_order' %}"><button id="complete_order_btn" class="btn btn-info mr-2 ml-2 posoption_button" style="float: right;"><i class="fas fa-arrow-right"></i> Finish</button> </a> -->
-                  <!-- <a href="{% url 'complete_order' %}"><button id="complete_order_btn" class="btn btn-info mr-2 ml-2 posoption_button" style="float: right;"><i class="fas fa-arrow-right"></i> Finish</button> </a> -->
-                  <a data-toggle="modal" data-target="#produceReceiptModal"><button class="btn btn-success mr-2 ml-2 posoption_button" style="float: right;"><i class="fas fa-arrow-right"></i> Checkout</button> </a>
-                  
+                  {% if order.paid_amount.paid_amount > order.order_total_due %}
+                  <a data-toggle="modal" data-target="#produceReceiptModal"><button class="btn btn-success mr-2 ml-2 posoption_button" style="float: right;"><i class="fas fa-arrow-right"></i> Checkout</button> </a> 
                   {% endif %}
                   {% endif %}
 

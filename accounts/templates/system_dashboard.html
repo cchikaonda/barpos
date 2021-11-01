@@ -25,7 +25,7 @@
               <a href="">
                 <div class="small-box bg-light dashboard_menu_item">
                     <div class="inner text-secondary">
-                    <h3>Venders</h3>
+                    <h3>Suppliers</h3>
 
                     <p class="ml-4">{{suppliers_count}}</p>
                     </div>
@@ -73,7 +73,12 @@
             <!-- ./col -->
             <div class="col-lg-3 col-6">
                 <!-- small card -->
+                {% if config.QUICK_SALE == 'yes' %}
+                <a href="{% url 'add_customer_to_order' %}">
+                {% else %}
                 <a href="{% url 'pos_dashboard' %}">
+                {% endif %}
+                  
                 <div class="small-box bg-light dashboard_menu_item">
                 <div class="inner text-secondary">
                     <h3>Register Sale<sup style="font-size: 20px"></sup></h3>

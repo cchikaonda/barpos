@@ -39,9 +39,11 @@ def index(request):
     return render(request, 'index.html', context=context)
 
 @login_required
-def pos_dashboard(request):
+def pos_dashboard(request):   
     if 'opened_order' in request.session:
         del request.session['opened_order']
+    if config.QUICK_SALE == 'yes':
+        return redirect('add_customer_to_order')
     customers = Customer.objects.all()
     form = AddCustomerForm()
     unpaid_orders = Order.objects.filter(user = request.user, ordered = False)
@@ -67,9 +69,8 @@ def pos_dashboard(request):
 
 @login_required
 def add_customer_to_order(request):
-    # form = AddCustomerToOrderForm(request.POST or None)
+    order_date = timezone.now()
     if request.method == "POST":
-        order_date = timezone.now()
         selected_customer = request.POST.get('customer_name')
         customer = Customer.objects.get(name=selected_customer)
         try: 
@@ -83,6 +84,17 @@ def add_customer_to_order(request):
             order = Order.objects.create(user = request.user, order_date = order_date, customer=customer)
             order.save()
         return redirect('/pos/personal_order_list/'+ str(order.id))
+    else:
+        customer = Customer.objects.get(id=1)
+        try: 
+            #check if there is already order for the customer
+            check_order = Order.objects.get(user = request.user, customer = customer, ordered = False)
+            if check_order:
+                return redirect('/pos/personal_order_list/'+ str(check_order.id))  
+        except ObjectDoesNotExist:
+            order = Order.objects.create(user = request.user, order_date = order_date, customer=customer)
+            order.save()
+            return redirect('/pos/personal_order_list/'+ str(order.id))
 
 
 
@@ -112,9 +124,9 @@ def add_payment(request):
         order_id =request.session['opened_order']
         order = Order.objects.get(id = order_id, user = request.user, ordered=False)
 
-        customer_id = request.POST.get('customer')
+        # customer_id = request.POST.get('customer')
         # order = Order.objects.get(customer = customer_id, ordered = False, active=True )
-        items_in_order = get_items_in_order(order)
+        # items_in_order = get_items_in_order(order)
         #print(items_in_order)
         try:
             if form.is_valid():
@@ -175,7 +187,9 @@ def complete_order_only(order, request):
 @login_required
 def complete_order(request):
     order_id =request.session['opened_order']
-    order = Order.objects.get(id = order_id, user = request.user, ordered=False)
+    print(order_id)
+    order = Order.objects.get(id = order_id)
+    print(order)
     order.customer.total_orders +=1
     order.customer.save()
     order.order_total_cost = order.order_total_due()
@@ -186,7 +200,6 @@ def complete_order(request):
         order_item.ordered = True
         order_item.save()
     order.ordered = True
-    # order.active = False
     order.vat_p = order.vat_rate
     order.vat_cost = order.get_vat_value
     order.save()
@@ -238,7 +251,7 @@ def personal_order_list(request, id):
     order = get_object_or_404(Order,id=id)
 
     request.session['opened_order'] = order.id
-    all_order_related = Order.objects.prefetch_related('customer','items','user',).all()
+    # all_order_related = Order.objects.prefetch_related('customer','items','user',).all()
     # print(all_order_related)
     unsettled_orders = Order.objects.filter(user=request.user, ordered = False, order_total_cost__gt = 0.0)
 
@@ -528,6 +541,8 @@ def view_order_items(request, id):
 def view_my_orders(request):
     if 'opened_order' in request.session:
         del request.session['opened_order']
+    if config.QUICK_SALE == 'yes':
+        return redirect ('add_customer_to_order')
     customers = Customer.objects.all()
     form = AddCustomerForm()
 

@@ -21,6 +21,7 @@ def system_dashboard(request):
         'suppliers_count':suppliers_count,
         'customers_count':customers_count,
         'orders_count':orders_count,
+        'config':config,
         }
     return render(request, 'system_dashboard.html', context)
 
