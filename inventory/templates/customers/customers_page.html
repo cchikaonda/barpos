@@ -1,0 +1,71 @@
+{% extends 'base_inventory.html' %}
+
+{% block body %}
+<div id="page-container">
+          <!-- Main Container -->
+          <main id="main-container">
+            <div class="bg-body-light">
+                <div class="content content-full">
+                    <div class="d-flex flex-column flex-sm-row justify-content-sm-between align-items-sm-center">
+                        <h1 class="flex-sm-fill h2 my-2">
+                            <small class="d-block d-sm-inline-block mt-2 mt-sm-0 font-size-base font-w400 text-muted">{{header}} Panel</small>
+                        </h1>
+                        <nav class="flex-sm-00-auto ml-sm-3" aria-label="breadcrumb">
+                            <ol class="breadcrumb breadcrumb-alt">
+                              <i class="nav-main-link-icon fa fa-tachometer-alt si si-speedometer"></i>
+                                <li class="breadcrumb-item"></li>
+                                <li class="breadcrumb-item" aria-current="page">
+                                    <a class="link-fx" href="">  {{header}}</a>
+                                </li>
+                            </ol>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+
+                <div class="content">
+                      <!-- Full Table -->
+                      <div class="block">
+                          <div class="block-content">
+                              <div class="block-header">
+                                <a href="{% url 'add_new_customer' %}">  <button class="btn btn-success "type="button" name="button">Add New Customer</button></a>
+                              </div>
+                              <div class="block-content block-content-full">
+                                  <!-- DataTables init on table by adding .js-dataTable-buttons class, functionality is initialized in js/pages/be_tables_datatables.min.js which was auto compiled from _es6/pages/be_tables_datatables.js -->
+                                  <table class="table table-bordered table-striped table-vcenter js-dataTable-buttons">
+                                      <thead class="thead-dark">
+                                          <tr>
+                                              <th class="text-center" style="width: 5%;">ID</th>
+                                              <th class="d-none d-sm-table-cell" style="width: 25%;">Customer Name</th>
+                                              <th class="d-none d-sm-table-cell" style="width: 25%;">Address</th>
+                                              <th class="d-none d-sm-table-cell" style="width: 20%;">Phone Number</th>
+                                              <th style="width: 10%;">Actions</th>
+                                          </tr>
+                                      </thead>
+                                      <tbody>
+                                        {% for all_customers in all_customers %}
+                                        <tr>
+                                          <td>{{ forloop.counter }}</td>
+                                          <td>{{ all_customers.name }}</td>
+                                          <td>{{ all_customers.address }}</td>
+                                          <td>{{ all_customers.phone_number }}</td>
+                                          <td class="text-center">
+                                                <div class="btn-group">
+                                                    <button type="button" class="btn btn-sm btn-light" data-toggle="tooltip" title="Edit {{ all_customers.name }} Details ">
+                                                        <a class="fa fa-fw fa-pencil-alt" href="{% url 'edit_customer_page' all_customers.pk %}"></a>
+                                                    </button>
+                                                    <button type="button" class="btn btn-sm btn-light" data-toggle="tooltip" title="Delete {{ all_customers.name }}">
+                                                        <a class="fa fa-fw fa-times" href="{% url 'delete_customer_page' all_customers.pk %}"></a>
+                                                    </button>
+                                                </div>
+                                        </td>
+                                      </tr>
+                                        {% endfor %}
+                                  </tbody>
+                            </table>
+                      </div>
+                  </div>
+              </div>
+
+                          <!-- END Page Content -->
+{% endblock %}

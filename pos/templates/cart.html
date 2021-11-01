@@ -1,0 +1,25 @@
+{% for ordered_item in order.items.all %}
+<tr class="tr ">
+    <td class="td">{{forloop.counter}}</td>
+
+    <td class="td">{{ordered_item.item}}</td>
+    <td > <a href="{%url 'remove_single_item_from_cart' ordered_item.item.slug %}"> <span class="badge badge-warning badge-pill" >-</span> </a></td>
+    <td class="td text-center">
+        {{ordered_item.quantity}}
+    </td>
+    <td> <a href="{%url 'add_to_cart' ordered_item.item.slug %}"> <span class="badge badge-primary badge-pill">+</span></a> </td> 
+    {% if ordered_item.item.discount_price %}
+      <td class="text-right td">
+          {{ordered_item.item.discount_price}}
+      </td>
+    {% else %}
+      <td class="text-right td">
+         {{ordered_item.item.price}}
+      </td>
+    {% endif %}
+    <td class="td text-right">
+        {{ordered_item.get_total_item_price}}
+    </td>
+    <td class="text-center"><a href="{{ordered_item.item.get_remove_from_cart_url }}"> <span class="badge badge-danger badge-pill" >x</span></a></td>
+</tr>
+{% endfor %}

@@ -1,0 +1,486 @@
+{% load static %}
+{% load crispy_forms_tags %}
+{% get_media_prefix as MEDIA_URL %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{home}}</title>
+  
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="{% static '/plugins/fontawesome-free/css/all.min.css' %}" type="text/css">
+    <!-- overlayScrollbars -->
+    <link rel="stylesheet" href="{% static '/plugins/overlayScrollbars/css/OverlayScrollbars.min.css' %}" type="text/css">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="{% static '/dist/css/adminlte.min.css' %}" type="text/css">
+    <!-- {{form.media.css }} -->
+
+    <link rel="stylesheet" href="{% static '/plugins/intl-tel-input-master/build/css/intlTelInput.css' %}" type="text/css">
+    
+    
+    <style>
+      #customer_name_label{
+        display: none;
+      }
+      .main-footer{
+        margin-left: auto !important;      
+      }
+      .confirm_button{
+        border: none;
+        color: white;
+        padding: 15px 32px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+      }
+      .posoption_button{
+        border: none;
+        color: white;
+        padding: 15px 32px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+      }
+    </style>
+
+    <script>
+      var today = new Date();
+    </script>
+
+    
+</head>
+<body class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed layout-footer-fixed" onload="realtimeClock()">
+    <div class="wrapper">
+       <!-- Navbar -->
+       {% include 'header.html' %}
+       <!-- /.navbar --> 
+  
+      {% if messages %}
+                   {% for message in messages %}
+                   <div class="mt-6 pt-2">
+                       <div class="alert alert-{{message.tags}}" alert-dismissible fade show role="alert">{{message}}
+                         <button type="button" class="close" data-dismiss = "alert" name="button">
+                           <span aria-hidden="true">&times;</span>
+                         </button>
+                       </div>
+                    </div>
+                   {% endfor %}
+               {% endif %}
+      
+      {% block body %}
+
+        
+    
+      {% endblock %}
+
+      <!-- /.content-wrapper -->
+    
+      {% include 'footer.html' %}
+
+    </div>
+
+
+    
+    <!-- REQUIRED SCRIPTS -->
+    <!-- jQuery -->
+    <script src="{% static '/plugins/jquery/jquery.min.js' %}"></script>
+    <!-- Bootstrap -->
+    <script src="{% static '/plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+    <!-- overlayScrollbars -->
+    <script src="{% static '/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js' %}"></script>
+    <!-- AdminLTE App -->
+    <script src="{% static '/dist/js/adminlte.js' %}"></script>
+
+
+
+    <!-- Select2 -->
+    <script src="{% static '/plugins/select2/js/select2.full.min.js' %} "></script>
+    <!-- Bootstrap4 Duallistbox -->
+    <script src="{% static '/plugins/bootstrap4-duallistbox/jquery.bootstrap-duallistbox.min.js' %}"></script>
+    <!-- InputMask -->
+    <script src="{% static '/plugins/moment/moment.min.js'  %}"></script>
+    <script src="{% static '/plugins/inputmask/min/jquery.inputmask.bundle.min.js' %}"></script>
+    <!-- date-range-picker -->
+    <script src="{% static '/plugins/daterangepicker/daterangepicker.js' %}"></script>
+    <!-- bootstrap color picker -->
+    <script src="{% static '/plugins/bootstrap-colorpicker/js/bootstrap-colorpicker.min.js' %}"></script>
+    <!-- Tempusdominus Bootstrap 4 -->
+    <script src="{% static '/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js' %}"></script>
+    <!-- Bootstrap Switch -->
+    <script src="{% static '/plugins/bootstrap-switch/js/bootstrap-switch.min.js' %}"></script>
+
+
+    <!-- OPTIONAL SCRIPTS -->
+    <script src="{% static '/dist/js/demo.js' %}"></script>
+    
+    <!-- PAGE PLUGINS -->
+    <!-- jQuery Mapael -->
+    <script src="{% static '/plugins/jquery-mousewheel/jquery.mousewheel.js' %}"></script>  
+    <script src="{% static '/plugins/raphael/raphael.min.js' %}"></script>  
+    <script src="{% static '/plugins/jquery-mapael/jquery.mapael.min.js' %}"></script>  
+    <script src="{% static '/plugins/jquery-mapael/maps/usa_states.min.js' %}"></script>  
+    <!-- ChartJS -->
+    <script src="{% static '/plugins/chart.js/Chart.min.js' %}"></script>  
+    <!-- PAGE SCRIPTS -->
+    <script src="{% static '/dist/js/pages/dashboard2.js' %}"></script>
+    <script src="{% static '/custom_js/helpers.js' %}"></script>
+    <script src="{% static '/custom_js/current_date_time.js' %}"></script>
+    
+
+    <!-- jQuery -->
+    <script src="{% static '/plugins/jquery/jquery.min.js' %}"></script>
+    <!-- Bootstrap 4 -->
+    <script src="{% static '/plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+    <!-- DataTables -->
+    <script src="{% static '/plugins/datatables/jquery.dataTables.min.js' %}"></script>
+    <script src="{% static '/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js' %}"></script>
+    <script src="{% static '/plugins/datatables-responsive/js/dataTables.responsive.min.js' %}"></script>
+    <script src="{% static '/plugins/datatables-responsive/js/responsive.bootstrap4.min.js' %}"></script>
+    <!-- AdminLTE App -->
+    <script src="{% static '/dist/js/adminlte.min.js' %}"></script>
+    <!-- AdminLTE for demo purposes -->
+    <script src="{% static '/dist/js/demo.js' %}"></script> 
+
+    <script src="{% static 'dist/js/pages/dashboard3.js' %}"></script> 
+    <script src="{% static '/custom_js/custom_tables.js' %}"></script>
+    
+    <script src="{% static '/custom_js/search_items_by_barcode.js' %}"></script>
+    <script src="{% static '/custom_js/verifyponenumber.js' %}"></script>
+
+    
+
+    <script src="{% static '/plugins/intl-tel-input-master/build/js/intlTelInput.js' %}"></script>
+   
+
+    <script>
+      var input = document.querySelector("#phone_number");
+      window.intlTelInput(input, {
+        // any initialisation options go here
+      });
+    </script>
+
+
+    
+    <!-- {{form.media.js}} -->
+
+    <style>
+      .modal_btns{
+        width: 300px;
+        height: 60px;
+      }
+      .main_btn{
+        width: 200px;
+        height: 50px;
+        font-size: large;
+      }
+      .pos_form{
+        height: 50px;
+        font-size: xx-large;
+      }
+    </style>
+  
+</body>
+
+<!--Confirm Receipt Printingl-->
+<div class="modal fade" id="produceReceiptModal">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Print Receipt?</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="text-right">
+        <div class="mb-4">
+          <table class="table table-striped">
+            <tbody style="font-size: x-large;">
+              <tr>
+                <td>AMOUNT TENDERED</td>
+                <td>{{order.paid_amount}}</td>
+              </tr>
+              <tr>
+                <td>BALANCE</td>
+                <td>{{order.get_balance}}</td>
+              </tr>
+              <tr>
+                <td>CHANGE</td>
+                <td class="bg-dark">{{order.get_change}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-body">  
+        <div class="modal-footer justify-content-between">
+         <a href="{% url 'complete_order' %}"> <button type="button" class="btn btn-dark modal_btns">NO</button> </a>
+         <a href="{% url 'final_receipt' %}"> <button type="submit" class="btn btn-primary modal_btns">YES</button></a>
+        </div>
+      </div>
+  </div>
+  </div>
+</div>
+<!--End Confirm Receipt Printing Modal-->
+
+<!--Confirm Save Order with Printing-->
+<div class="modal fade" id="produceReceiptSavedBillModal">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Print Receipt?</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="text-right">
+        <div class="mb-4">
+          <table class="table table-striped">
+            <tbody style="font-size: x-large;">
+              <tr>
+                <td>AMOUNT TENDERED</td>
+                <td>{{order.paid_amount}}</td>
+              </tr>
+              <tr>
+                <td>BALANCE</td>
+                <td>{{order.get_balance}}</td>
+              </tr>
+              <tr>
+                <td>CHANGE</td>
+                <td class="bg-dark">{{order.get_change}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-body">  
+        <div class="modal-footer justify-content-between">
+         <a href="{% url 'save_bill' %}"> <button type="button" class="btn btn-dark modal_btns">NO</button> </a>
+         <a href="{% url 'print_receipt_only' %}"> <button type="submit" class="btn btn-primary modal_btns">YES</button></a>
+        </div>
+      </div>
+  </div>
+  </div>
+</div>
+<!--End Save Order with Printing Modal-->
+
+<!--Cash Payment Modal-->
+<div class="modal fade" id="cashModal">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Cash Payment</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        
+        <form action="{% url 'add_payment' %}" method="post" >
+          {% csrf_token %}
+            
+          <label for="topay">TO PAY</label>
+          <div class="form-group" >
+              <input id="topay" class="form-control text-right pos_form" name="" value="{{order.order_total_due}}" style="background-color: rgb(62, 74, 89); font-size: 200%; font-family: monospace; color: chartreuse;" disabled/>
+          </div>
+          <br>
+          <div class="form-group">
+            <label for="payment_mode">Payment Mode</label>
+            <div class="mb-4">
+            {{payment_form.payment_mode}}
+            </div>
+            <div class="mt-4 mb-4">
+              <label for="paid_amount">Received Amount</label>
+              {{payment_form.paid_amount}}
+            </div>
+            <div class=" mt-4 mb-4 disabled">
+              {{payment_form.reference.as_hidden}}
+              <input type="hidden" name="reference" value="300">
+            </div>
+            <div class=" mt-4 mb-4 disabled">
+              <input type="hidden" name="customer" value="{{order.customer.id}}">
+            </div>
+
+          </div>
+      </div>
+      <div class="modal-footer justify-content-between">
+        <button type="button" class="btn btn-default btn-lg" data-dismiss="modal">CLOSE</button>
+        <button type="submit" class="btn btn-primary btn-lg">PROCESS</button>
+      </div>
+    </div>
+  </form>
+    <!-- /.modal-content -->
+  </div>
+</div>
+<!--End Cash Payment Modal-->
+
+<!--Airtel Money Payment Modal-->
+<div class="modal fade" id="airtelMoneyModal">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Airtel Money Payment</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        
+        <form action="{% url 'add_payment' %}" method="post" >
+          {% csrf_token %}
+            
+          <label for="topay">TO PAY</label>
+          <div class="form-group" >
+              <input id="topay" class="form-control text-right pos_form" name="" value="{{order.order_airtel_money_total_due}}" style="background-color: rgb(62, 74, 89); font-size: 200%; font-family: monospace; color: chartreuse;" disabled/>
+          </div>
+          <br>
+          <div class="form-group">
+            <div class="mb-4">
+              <label for="payment_mode">Payment Mode</label>
+            {{airtel_money_payment_form.payment_mode}}
+            </div>
+            <div class=" mt-4 mb-4">
+              <label for="amount_received">Amount Received</label>
+              {{airtel_money_payment_form.paid_amount}}
+            </div>
+            <div class=" mt-4 mb-4">
+              <label for="reference">Reference Number</label>
+              {{airtel_money_payment_form.reference}}
+            </div>
+            <div class=" mt-4 mb-4 disabled">
+              <input type="hidden" name="customer" value="{{order.customer.id}}">
+            </div>
+          </div>
+      </div>
+      <div class="modal-footer justify-content-between">
+        <button type="button" class="btn btn-default btn-lg" data-dismiss="modal">CLOSE</button>
+        <button type="submit" class="btn btn-primary btn-lg">PROCESS</button>
+      </div>
+    </div>
+  </form>
+    <!-- /.modal-content -->
+  </div>
+</div>
+<!--End Airtel Money Payment Modal-->
+
+<!--Mpamba Payment Modal-->
+<div class="modal fade" id="mpambaModal">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Mpamba Payment</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        
+        <form action="{% url 'add_payment' %}" method="post" >
+          {% csrf_token %}
+            
+          <label for="topay">TO PAY</label>
+          <div class="form-group" >
+              <input id="topay" class="form-control text-right pos_form" name="" value="{{order.order_mpamba_total_due}}" style="background-color: rgb(62, 74, 89); font-size: 200%; font-family: monospace; color: chartreuse;" disabled/>
+          </div>
+          <br>
+          <div class="form-group">
+            <div class="mb-4">
+              <label for="topay">Payment Mode</label>
+            {{mpamba_payment_form.payment_mode}}
+            </div>
+            <div class=" mt-4 mb-4">
+              <label for="topay">Amount Received</label>
+              {{mpamba_payment_form.paid_amount}}
+            </div>
+            <div class=" mt-4 mb-4">
+              <label for="topay">Reference Number</label>
+              {{mpamba_payment_form.reference}}
+            </div>
+            <div class=" mt-4 mb-4 disabled">
+              <input type="hidden" name="customer" value="{{order.customer.id}}">
+            </div>
+          </div>
+      </div>
+      <div class="modal-footer justify-content-between">
+        <button type="button" class="btn btn-default" data-dismiss="modal">CLOSE</button>
+        <button type="submit" class="btn btn-primary">PROCESS</button>
+      </div>
+    </div>
+  </form>
+    <!-- /.modal-content -->
+  </div>
+</div>
+<!--End Mpamba Payment Modal-->
+
+<!--View Bill Modal-->
+<div class="modal fade" id="{unpaid_order.id}">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Order: {{unpaid_order.get_code}}</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        
+        <form action="{% url 'add_payment' %}" method="post" >
+          {% csrf_token %}
+            
+          <label for="topay">TO PAY</label>
+          <div class="form-group" >
+              <input id="topay" class="form-control text-right payment_form" name="" value="{{order.order_mpamba_total_due}}" style="background-color: rgb(62, 74, 89); font-size: 200%; font-family: monospace; color: chartreuse;" disabled/>
+          </div>
+          <br>
+
+
+          <div class="form-group">
+            <div class="mb-4">
+              <label for="topay">Payment Mode</label>
+            {{mpamba_payment_form.payment_mode}}
+            </div>
+            <div class=" mt-4 mb-4">
+              <label for="topay">Amount Received</label>
+              {{mpamba_payment_form.paid_amount}}
+            </div>
+            <div class=" mt-4 mb-4">
+              <label for="topay">Reference Number</label>
+              {{mpamba_payment_form.reference}}
+            </div>
+          </div>
+          
+       
+      </div>
+      <div class="modal-footer justify-content-between">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </form>
+    <!-- /.modal-content -->
+  </div>
+</div>
+<!--End View Bill Modal-->
+
+<!-- Logout Modal-->
+<div id="logout_confirm" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+<!-- Modal content-->
+  <div class="modal-content">
+    <div class="modal-header">
+      <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">×</span>
+      </button>
+    </div>
+    <div class="modal-body text-center"><b><h3>Are you sure you want to logout ?</h3></b></div>
+    <div class="modal-footer">
+      <button class="btn btn-primary confirm_button" data-dismiss="modal" type="button">NO</button>
+      <a href="{% url 'logout_request' %}" ><button class="btn btn-danger confirm_button" type="button">YES</button></a>
+    </div>
+  </div>
+<!-- Logout Modal -->
+
+</html>

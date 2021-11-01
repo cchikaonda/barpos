@@ -9,6 +9,9 @@
     #home_button{
       visibility: hidden;
     }
+    #my_orders_button{
+      visibility: hidden;
+    }
   </style>
  
 
@@ -16,6 +19,24 @@
     <div class="content ml-2 mr-2 mt-2" style="max-height: 500px;">
         <!-- Small Box (Stat card) -->
         <div class="row">
+            {% if request.user.admin == True %}
+            <div class="col-lg-3 col-6">
+              <!-- small card -->
+              <a href="">
+                <div class="small-box bg-light dashboard_menu_item">
+                    <div class="inner text-secondary">
+                    <h3>Venders</h3>
+
+                    <p class="ml-4">{{suppliers_count}}</p>
+                    </div>
+                    <div class="icon">
+                    <i class="fas fa-truck"></i>
+                    </div>
+                </div>
+              </a>
+            </div>
+            {% endif %}
+
             <div class="col-lg-3 col-6">
               <a href="{% url 'customers_list' %}">
               <!-- small card -->
@@ -24,45 +45,29 @@
                       <div class="inner text-secondary">
                       <h3>Customers</h3>
 
-                      <p>New Orders</p> <br> <br>
-                    
+                      <p class="ml-4">{{customers_count}}</p>
                       </div>
                       <div class="icon">
-                      <i class="fas fa-shopping-cart"></i>
+                      <i class="fas fa-users"></i>
                       </div>
                   </div>
               </a>
             </div>
-            <!-- ./col -->
-            <div class="col-lg-3 col-6">
-                <!-- small card -->
-                <a href="{% url 'pos_dashboard' %}">
-                <div class="small-box bg-light dashboard_menu_item">
-                <div class="inner text-secondary">
-                    <h3>Point Of Sale<sup style="font-size: 20px"></sup></h3>
 
-                    <p>POS</p><br> <br>
-                </div>
-                <div class="icon">
-                    <i class="ion ion-stats-bars"></i>
-                </div>
-                </div>
-            </a>
-            </div>
             <div class="col-lg-3 col-6">
-              <a href="{% url 'customers_list' %}">
               <!-- small card -->
-                  <div class="small-box bg-light dashboard_menu_item">
+              <a href="{% url 'view_my_orders' %}">
+                <div class="small-box bg-light dashboard_menu_item">
                   
-                      <div class="inner text-secondary">
-                      <h3>Customers</h3>
-
-                      <p>New Orders</p>
-                      </div>
-                      <div class="icon">
-                      <i class="fas fa-shopping-cart"></i>
-                      </div>
+                  <div class="inner text-secondary">
+                    <h3>My Orders</h3>
+    
+                    <p class="ml-4">{{orders_count}}</p> 
                   </div>
+                  <div class="icon">
+                    <i class="fas fa-shopping-basket"></i>
+                  </div>
+                </div>
               </a>
             </div>
             <!-- ./col -->
@@ -75,46 +80,15 @@
  
                 </div>
                 <div class="icon">
-                    <i class="fa fa-shopping-cart"></i>
+                    <i class="fa fa-cash-register"></i>
                 </div>
                 </div>
             </a>
             </div>
         </div>
         <!-- ./col -->
+        {% if request.user.is_admin == True %}
         <div class="row">
-          <div class="col-lg-3 col-6">
-              <!-- small card -->
-              <a href="">
-              <div class="small-box bg-light dashboard_menu_item">
-                  <div class="inner text-secondary">
-                  <h3>44</h3>
-
-                  <p>User Registrations</p>
-                  </div>
-                  <div class="icon">
-                  <i class="fas fa-user-plus"></i>
-                  </div>
-              </div>
-              </a>
-          </div>
-          <!-- ./col -->
-          <div class="col-lg-3 col-6">
-              <!-- small card -->
-              <a href="{% url 'inventory_dashboard' %}">
-              <div class="small-box bg-light dashboard_menu_item">
-                  <div class="inner text-secondary">
-                  <h3>Inventory</h3>
-
-                  
-                  </div>
-                  <div class="icon">
-                  <i class="fas fa-chart-pie"></i>
-                  </div>
-              </div>
-              </a>
-          </div>
-          <!-- ./col -->
           <div class="col-lg-3 col-6">
             <!-- small card -->
             <a href="#">
@@ -144,30 +118,8 @@
             </div>
             </a>
         </div>
-        <!-- ./col -->
-    </div>
-
-    <!-- /.row -->
-    <!-- Small Box (Stat card) -->
-    <div class="row">
-        <div class="col-lg-3 col-6">
-          <!-- small card -->
-          <a href="">
-            <div class="small-box bg-light dashboard_menu_item">
-              
-              <div class="inner text-secondary">
-                <h3>150</h3>
-
-                <p>New Orders</p> 
-              </div>
-              <div class="icon">
-                <i class="fas fa-shopping-cart"></i>
-              </div>
-            </div>
-          </a>
-        </div>
-        <!-- ./col -->
-        <div class="col-lg-3 col-6">
+         <!-- ./col -->
+         <div class="col-lg-3 col-6">
           <!-- small card -->
           <a href="{% url 'reports_dashboard' %}">
             <div class="small-box bg-light dashboard_menu_item">
@@ -196,33 +148,12 @@
           </a>
         </div>
         <!-- ./col -->
+        <!-- ./col -->
+        {%endif%}
+      </div>
 
-
-        <div class="col-lg-3 col-6">
-          <div class="card-body">
-            <div class="card-header bg-secondary">
-              <h3 class="card-title"><i class="fa fa-calendar"></i> LAST 30 DAYS SALES</h3>
-            </div>
-          
-               <!-- small card -->
-              <a href="{% url 'pos_dashboard' %}">
-                <div class="small-box bg-light dashboard_menu_item">
-                  <div class="inner text-secondary">
-                    <p> <h3>Admin<sup style="font-size: 20px"></sup></h3> </p>
-                  </div>
-                  <div class="icon">
-                    <i class="fa fa-cogs"></i>
-                  </div>
-                </div>
-              </a>
-            
-          </div>
-  
-        </div>
-
-
-    </div>
-      <!-- /.row -->
+    <!-- /.row -->
+    <!-- Small Box (Stat card) -->
 
 <script type="text/javascript">
   $(window).on('load',function(){

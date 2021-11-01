@@ -1,0 +1,19 @@
+{% for unit in units %}
+    <td>{{ forloop.counter }}</td>
+    <td>{{ unit.unit_description }}</td>
+    <td>{{ unit.unit_short_name }}</td>
+
+    <td class="text-center">
+        <div class="btn-group">
+            <button type="button" class="btn btn-sm btn-light show-form-update" data-url="{% url 'unit_update' unit.id %}" data-toggle="tooltip" title="Edit {{ unit.unit_short_name }} ">
+                <a class="fa fa-fw fa-pencil-alt"></a>
+            </button>
+           
+            <button type="button"  class="btn btn-sm btn-light show-form-delete" data-url="{% url 'unit_delete' unit.id %}" data-toggle="tooltip" title="Delete {{ unit.unit_short_name }}">
+                <a class="fa fa-fw fa-times"> </a>
+            </button>
+
+        </div>
+    </td>
+  </tr>
+{% endfor %}

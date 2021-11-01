@@ -1,0 +1,55 @@
+{% extends 'base_inventory.html' %}
+
+{% block content %}    
+<!-- Main content -->
+<section class="content">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-12">
+
+        <div class="card-body">
+            <div class="card">
+              <div class="card-header">
+                <div class="block-header row">
+                  <div class="col-md-6 mb-0">
+                    <button class="btn btn-primary show-form" data-url="{% url 'item_create' %}"> <span class="fa fa-plus fa-1x"></span> Add New Item</button>
+                  </div>
+                  <div class="col-md-6 mb-0">
+                    {% include "includes/category_list.html" %}
+                  </div>
+                    
+              </div>
+            <table class="table table-bordered table-striped" id="product-table">
+              <thead >
+                <tr>
+                    <th class="text-center" style="width: 5%;">ID</th>
+                    <th class="d-none d-sm-table-cell" style="width: 15%;">Item</th>
+                    <th class="d-none d-sm-table-cell" style="width: 15%;">Description</th>
+                    <th class="d-none d-sm-table-cell" style="width: 10%;">Unit</th>
+                    <th style="width: 5%;">Price</th>
+                    <th style="width: 10%;">Category</th>
+                    <th style="width: 10%;">Qty at Hand</th>
+                    <th style="width: 10%;">Active in POS</th>
+                    <th style="width: 10%;">Action</th>
+
+                </tr>
+              </thead>
+              <tbody>
+                {% include "items/items_list_2.html" %}
+              </tbody>
+          </table>
+              </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<div class="modal fade" id="modal-product">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content"></div>
+  </div>
+</div>
+{% endblock %}

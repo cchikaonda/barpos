@@ -1,0 +1,76 @@
+{% load static %}
+{% load crispy_forms_tags %}
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+
+    <link rel="stylesheet" href="{% static '/css/style.css'%}" type="text/css">
+    <link rel="stylesheet" href="{% static '/css/oneui.min.css'%}" type="text/css">
+    <link rel="stylesheet" href="{% static '/css/oneui.css'%}" type="text/css">
+    <link rel="stylesheet" href="{% static '/js/plugins/sweetalert2/sweetalert2.min.css'%}" type="text/css">
+
+
+    <script src="{% static '/js/oneui.core.min.js' %}"></script>
+    <script src="{% static '/js/oneui.app.min.js' %}"></script>
+
+    <script src="{% static '/js/plugins/sweetalert2/sweetalert2.min.js' %}"> </script>
+
+    <script src="{% static '/js/pages/be_comp_dialogs.min.js' %}"></script>
+
+
+
+    <title>Login</title>
+  </head>
+  <body>
+    <form method="post">
+
+      <div id="page-container">
+                <!-- Main Container -->
+                <main id="main-container">
+                    <!-- Page Content -->
+                    <div class="hero-static d-flex align-items-center bg-grey ">
+                        <div class="w-100" >
+                            <!-- Sign In Section -->
+                                <div class="row justify-content-center">
+                                    <div class="col-md-8 col-lg-6 col-xl-4 py-4">
+                                        <!-- Header -->
+                                        <div class="text-center">
+                                            <p class="mb-2">
+                                                <i class="fa fa-2x fa-circle-notch text-info"></i>
+                                            </p>
+                                            <h1 class="h4 mb-1">
+                                                Sign In
+                                            </h1>
+                                            <h2 class="h6 font-w400 text-muted mb-3">
+                                               MCA-TECH SHOP MANAGEMENT SYSTEM
+                                            </h2>
+                                        </div>
+                                        <!-- END Header -->
+
+                                          {% csrf_token %}
+
+                                          {{form|crispy}}
+                                       <br>
+                                        <div class="form-group row justify-content-center">
+                                            <div class="col-md-12 col-xl-12">
+                                            <button type="submit" class="btn btn-block btn-primary">
+                                              {% if CustomUser.is_authenticated %}
+                                              <ul class="js-swal-success"></ul>
+                                              {% else %}
+
+                                              {% endif %}
+                                                <i class="fa fa-fw fa-sign-in-alt mr-1"></i> Sign In
+                                            </button>
+                                        </div>
+                                       </br>
+
+                                      </div>
+                                  </div>
+                               </div>
+                              <!-- End Sign In Section -->
+                      </form>
+                </div>
+  </body>
+
+</html>

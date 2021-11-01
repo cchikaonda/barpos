@@ -1,0 +1,60 @@
+<!-- loading static files to access the avatar image -->
+{% load static %}
+{% for user in users %}
+<tr>
+<!--  <td class="text-center"><i><img class="img-avatar img-avatar48" src="{% static '/media/avatars/avatar3.jpg' %}" alt=""></i></td> -->
+<td class="text-center user-panel"><i><img class="img-circle elevation-2" src="{{user.imageURL}}" alt=""></i></td>
+
+<td class="font-w600 font-size-sm">
+    {{user.user_role}}
+<td class="font-w600 font-size-sm">
+    {{user.email}}
+<td class="font-w600 font-size-sm">{{user.full_name}}
+</td>
+<td class="font-w600 font-size-sm">{{user.phone_number}}
+
+</td>
+<td class="text-center">
+  {% if user.active == True %}
+  <span class="badge-pill badge-success" data-toggle="tooltip" title="User is Active"></span>
+  {% elif user.active == False %}
+  <span class="badge-pill badge-danger" data-toggle="tooltip" title="User is Deactivated"></i></span>
+  {% endif %}
+</td>
+<td class="text-center">
+  {% if user.admin == True %}
+  <span class="badge-pill badge-success" data-toggle="tooltip" title="User is Admin"></span>
+  {% elif user.admin == False %}
+  <span class="badge-pill badge-danger" data-toggle="tooltip" title="User is not Admin"></i></span>
+  {% endif %}
+</td>
+<td class="text-center">
+  {% if user.staff == True %}
+  <span class="badge-pill badge-success" data-toggle="tooltip" title="User is Staff"></i></span>
+  {% elif user.staff == False %}
+  <span class="badge-pill badge-danger" data-toggle="tooltip" title="User is not Staff"></i></span>
+  {% endif %}
+</td>
+<td class="text-center">
+  {% if user.superuser == True %}
+  <span class="badge-pill badge-success" data-toggle="tooltip" title="User is Staff"></i></span>
+  {% elif user.superuser == False %}
+  <span class="badge-pill badge-danger" data-toggle="tooltip" title="User is not Staff"></i></span>
+  {% endif %}
+</td>
+<td class="text-center">
+  {% if request.user == user %}
+  {% else %}
+    <div class="btn-group">
+      <button type="button" class="btn btn-sm btn-light show-form-update" data-url="{% url 'user_update' user.id %}" data-toggle="tooltip" title="Edit {{ user.full_name }}">
+          <a class="fa fa-fw fa-pencil-alt"> </a>
+      </button>
+      <button type="button" class="btn btn-sm btn-light show-form-delete" data-url="{% url 'user_delete' user.id %}" data-toggle="tooltip" title="Delete {{ user.full_name }}">
+          <a class="fa fa-fw fa-times"> </a>
+      </button>
+    </div>
+  {% endif %}
+</td>
+
+</tr>
+{% endfor %}

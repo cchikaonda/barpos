@@ -1,0 +1,125 @@
+{% extends 'base_pos.html' %}
+
+{% block body %}
+
+<style>
+  .footer{
+    float: left;
+  }
+</style>
+
+<div class="row">
+<div class="card col-5 mr-2">
+  <div class="card-header">
+      
+      <form action="{% url 'add_customer_to_order' %}" method="post" >
+        {% csrf_token %}
+        <div class="input-group-prepend " >
+          <select class="form-control payment_form" name="customer_name" >
+            {% for customers in customers %}
+              <option value="{{customers.name}}"> {{customers.name}} ({{customers.phone_number}}), {{customers.address}}</option>
+            {%endfor%}
+          </select>
+          <button type="submit" name="button" class=" btn btn-info ml-2" data-toggle="modal" data-target="#customerModal" style="width: 100px;">Select</button>
+        </div>
+      </form>
+    
+  </div>
+</div>
+
+<div class="card col-5 mr-2">
+  <div class="card-header">
+      
+      <form action="{% url 'add_new_customer_from_pos_dash' %}" method="post" >
+        {% csrf_token %}
+        {{form}}
+        <div class="mt-2 mb-2">
+          <button type="submit" class="btn btn-info" style="float: right;"> Submit</button>
+        </div>
+      </form>
+  </div>
+</div>
+
+
+
+</div>
+<div class="row ">
+  <div class="card col-12">
+    <div class="card-header">
+      <h3 class="card-title">All Customers</h3>
+      <button class="btn btn-info" style="float: right;" id="load_orders">Load Orders</button>
+    </div>
+    <!-- /.card-header -->
+    <div class="card-body">
+      <div id="example1_wrapper" class="dataTables_wrapper dt-bootstrap4">
+        <div class="row">
+          <div class="col-sm-6 col-md-6">
+          <div class="dataTables_length" id="example1_length">
+            </div></div><div class="col-sm-12 col-md-6"><div id="example1_filter" class="dataTables_filter"></div></div></div><div class="row"><div class="col-sm-12"><table id="example1" class="table table-bordered table-striped dataTable dtr-inline" role="grid" aria-describedby="example1_info">
+        <thead>
+        <tr role="row"> <th>Order ID</th><th class="sorting_asc" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Rendering engine: activate to sort column descending">Customer Name</th><th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Browser: activate to sort column ascending">Phone Number</th><th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Total Bill</th><th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Date</th><th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Cashier</th><th class="sorting" tabindex="0" aria-controls="example1">Action</th></tr>
+        </thead>
+        <tbody>
+        {% for unpaid_order in unpaid_orders %}
+        <tr role="row" class="odd">
+          <td id="customer_name"><a type="submit" href="{% url 'personal_order_list' unpaid_order.id %}"  >{{unpaid_order.get_code}}</a></td>
+          <td tabindex="0" class="sorting_1">{{unpaid_order.customer}}</td>
+          <td>{{unpaid_order.customer.phone_number}}</td>
+          <td>{{unpaid_order.order_total_cost}}</td>
+          <td>{{unpaid_order.order_date}}</td>
+          <td>{{unpaid_order.user.full_name}}</td>
+          <td class="project-actions text-left">
+            <a class="btn btn-success btn-sm" href="{% url 'personal_order_list' unpaid_order.id %}">
+                <i class="fas fa-money-bill-alt">
+                </i>
+                Select
+            </a>
+            <!-- <a class="btn btn-primary btn-sm" href="#">
+                <i class="fas fa-pencil-alt">
+                </i>
+                Add Item
+            </a> -->
+            <a class="btn btn-info btn-sm" class = "open-modal" data-url = "{% url 'view_order_items' unpaid_order.id %}">
+                <i class="fas fa-trash">
+                </i>
+                View Bill Items
+            </a>
+          </td>
+          
+        </tr>
+        {% endfor %}
+    </tbody>
+        <tfoot>
+        </tfoot>
+      </table>
+    </div>
+    
+    <div><br></div>
+  </div>
+</div>
+    <!-- /.card-body -->
+    </div>
+  </div>
+</div>
+
+
+</div>
+
+
+<script>
+  var modalDiv = $("#modal-div");
+  $(".open-modal").on("click", function () {
+    $.ajax({
+      url: $(this).attr("data-url"),
+      success: function(data){
+        modalDiv.html(data);
+        $("#view_order_items_modal").modal();
+      }
+    });
+  });
+</script>
+
+{% endblock %}
+
+
+

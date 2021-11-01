@@ -1,0 +1,101 @@
+<div class="col-md-6 col-xl-5">
+    <div class="card">
+        <div class="card-header">
+
+            
+            {% if category %}
+            <h3 class="card-title">
+              {% for category in category %}
+              {{category.category_name}}
+              {% endfor %}
+            </h3>
+            {% else %}
+
+            <h3 class="card-title">All Items </h3>
+            {% endif %}
+            <div class="card-tools">
+                <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i>
+                </button>
+                <button type="button" class="btn btn-tool" data-card-widget="remove"><i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+        <!-- /.card-header -->
+        <div class="card-body" >
+            <div class="row">
+                {% for item in items %}
+                <div class="info-box mb-3 mr-2 bg-info col-xl-3" >
+                    <span class="info-box-icon">
+                    <a href="{{item.get_add_to_cart_url}}">
+                      
+                      <img class="img-fluid options-item" src = "{{item.image.url}}" alt=""></span>
+
+                    <div class="info-box-content">
+                      <button class="btn btn-sm btn-info" >
+                        <span class="info-box-text">{{item.item_name}}</span>
+                        <span class="info-box-number text-warning">{{item.selling_price}}
+                          {% if item.discount_price %}
+                           <del><h6>{{item.price.amount}}</h6></del> 
+                          {% endif %}
+                        </span>
+                      </button>
+                        <!-- <span class="info-box-number">{{item.quantity_at_hand}}</span> -->
+                      
+                        
+                    </div>
+                  </a>
+                    <!-- /.info-box-content -->
+                </div>
+                <!-- /.info-box -->
+                {% endfor %}
+                
+            </div>
+            <!-- /.row -->
+        </div>
+                
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Items</h3>
+
+          <div class="card-tools">
+            <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i>
+            </button>
+            <button type="button" class="btn btn-tool" data-card-widget="remove"><i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        </div>
+        <!-- /.card-header -->
+        <div class="card-body">
+          <div id="example1_wrapper" class="dataTables_wrapper dt-bootstrap4">
+            <div class="row"><div class="col-sm-12 col-md-6">
+              <div class="dataTables_length" id="example1_length">
+                </div></div><div class="col-sm-12 col-md-6"><div id="example1_filter" class="dataTables_filter"></div></div></div><div class="row"><div class="col-sm-12"><table id="example1" class="table table-bordered table-striped dataTable dtr-inline" role="grid" aria-describedby="example1_info">
+            <thead>
+            <tr role="row"><th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Item: activate to sort column ascending">Item</th><th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Category: activate to sort column ascending">Category</th><th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Price: activate to sort column ascending">Price</th></tr>
+            </thead>
+            <tbody>
+            {% for item in items %}
+              <tr role="row" class="odd">
+              <td tabindex="0" class="sorting_1"><a href="{{item.get_add_to_cart_url}}">{{item.item_name}}</a></td>
+              <td>{{item.category}}</td>
+              <td>{{item.selling_price}}</td>
+              
+            </tr>
+            {% endfor %}
+        </tbody>
+            <tfoot>
+            </tfoot>
+          </table>
+        </div>
+        
+        <div><br></div>
+      </div>
+    </div>
+        <!-- /.card-body -->
+      </div>
+      
+    </div>
+</div>

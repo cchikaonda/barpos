@@ -1,0 +1,51 @@
+{% load crispy_forms_tags %}
+<form method="post" data-url="{% url 'user_create' %}" class="create-form ">
+	{% csrf_token %}
+	<div class="block block-themed block-transparent mb-0 ">
+			<div class="block-header bg-primary-dark">
+				<h5 class="modal-title block-title ">Add User</h5>
+					<div class="block-options">
+						<button type="button" class="btn-block-option" data-dismiss="modal" aria-label="Close">
+						<i class="fa fa-fw fa-times"></i>
+						</button>
+						<span aria-hidden="true"></span>
+					</div>
+		</div>
+	</div>
+		<div class="modal-body">
+			<div class="form-row">
+  			 <div class="form-group col-md-6 mb-0">
+  						{{form.email|as_crispy_field}}
+  			 </div>
+  			 <div class="form-group col-md-6 mb-0">
+ 				 		{{form.full_name|as_crispy_field}}
+  			 </div>
+  			 <div class="form-group col-md-6 mb-0">
+  			 			{{form.phone_number|as_crispy_field}}
+  			 </div>
+ 			 <div class="form-group col-md-6 mb-0">
+ 				 	{{form.user_role|as_crispy_field}}
+ 			 </div>
+ 			 <div class="form-row">
+ 					<div class="form-group col-md-6 mb-0">
+ 					 {{form.active|as_crispy_field}}
+ 					 {{form.admin|as_crispy_field}}
+ 					 {{form.staff|as_crispy_field}}
+ 					</div>
+ 		  </div>
+			<div class="form-row">
+				 <div class="form-group col-md-6 mb-0">
+					{{form.password1|as_crispy_field}}
+				 </div>
+				 <div>
+				 	{{form.password2|as_crispy_field}}
+				 </div>
+		 </div>
+
+ 		</div>
+		</div>
+		<div class="modal-footer block-content block-content-full text-right border-top">
+		<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+		<button type="submit" class="btn btn-primary">add user</button>
+		</div>
+</form>

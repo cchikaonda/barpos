@@ -1,0 +1,104 @@
+{% load crispy_forms_tags %}
+<div class="card">
+    <div class="card-header">
+      <h3 class="card-title">Sales Report <strong>For {{report_period}}</strong> For {{item_cat}} </h3>
+      </div>
+    
+    <div class="row ml-3">
+          <div class="col-5 ml-2 mr-2 mt-2 mb-2">
+            <div class="row">
+                <form action="{% url 'sales_report' %}" method="post" class="row form-select">
+                  {% csrf_token %}
+                      <div class="mt-2 ml-4">
+                        <label for="measure">Select Period</label>
+                        <div class="input-group">
+                        
+                          <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="far fa-calendar-alt"></i></span>
+      
+                          </div>
+                            <select class="form-control" id="example-select" name="report_period">
+                              <i class="far fa-calendar-alt"> <option value="0"> All Days </option></i>
+                                <option value="1" id="today_option" >Today</option>
+                                <option value="2">Yesterday</option>
+                                <option value="3">Last 7 Days</option>
+                                <option value="4">Last 30 Days</option>
+                                <option value="5">This Month</option>
+                                <option value="6">Last Month</option>
+                            </select>
+                        </div>
+                        <script type="text/javascript">
+                            document.getElementById('report_period').value = "<?php echo $_GET['report_period'];?>";
+                        </script>
+              
+                      </div>
+                      
+                      <div class="ml-4 mt-2 mb-4">
+                        <label for="date-rage">Category</label>
+                          <div class="input-group-prepend " >
+                            <select class="form-control" name="item_categories_option" >
+                              <option value = 2022>All Categories</option>
+                              {% for item_cat in item_categories %}
+                                <option value="{{item_cat.category_name}}"> {{item_cat.category_name}}</option>
+                              {%endfor%}
+                            </select>
+                            <button type="submit" name="button" class=" btn btn-info ml-2" style="width: 100px;">Select</button>
+                           <a href="{% url 'sales_report' %}"> <button type="button" name="button" class=" btn btn-secondary ml-2" style="width: 100px;">Reset</button> </a>
+                          </div>
+                          <script type="text/javascript">
+                            document.getElementById('item_categories_option').value = "<?php echo $_GET['item_categories_option'];?>";
+                        </script>
+                      </div>
+                      <!-- <div class="card-body">
+                        <form action="{% url 'sales_report' %}" method="post" class="row">
+                          {% csrf_token %}
+                            <div class="row">
+                              
+                            
+                            <div class="input-group mt-2 ml-2">
+                              {{default_report_form.reporting_period|as_crispy_field}}
+                            </div>
+                            <div class="form-group mt-2 ml-2">
+                              {{default_report_form.category|as_crispy_field}}
+                            </div>
+                            <div class="mt-2 ml-3 ">
+                              <label for="date-rage" class="text-white">.</label> <br>
+                              <button type="submit" class="btn btn-info" style="float: right;"> Submit</button>
+                            </div>
+                        </div>
+                        </form>
+                      </div> -->
+                </form>
+            </div>
+          </div>
+          
+          <!-- <div class="card collapsed-card col-5 mr-2 ml-2 mt-2 mb-4">
+            <div class="card-header">
+              <h3 class="card-title"><strong>Custom Date Range </strong></h3>
+              <div class="card-tools">
+                  <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-plus"></i>
+                  </button>
+                  <button type="button" class="btn btn-tool" data-card-widget="remove"><i class="fas fa-times"></i>
+                  </button>
+              </div>
+            </div>
+            <div class="card-body">
+              <form action="" method="POST">
+                {% csrf_token %}
+                  <div class="row">
+                  <div class="form-group mt-2 ml-4">
+                    {{form.start_date_time|as_crispy_field}}
+                  </div>
+                  <div class="form-group mt-2 ml-2">
+                    {{form.end_date_time|as_crispy_field}}
+                  </div>
+                  <div class="mt-2 ml-3 ">
+                    <label for="date-rage" class="text-white">.</label> <br>
+                    <button type="submit" class="btn btn-info" style="float: right;"> Submit</button>
+                  </div>
+              </div>
+              </form>
+            </div>
+          </div> -->
+    </div>
+</div>

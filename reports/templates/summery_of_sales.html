@@ -1,0 +1,467 @@
+{% extends 'base.html' %}
+{% load l10n %}
+
+{% block title %}
+
+{% endblock title %}
+
+{% block content %}
+
+{% localize on %}
+
+<div id="spinner-box" class="text-center mt-3"> 
+    <div class="fa fa-spinner fa-spin fa-fw" role="status">
+    </div>
+    <span v-if="progress">Loading...</span>
+</div>
+
+<!-- /.card-header -->
+<div id="page-content" class="not-visible">
+
+  <section class="content mt-2 mb-4">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-4">
+          <div class="card">
+            <div class="card-header bg-secondary">
+              <h3 class="card-title "> <i class=" fa fa-clock"></i> TODAYS SALES</h3>
+            </div>
+            <!-- /.card-header -->
+            <div class="card-body">
+              <table class="table table-bordered table-striped dataTable dtr-inline" role="grid" aria-describedby="example1_info">
+                <thead>
+                <tr role="row">
+                  <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Category</th>
+                  <th class="text-center">Quantity</th>
+                  <th class="sorting text-right" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Sales</th>
+                
+                </tr>
+                </thead>
+                <tbody>
+          
+                  <tr role="row" class="odd">
+            
+                      {% for today_s in ptoday %}
+                    
+                        <th class="text-left">{{today_s.category__category_name}}</th>
+                        <td class="text-center">{{today_s.total_quantity}}</td>
+                        <td class="text-right">{{today_s.sales_total}}</td>
+                  <tr>
+                      {% endfor %}
+              
+                
+                  <td class="text-right">
+                   <b> TOTAL </b>
+                  </td>
+          
+                  <td class="text-center">
+                    <b>{{grand_today.grand_quantity}}</b>
+                  </td>
+                  <td class="text-right">
+                   <b> {{grand_total.grand_total}}</b>
+                  </td>
+          
+                </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          
+        </div>
+
+        <div class="col-md-4">
+          <div class="card">
+            <div class="card-header bg-secondary">
+              <h3 class="card-title"><i class=" fa fa-calendar"></i> YESTERDAYS SALES</h3>
+            </div>
+            <!-- /.card-header -->
+            <div class="card-body">
+              <table class="table table-bordered table-striped dataTable dtr-inline" role="grid" aria-describedby="example1_info">
+                <thead>
+                <tr role="row">
+                  <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Category</th>
+                  <th class="text-center">Quantity</th>
+                  <th class="sorting text-right" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Sales</th>
+                
+                </tr>
+                </thead>
+                <tbody>
+          
+                  <tr role="row" class="odd">
+            
+                      {% for yesterday_s in pyesterday %}
+                    
+                        <th class="text-left">{{yesterday_s.category__category_name}}</th>
+                        <td class="text-center">{{yesterday_s.total_quantity}}</td>
+                        <td class="text-right">{{yesterday_s.sales_total}}</td>
+                  <tr>
+                      {% endfor %}
+              
+                
+                  <td class="text-right">
+                   <b> TOTAL </b>
+                  </td>
+          
+                  <td class="text-center">
+                    <b>{{grand_yesterday.grand_quantity}}</b>
+                  </td>
+                  <td class="text-right">
+                   <b> {{grand_total_yesterday.grand_total}}</b>
+                  </td>
+          
+                </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+    
+        </div>
+
+        <div class="col-md-4">
+          <div class="card">
+            <div class="card-header bg-secondary">
+              <h3 class="card-title"><i class="fa fa-calendar"></i> LAST 7 DAYS SALES</h3>
+            </div>
+            <!-- /.card-header -->
+            <div class="card-body">
+              <table  class="table table-bordered table-striped dataTable dtr-inline" role="grid" aria-describedby="example1_info">
+                <thead>
+                <tr role="row">
+                  <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Category</th>
+                  <th class="text-center">Quantity</th>
+                  <th class="sorting text-right" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Sales</th>
+                
+                </tr>
+                </thead>
+                <tbody>
+          
+                  <tr role="row" class="odd">
+            
+                      {% for last7days_s in plast7days %}
+                    
+                        <th class="text-left">{{last7days_s.category__category_name}}</th>
+                        <td class="text-center">{{last7days_s.total_quantity}}</td>
+                        <td class="text-right">{{last7days_s.sales_total}}</td>
+                  <tr>
+                      {% endfor %}
+              
+                
+                  <td class="text-right">
+                   <b> TOTAL </b>
+                  </td>
+          
+                  <td class="text-center">
+                    <b>{{grand_last7days.grand_quantity}}</b>
+                  </td>
+                  <td class="text-right">
+                   <b> {{grand_total_last7days.grand_total}}</b>
+                  </td>
+          
+                </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <!-- /.card -->
+
+        </div>
+        
+      </div>
+      
+      <div class="row">
+        <div class="col-md-4">
+          <div class="card">
+            <div class="card-header bg-secondary">
+              <h3 class="card-title"><i class="fa fa-calendar"></i> LAST 30 DAYS SALES</h3>
+            </div>
+            <!-- /.card-header -->
+            <div class="card-body">
+              <table class="table table-bordered table-striped dataTable dtr-inline" role="grid" aria-describedby="example1_info">
+                <thead>
+                <tr role="row">
+                  <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Category</th>
+                  <th class="text-center">Quantity</th>
+                  <th class="sorting text-right" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Sales</th>
+                
+                </tr>
+                </thead>
+                <tbody>
+          
+                  <tr role="row" class="odd">
+            
+                      {% for last30days_s in plast30days %}
+                    
+                        <th class="text-left">{{last30days_s.category__category_name}}</th>
+                        <td class="text-center">{{last30days_s.total_quantity}}</td>
+                        <td class="text-right">{{last30days_s.sales_total}}</td>
+                  <tr>
+                      {% endfor %}
+              
+                
+                  <td class="text-right">
+                   <b> TOTAL </b>
+                  </td>
+          
+                  <td class="text-center">
+                    <b>{{grand_last30days.grand_quantity}}</b>
+                  </td>
+                  <td class="text-right">
+                   <b> {{grand_total_last30days.grand_total}}</b>
+                  </td>
+          
+                </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+  
+        </div>
+
+        <div class="col-md-4">
+          <div class="card">
+            <div class="card-header bg-secondary">
+              <h3 class="card-title"><i class="fa fa-calendar"></i> THIS MONTH SALES</h3>
+            </div>
+            <!-- /.card-header -->
+            <div class="card-body">
+              <table class="table table-bordered table-striped dataTable dtr-inline" role="grid" aria-describedby="example1_info">
+                <thead>
+                <tr role="row">
+                  <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Category</th>
+                  <th class="text-center">Quantity</th>
+                  <th class="sorting text-right" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Sales</th>
+                
+                </tr>
+                </thead>
+                <tbody>
+          
+                  <tr role="row" class="odd">
+            
+                      {% for today_s in ptoday %}
+                    
+                        <th class="text-left">{{today_s.category__category_name}}</th>
+                        <td class="text-center">{{today_s.total_quantity}}</td>
+                        <td class="text-right">{{today_s.sales_total}}</td>
+                  <tr>
+                      {% endfor %}
+              
+                
+                  <td class="text-right">
+                   <b> TOTAL </b>
+                  </td>
+          
+                  <td class="text-center">
+                    <b>{{grand_today.grand_quantity}}</b>
+                  </td>
+                  <td class="text-right">
+                   <b> {{grand_total.grand_total}}</b>
+                  </td>
+          
+                </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="card">
+            <div class="card-header bg-secondary">
+              <h3 class="card-title"> <i class="fa fa-calendar"></i> LAST MONTH SALES</h3>
+            </div>
+            <!-- /.card-header -->
+            <div class="card-body">
+              <table  class="table table-bordered table-striped dataTable dtr-inline" role="grid" aria-describedby="example1_info">
+                <thead>
+                <tr role="row">
+                  <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Category</th>
+                  <th class="text-center">Quantity</th>
+                  <th class="sorting text-right" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Sales</th>
+                
+                </tr>
+                </thead>
+                <tbody>
+          
+                  <tr role="row" class="odd">
+            
+                      {% for today_s in ptoday %}
+                    
+                        <th class="text-left">{{today_s.category__category_name}}</th>
+                        <td class="text-center">{{today_s.total_quantity}}</td>
+                        <td class="text-right">{{today_s.sales_total}}</td>
+                  <tr>
+                      {% endfor %}
+              
+                
+                  <td class="text-right">
+                   <b> TOTAL </b>
+                  </td>
+          
+                  <td class="text-center">
+                    <b>{{grand_today.grand_quantity}}</b>
+                  </td>
+                  <td class="text-right">
+                   <b> {{grand_total.grand_total}}</b>
+                  </td>
+          
+                </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        
+      </div>
+
+      <div class="row">
+        <div class="col-md-4">
+          <div class="card">
+            <div class="card-header bg-secondary">
+              <h3 class="card-title"><i class="fa fa-calendar"></i> THIS YEAR SALES</h3>
+            </div>
+            <!-- /.card-header -->
+            <div class="card-body">
+              <table class="table table-bordered table-striped dataTable dtr-inline" role="grid" aria-describedby="example1_info">
+                <thead>
+                <tr role="row">
+                  <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Category</th>
+                  <th class="text-center">Quantity</th>
+                  <th class="sorting text-right" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Sales</th>
+                
+                </tr>
+                </thead>
+                <tbody>
+          
+                  <tr role="row" class="odd">
+            
+                      {% for today_s in ptoday %}
+                    
+                        <th class="text-left">{{today_s.category__category_name}}</th>
+                        <td class="text-center">{{today_s.total_quantity}}</td>
+                        <td class="text-right">{{today_s.sales_total}}</td>
+                  <tr>
+                      {% endfor %}
+              
+                
+                  <td class="text-right">
+                   <b> TOTAL </b>
+                  </td>
+          
+                  <td class="text-center">
+                    <b>{{grand_today.grand_quantity}}</b>
+                  </td>
+                  <td class="text-right">
+                   <b> {{grand_total.grand_total}}</b>
+                  </td>
+          
+                </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+  
+        </div>
+
+        <div class="col-md-4">
+          <div class="card">
+            <div class="card-header bg-secondary">
+              <h3 class="card-title"><i class="fa fa-calendar"></i> LAST YEAR SALES</h3>
+            </div>
+            <!-- /.card-header -->
+            <div class="card-body">
+              <table class="table table-bordered table-striped dataTable dtr-inline" role="grid" aria-describedby="example1_info">
+                <thead>
+                <tr role="row">
+                  <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Category</th>
+                  <th class="text-center">Quantity</th>
+                  <th class="sorting text-right" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Sales</th>
+                
+                </tr>
+                </thead>
+                <tbody>
+          
+                  <tr role="row" class="odd">
+            
+                      {% for today_s in ptoday %}
+                    
+                        <th class="text-left">{{today_s.category__category_name}}</th>
+                        <td class="text-center">{{today_s.total_quantity}}</td>
+                        <td class="text-right">{{today_s.sales_total}}</td>
+                  <tr>
+                      {% endfor %}
+              
+                
+                  <td class="text-right">
+                   <b> TOTAL </b>
+                  </td>
+          
+                  <td class="text-center">
+                    <b>{{grand_today.grand_quantity}}</b>
+                  </td>
+                  <td class="text-right">
+                   <b> {{grand_total.grand_total}}</b>
+                  </td>
+          
+                </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="card">
+            <div class="card-header bg-secondary">
+              <h3 class="card-title"> <i class="fa fa-calendar"></i> ALL TIME SALES</h3>
+            </div>
+            <!-- /.card-header -->
+            <div class="card-body">
+              <table  class="table table-bordered table-striped dataTable dtr-inline" role="grid" aria-describedby="example1_info">
+                <thead>
+                <tr role="row">
+                  <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Category</th>
+                  <th class="text-center">Quantity</th>
+                  <th class="sorting text-right" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Sales</th>
+                
+                </tr>
+                </thead>
+                <tbody>
+          
+                  <tr role="row" class="odd">
+            
+                      {% for all_time_s in palldays %}
+                    
+                        <th class="text-left">{{all_time_s.category__category_name}}</th>
+                        <td class="text-center">{{all_time_s.total_quantity}}</td>
+                        <td class="text-right">{{all_time_s.sales_total}}</td>
+                  <tr>
+                      {% endfor %}
+              
+                
+                  <td class="text-right">
+                   <b> TOTAL </b>
+                  </td>
+          
+                  <td class="text-center">
+                    <b>{{grand_all_days.grand_quantity}}</b>
+                  </td>
+                  <td class="text-right">
+                   <b> {{grand_total_all_days.grand_total}}</b>
+                  </td>
+          
+                </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        
+      </div>
+  </div>
+  <!-- /.container-fluid -->
+  </section>
+
+</div>
+{% endlocalize %}
+
+{% endblock content %}

@@ -1,0 +1,308 @@
+{% load static %}
+{% load inventory_template_tags %}
+{% get_media_prefix as MEDIA_URL %}
+{% load crispy_forms_tags %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{header}}</title>
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="{% static '/plugins/fontawesome-free/css/all.min.css' %}" type="text/css">
+    <!-- overlayScrollbars -->
+    <link rel="stylesheet" href="{% static '/plugins/overlayScrollbars/css/OverlayScrollbars.min.css' %}" type="text/css">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="{% static '/dist/css/adminlte.min.css' %}" type="text/css">
+
+    <link rel="stylesheet" href="{% static '/plugins/intl-tel-input-master/build/css/intlTelInput.css' %}" type="text/css">
+
+
+    <!-- {{ form.media.css }} -->
+
+    <style>
+      #home_button{
+        visibility: hidden;
+      }
+    </style>
+
+</head>
+<body class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed layout-footer-fixed">
+<!--Wrapper-->
+  <div class="wrapper">
+     {% include 'navigation_bar.html' %}
+    
+      <!-- Main Sidebar Container -->
+      <aside class="main-sidebar sidebar-dark-primary elevation-4">
+        <!-- Brand Logo -->
+        <a href="{% url 'inventory_dashboard' %}" class="brand-link">
+          <img src="{{MEDIA_URL}}{{config.LOGO_IMAGE}}" alt="" class="brand-image img-circle elevation-3"
+               style="opacity: .8">
+          <span class="brand-text font-weight-light">{{config.SHOP_NAME}}</span>
+        </a>
+    
+        <!-- Sidebar -->
+        <div class="sidebar">
+          <!-- Sidebar user panel (optional) -->
+          <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+            <div class="image">
+              <img src="{{user.image.url}}" class="img-circle elevation-2" alt="">
+            </div>
+            <div class="info">
+              <a href="{% url 'inventory_dashboard' %}" class="d-block">{{user.full_name|title}}</a>
+            </div>
+          </div>
+    
+          <!-- Sidebar Menu -->
+          <nav class="mt-2" id="nav">
+            <!-- <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false"> -->
+            
+              <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false"> 
+              <!-- Add icons to the links using the .nav-icon class
+                   with font-awesome or any other icon font library -->
+            
+               <li class="nav-item">
+                <a href="{% url 'inventory_dashboard' %}" class="nav-link">
+                  <i class="nav-icon fas fa-tachometer-alt"></i>
+                  <p>
+                    Dashboard
+                  </p>
+                </a>
+
+               </li>
+              
+               <li class="nav-header">INVENTORY OPTIONS</li>
+              <li class="nav-item has-treeview menu-open">
+                <a href="#" class="nav-link" id="link-options" >
+                  <i class="nav-icon fas fa-th"></i>
+                  <p>
+                    Items
+                    <i class="right fas fa-angle-left"></i>
+                  </p>
+                </a>
+                <ul class="nav nav-treeview">
+                  <li class="nav-item">
+                    <a href="{% url 'category_list' %}" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Item Categories <span class="badge badge-info right">{{request.user|item_category_count}}</span> </p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="{% url 'items_list' %}" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Items <span class="badge badge-info right">{{request.user|item_count}}</span> </p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="{% url 'unit_list' %}" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Item Units <span class="badge badge-info right">{{request.user|unit_count}}</span> </p>
+                    </a>
+                  </li>
+                </ul>
+              </li>
+              
+              <li class="nav-header">SYSTEM SETTINGS</li>
+              <li class="nav-item">
+                <a href="{% url 'user_list' %}" class="nav-link">
+                  <i class="nav-icon fas fa-calendar-alt"></i>
+                  <p>
+                    Manage Users
+                    <span class="badge badge-info right">{{request.user|user_count}}</span>
+                  </p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{% url 'user_profile' %}" class="nav-link">
+                  <i class="nav-icon far fa-user"></i>
+                  <p>
+                    Update Profile
+                  </p>
+                </a>
+              </li>
+            </ul>
+          </nav>
+          <!-- /.sidebar-menu -->
+        </div>
+        <!-- /.sidebar -->
+      </aside>
+    
+      <!-- Content Wrapper. Contains page content -->
+      <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <div class="content-header">
+          <div class="container-fluid">
+            <div class="row mb-2 mt-2">
+              <div class="col-sm-6 mt-2">
+                <h1 class="m-0 text-dark">{{header}}</h1>
+              </div><!-- /.col -->
+              <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                  <li class="breadcrumb-item"><a href="{% url 'system_dashboard' %}">Home</a></li>
+                  <li class="breadcrumb-item active">{{header}}</li>
+                </ol>
+              </div><!-- /.col -->
+            </div><!-- /.row -->
+          </div><!-- /.container-fluid -->
+        </div>
+        <!-- /.content-header -->
+    
+        <!-- Main content -->
+        <section class="content">
+          {% block content %}
+          <div class="spinner-border text-primary" role="status">
+          </div>
+
+          {% endblock %}
+        </section>
+        <!-- /.content -->
+      </div>
+      <!-- /.content-wrapper -->
+  </div>
+<!-- ./wrapper -->
+
+<!--Footer-->
+{% include 'footer.html' %}
+<!--./Footer-->   
+
+    
+  <!-- REQUIRED SCRIPTS -->
+  <!-- jQuery -->
+  <script src="{% static '/plugins/jquery/jquery.min.js' %}"></script>
+  <!-- Bootstrap -->
+  <script src="{% static '/plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+  <!-- overlayScrollbars -->
+  <script src="{% static '/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js' %}"></script>
+  <!-- AdminLTE App -->
+  <script src="{% static '/dist/js/adminlte.js' %}"></script>
+
+  
+  <!-- OPTIONAL SCRIPTS -->
+  <script src="{% static '/dist/js/demo.js' %}"></script>
+  
+  <!-- PAGE PLUGINS -->
+  <!-- jQuery Mapael -->
+  <script src="{% static '/plugins/jquery-mousewheel/jquery.mousewheel.js' %}"></script>  
+  <script src="{% static '/plugins/raphael/raphael.min.js' %}"></script>  
+  <script src="{% static '/plugins/jquery-mapael/jquery.mapael.min.js' %}"></script>  
+  <script src="{% static '/plugins/jquery-mapael/maps/usa_states.min.js' %}"></script>  
+  <!-- ChartJS -->
+  <script src="{% static '/plugins/chart.js/Chart.min.js' %}"></script>  
+  <!-- PAGE SCRIPTS -->
+  <script src="{% static '/dist/js/pages/dashboard2.js' %}"></script>
+
+  <script src="{% static '/custom_js/tables_crud.js' %}"></script>
+
+
+
+  <!-- DataTables -->
+  <script src="{% static '/plugins/datatables/jquery.dataTables.min.js' %}"></script>
+  <script src="{% static '/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js' %}"></script>
+  <script src="{% static '/plugins/datatables-responsive/js/dataTables.responsive.min.js' %}"></script>
+  <script src="{% static '/plugins/datatables-responsive/js/responsive.bootstrap4.min.js' %}"></script>
+  <!-- {{ form.media.js }} -->
+
+  <script src="{% static '/plugins/intl-tel-input-master/build/js/intlTelInput.js' %}"></script>
+   
+
+    <script>
+      var input = document.querySelector("#phone_number");
+      window.intlTelInput(input, {
+        // any initialisation options go here
+      });
+    </script>
+
+<!--Activating Links Script-->
+    <script>
+        $(function(){
+          var current = location.pathname;
+          $('#nav ul li a').each(function(){
+            var $this = $(this);
+            //if current paths is like this link, make it active
+            if($this.attr('href').indexOf(current) !== -1){
+              $this.addClass('active');
+              
+            }
+          })
+        })
+    </script>
+
+<!--Data Tables Functionality Scripts-->
+<script>
+  $(function () {
+    $('#product-table').DataTable({
+      "paging": true,
+      "lengthChange": false,
+      "searching": true,
+      "ordering": true,
+      "info": true,
+      "autoWidth": false,
+      "responsive": true,
+    });
+  });
+
+  $(function () {
+    $('#category-table').DataTable({
+      "paging": true,
+      "lengthChange": false,
+      "searching": true,
+      "ordering": true,
+      "info": true,
+      "autoWidth": false,
+      "responsive": true,
+    });
+  });
+
+  $(function () {
+    $('#unit-table').DataTable({
+      "paging": true,
+      "lengthChange": false,
+      "searching": true,
+      "ordering": true,
+      "info": true,
+      "autoWidth": false,
+      "responsive": true,
+    });
+  });
+
+  $(function () {
+    $('#user-table').DataTable({
+      "paging": true,
+      "lengthChange": false,
+      "searching": true,
+      "ordering": true,
+      "info": true,
+      "autoWidth": false,
+      "responsive": true,
+    });
+  });
+  
+</script>
+
+
+
+<!-- Logout Modal-->
+<div id="logout_confirm" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+<!-- Modal content-->
+  <div class="modal-content">
+    <div class="modal-header">
+      <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">×</span>
+      </button>
+    </div>
+    <div class="modal-body text-center"><b><h3>Are you sure you want to logout ?</h3></b></div>
+    <div class="modal-footer">
+      <button class="btn btn-primary confirm_button" data-dismiss="modal" type="button">NO</button>
+      <a href="{% url 'logout_request' %}" ><button class="btn btn-danger confirm_button" type="button">YES</button></a>
+    </div>
+  </div>
+<!-- Logout Modal -->
+</div>
+</div>
+
+</body>
+
+</html>

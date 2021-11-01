@@ -1,0 +1,318 @@
+{% extends 'base_pos.html' %}
+{% block body %}
+
+<div class="row">
+  <div class="col-12 col-sm-6 col-md-3">
+    <div class="info-box">
+      <span class="info-box-icon bg-info elevation-1"><i class="fas fa-money-bill"></i></span>
+
+      <div class="info-box-content">
+        <span class="info-box-text">Unsettled Bills</span>
+        <span class="info-box-number">
+          {{unsettled_orders_count}}
+        </span>
+      </div>
+      <!-- /.info-box-content -->
+    </div>
+    <!-- /.info-box -->
+  </div>
+  <!-- /.col -->
+  <div class="col-12 col-sm-6 col-md-3">
+    <div class="info-box mb-3">
+      <span class="info-box-icon bg-danger elevation-1"><i class="fas fa-thumbs-up"></i></span>
+
+      <div class="info-box-content">
+        <span class="info-box-text">Settled Bills</span>
+        <span class="info-box-number">{{settled_orders_count}}</span>
+      </div>
+      <!-- /.info-box-content -->
+    </div>
+    <!-- /.info-box -->
+  </div>
+  <!-- /.col -->
+
+  <!-- fix for small devices only -->
+  <div class="clearfix hidden-md-up"></div>
+
+  <div class="col-12 col-sm-6 col-md-3">
+    <div class="info-box mb-3">
+      <span class="info-box-icon bg-success elevation-1"><i class="fas fa-shopping-cart"></i></span>
+
+      <div class="info-box-content" >
+        <span class="info-box-text">All Bills</span>
+        <span class="info-box-number">{{all_orders_count}}</span>
+      </div>
+      <!-- /.info-box-content -->
+    </div>
+    <!-- /.info-box -->
+  </div>
+  <!-- /.col -->
+  <div class="col-12 col-sm-6 col-md-3">
+    <div class="info-box mb-3">
+      <span class="info-box-icon bg-warning elevation-1"><i class="fas fa-users"></i></span>
+
+      <div class="info-box-content">
+        <span class="info-box-text">Customers</span>
+        <span class="info-box-number">{{customers_count}}</span>
+      </div>
+      <!-- /.info-box-content -->
+    </div>
+    <!-- /.info-box -->
+  </div>
+  <!-- /.col -->
+</div>
+
+<div class="col-12 col-sm-12">
+  <div class="card card-primary card-outline card-outline-tabs">
+    <a href="{% url 'pos_dashboard' %}"><button class="btn btn-info mb-4" style="width: 250px;" > New Customer</button> </a>
+    <div class="card-header p-0 border-bottom-0">
+      <ul class="nav nav-tabs" id="custom-tabs-four-tab" role="tablist">
+        <li class="nav-item">
+          <a class="nav-link" id="custom-tabs-four-home-tab" data-toggle="pill" href="#custom-tabs-four-home" role="tab" aria-controls="custom-tabs-four-home" aria-selected="True">Unsettled Bills</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" id="custom-tabs-four-messages-tab" data-toggle="pill" href="#custom-tabs-four-messages" role="tab" aria-controls="custom-tabs-four-messages" aria-selected="false">Settled Bills</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" id="custom-tabs-four-settings-tab" data-toggle="pill" href="#custom-tabs-four-settings" role="tab" aria-controls="custom-tabs-four-settings" aria-selected="false">All Bills</a>
+        </li>
+      </ul>
+    </div>
+    <div class="card-body">
+      <div class="tab-content" id="custom-tabs-four-tabContent">
+        <div class="tab-pane fade" id="custom-tabs-four-home" role="tabpanel" aria-labelledby="custom-tabs-four-home-tab">
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Unsettled Orders</h3>
+            </div>
+            <!-- /.card-header -->
+            <div class="card-body">
+              <div id="example1_wrapper" class="dataTables_wrapper dt-bootstrap4">
+                <div class="row">
+                  <div class="col-sm-12 col-md-6">
+                  <div class="dataTables_length" id="example1_length">
+                    </div></div><div class="col-sm-12 col-md-6"><div id="example1_filter" class="dataTables_filter"></div></div></div><div class="row"><div class="col-sm-12"><table id="example1" class="table table-bordered table-striped dataTable dtr-inline" role="grid" aria-describedby="example1_info">
+                <thead>
+                <tr role="row"> <th>Order ID</th><th class="sorting_asc" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Rendering engine: activate to sort column descending">Customer Name</th><th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Browser: activate to sort column ascending">Phone Number</th><th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Total Bill</th><th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Date</th><th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Cashier</th><th class="sorting" tabindex="0" aria-controls="example1">Action</th></tr>
+                </thead>
+                <tbody>
+                {% for order in unsettled_orders %}
+                <tr role="row" class="odd">
+                  <td><a href="{% url 'personal_order_list' order.id %}">{{order.get_code}}</a></td>
+                  <td tabindex="0" class="sorting_1">{{order.customer}}</td>
+                  <td>{{order.customer.phone_number}}</td>
+                  <td>{{order.order_total_cost}}</td>
+                  <td>{{order.order_date}}</td>
+                  <td>{{order.user.full_name}}</td>
+                  <td class="project-actions text-left">
+                    <a class="btn btn-success btn-sm" href="#">
+                        <i class="fas fa-money-bill-alt">
+                        </i>
+                        Pay Bill
+                    </a>
+                    <!-- <a class="btn btn-primary btn-sm" href="#">
+                        <i class="fas fa-pencil-alt">
+                        </i>
+                        Add Item
+                    </a> -->
+                    <a class="btn btn-info btn-sm" href="{% url 'personal_order_list' order.id %}">
+                        <i class="fas fa-trash">
+                        </i>
+                        View Bill Items
+                    </a>
+                  </td>
+                  
+                </tr>
+                {% endfor %}
+            </tbody>
+                <tfoot>
+                </tfoot>
+              </table>
+            </div>
+            
+            <div><br></div>
+          </div>
+        </div>
+            <!-- /.card-body -->
+            </div>
+          </div>
+        </div>
+        <div class="tab-pane fade" id="custom-tabs-four-messages" role="tabpanel" aria-labelledby="custom-tabs-four-messages-tab">
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Settled orders</h3>
+            </div>
+            <!-- /.card-header -->
+            <div class="card-body">
+              <div id="example1_wrapper" class="dataTables_wrapper dt-bootstrap4">
+                <div class="row">
+                  <div class="col-sm-12 col-md-6">
+                  <div class="dataTables_length" id="example1_length">
+                    </div></div><div class="col-sm-12 col-md-6"><div id="example1_filter" class="dataTables_filter"></div></div></div><div class="row"><div class="col-sm-12"><table id="example1" class="table table-bordered table-striped dataTable dtr-inline" role="grid" aria-describedby="example1_info">
+                <thead>
+                <tr role="row"> <th>Order ID</th><th class="sorting_asc" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Rendering engine: activate to sort column descending">Customer Name</th><th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Browser: activate to sort column ascending">Phone Number</th><th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Total Bill</th><th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Date</th><th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Cashier</th><th class="sorting" tabindex="0" aria-controls="example1">Action</th></tr>
+                </thead>
+                <tbody>
+                {% for order in settled_orders %}
+                <tr role="row" class="odd">
+                  <td><a href="{% url 'personal_order_list' order.id %}">{{order.get_code}}</a></td>
+                  <td tabindex="0" class="sorting_1">{{order.customer}}</td>
+                  <td>{{order.customer.phone_number}}</td>
+                  <td>{{order.order_total_cost}}</td>
+                  <td>{{order.order_date}}</td>
+                  <td>{{order.user.full_name}}</td>
+                  <td class="project-actions text-left">
+                    <a class="btn btn-success btn-sm" href="#">
+                        <i class="fas fa-money-bill-alt">
+                        </i>
+                        Pay Bill
+                    </a>
+                    <!-- <a class="btn btn-primary btn-sm" href="#">
+                        <i class="fas fa-pencil-alt">
+                        </i>
+                        Add Item
+                    </a> -->
+                    <a class="btn btn-info btn-sm" href="{% url 'personal_order_list' order.id %}">
+                        <i class="fas fa-trash">
+                        </i>
+                        View Bill Items
+                    </a>
+                  </td>
+                  
+                </tr>
+                {% endfor %}
+            </tbody>
+                <tfoot>
+                </tfoot>
+              </table>
+            </div>
+            
+            <div><br></div>
+          </div>
+        </div>
+            <!-- /.card-body -->
+            </div>
+          </div>
+        </div>
+        <div class="tab-pane fade" id="custom-tabs-four-settings" role="tabpanel" aria-labelledby="custom-tabs-four-settings-tab">
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">All Orders</h3>
+            </div>
+            <!-- /.card-header -->
+            <div class="card-body">
+              <div id="example1_wrapper" class="dataTables_wrapper dt-bootstrap4">
+                <div class="row">
+                  <div class="col-sm-12 col-md-6">
+                  <div class="dataTables_length" id="example1_length">
+                    </div></div><div class="col-sm-12 col-md-6"><div id="example1_filter" class="dataTables_filter"></div></div></div><div class="row"><div class="col-sm-12"><table id="example1" class="table table-bordered table-striped dataTable dtr-inline" role="grid" aria-describedby="example1_info">
+                <thead>
+                <tr role="row"> <th>Order ID</th><th class="sorting_asc" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Rendering engine: activate to sort column descending">Customer Name</th><th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Browser: activate to sort column ascending">Phone Number</th><th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Total Bill</th><th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Date</th><th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Cashier</th><th class="sorting" tabindex="0" aria-controls="example1">Action</th></tr>
+                </thead>
+                <tbody>
+                {% for order in orders %}
+                <tr role="row" class="odd">
+                  <td><a href="{% url 'personal_order_list' order.id %}">{{order.get_code}}</a></td>
+                  <td tabindex="0" class="sorting_1">{{order.customer}}</td>
+                  <td>{{order.customer.phone_number}}</td>
+                  <td>{{order.order_total_cost}}</td>
+                  <td>{{order.order_date}}</td>
+                  <td>{{order.user.full_name}}</td>
+                  <td class="project-actions text-left">
+                    <a class="btn btn-success btn-sm" href="#" data-toggle="modal" data-target="#directPayment">
+                        <i class="fas fa-money-bill-alt">
+                        </i>
+                        Pay Bill
+                    </a>
+                    
+      
+                    <!-- <a class="btn btn-primary btn-sm" href="#">
+                        <i class="fas fa-pencil-alt">
+                        </i>
+                        Add Item
+                    </a> -->
+                    <a class="btn btn-info btn-sm" href="{% url 'personal_order_list' order.id %}">
+                        <i class="fas fa-trash">
+                        </i>
+                        View Bill Items
+                    </a>
+                  </td>
+                  
+                </tr>
+                {% endfor %}
+            </tbody>
+                <tfoot>
+                </tfoot>
+              </table>
+            </div>
+            
+            <div><br></div>
+          </div>
+        </div>
+            <!-- /.card-body -->
+            </div>
+          </div>
+      </div>
+    </div>
+    <!-- /.card -->
+  </div>
+</div>
+
+
+
+
+<!--Payment Modal-->
+<div class="modal fade" id="directPayment">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Paid Amount</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        
+        <form action="{% url 'add_payment' %}" method="post" >
+          {% csrf_token %}
+            
+          <label for="topay">TO PAY</label>
+          <div class="form-group" >
+              <input id="topay" class="form-control text-right payment_form" name="" value="{{order.order_total_cost}}" style="background-color: rgb(62, 74, 89); font-size: 200%; font-family: monospace; color: chartreuse;" disabled/>
+          </div>
+          <br>
+
+          <div class="col-sm-12">
+            <!-- select -->
+            <div class="form-group">
+              <label>Payment Mode</label>
+              <select class="custom-select">
+                {% for x,y in payment_options.fields.payment_mode.choices %}
+                <option value="{{x}}" {% if payment_options.fields.payment_mode.id == Cash %}selected {% endif %}>{{y}}</option>
+                {% endfor %}
+                
+              </select>  
+            </div>
+          </div>
+
+          <div class="form-group col-md-12 mb-0">
+            {{payment_form.paid_amount}}
+          </div>
+       
+      </div>
+      <div class="modal-footer justify-content-between">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </form>
+    <!-- /.modal-content -->
+  </div>
+</div>
+
+{% endblock %}
+
+
+
+
+

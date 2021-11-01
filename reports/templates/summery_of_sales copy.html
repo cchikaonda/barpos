@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+
+
+{% block title %}
+
+{% endblock title %}
+
+{% block content %}
+
+<div id="spinner-box" class="text-center mt-3"> 
+    <div class="fa fa-spinner fa-spin fa-fw" role="status">
+    </div>
+    <span v-if="progress">Loading...</span>
+</div>
+
+<!-- /.card-header -->
+<div id="page-content" class="card-body not-visible">
+    <div id="example1_wrapper" class="dataTables_wrapper dt-bootstrap4">
+      <div class="row">
+        <div class="col-sm-12 col-md-6">
+        <div class="dataTables_length" id="example1_length">
+          </div></div><div class="col-sm-12 col-md-6"><div id="example1_filter" class="dataTables_filter"></div></div></div><div class="row"><div class="col-sm-12">
+    <table id="sales_report_table" class="table table-bordered table-striped dataTable dtr-inline" role="grid" aria-describedby="example1_info">
+      <thead>
+      <tr role="row">
+        <th>
+        </th>
+        <th colspan="2" class="text-center">TODAY</th>
+        <th colspan="2" class="text-center">YESTERDAY</th>
+        <th colspan="2" class="text-center">LAST 7 DAYS</th>
+        <th colspan="2" class="text-center">LAST 30 DAYS</th>
+        <th colspan="2" class="text-center">THIS MONTH</th>
+        <th colspan="2" class="text-center">LAST MONTH</th>
+        <th colspan="2" class="text-center">ALL DAYS</th>
+      </tr>
+      <tr role="row">
+        <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Category</th>
+        <th class="text-center">Quantity</th>
+        <th class="sorting text-right" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Sales</th>
+        <th class="text-center">Quantity</th>
+        <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Sales</th>
+        <th class="text-center">Quantity</th>
+        <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Sales</th>
+        <th class="text-center">Quantity</th>
+        <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Sales</th>
+        <th class="text-center">Quantity</th>
+        <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Sales</th>
+        <th class="text-center">Quantity</th>
+        <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Sales</th>
+        <th class="text-center">Quantity</th>
+        <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Sales</th>
+      </tr>
+      </thead>
+      <tbody>
+
+        <tr role="row" class="odd">
+          {% for all_days_s in palldays %}
+            {% for today_s in ptoday %}
+          
+              <th class="text-left">{{all_days_s.category__category_name}}</th>
+              <td class="text-center">{{all_days_s.total_quantity}}</td>
+              <td class="text-right">{{all_days_s.sales_total}}</td>
+        </tr>
+              <td class="text-center">{{today_s.total_quantity}}</td>
+              <td class="text-right">{{today_s.sales_total}}</td>
+          
+         {% endfor %}
+         {% endfor %}
+    
+      <tr>
+        <td class="text-right">
+         <b> TOTAL </b>
+        </td>
+
+        <td class="text-center">
+          <b>{{grand_today.grand_quantity}}</b>
+        </td>
+        <td class="text-right">
+         <b> {{grand_total.grand_total}}</b>
+        </td>
+
+        <td class="text-center">
+          <b>{{grand_today.total_quantity}}</b>
+        </td>
+        <td class="text-right">
+         <b> {{todaygtotal.grand_total}}</b>
+        </td>
+
+        <td class="text-center">
+          <b>{{todaytotal_q.total_quantity}}</b>
+        </td>
+        <td class="text-right">
+         <b> {{todaygtotal.grand_total}}</b>
+        </td>
+
+
+        <td class="text-center">
+          <b>{{todaytotal_q.total_quantity}}</b>
+        </td>
+        <td class="text-right">
+         <b> {{todaygtotal.grand_total}}</b>
+        </td>
+
+
+        <td class="text-center">
+          <b>{{todaytotal_q.total_quantity}}</b>
+        </td>
+        <td class="text-right">
+         <b> {{todaygtotal.grand_total}}</b>
+        </td>
+
+        <td class="text-center">
+          <b>{{todaytotal_q.total_quantity}}</b>
+        </td>
+        <td class="text-right">
+         <b> {{todaygtotal.grand_total}}</b>
+        </td>
+
+        <td class="text-center">
+          <b>{{todaytotal_q.total_quantity}}</b>
+        </td>
+        <td class="text-right">
+         <b> {{todaygtotal.grand_total}}</b>
+        </td>
+         
+        
+      </tr>
+      </tbody>
+      <tfoot>
+      </tfoot>
+    </table>
+  </div>
+  
+  <div><br></div>
+</div>
+</div>
+  <!-- /.card-body -->
+</div>
+
+{% endblock content %}
