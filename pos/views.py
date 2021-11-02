@@ -16,6 +16,8 @@ from django.core import serializers
 import json
 from django.db.models import Count
 from django.contrib.auth.decorators import login_required
+from accounts.admin import CustomConfigForm
+from barpos import settings
 
 
 
@@ -42,6 +44,7 @@ def index(request):
 def pos_dashboard(request):   
     if 'opened_order' in request.session:
         del request.session['opened_order']
+    print(config.QUICK_SALE)
     if config.QUICK_SALE == 'yes':
         return redirect('add_customer_to_order')
     customers = Customer.objects.all()
@@ -543,9 +546,7 @@ def view_my_orders(request):
         del request.session['opened_order']
     if config.QUICK_SALE == 'yes':
         return redirect ('add_customer_to_order')
-    customers = Customer.objects.all()
     form = AddCustomerForm()
-
     customers = Customer.objects.all()
     paid_orders = Order.objects.filter(user = request.user, ordered = True)
     unpaid_orders = Order.objects.filter(user = request.user, ordered = False)
@@ -573,3 +574,35 @@ def view_my_orders(request):
 
     }
     return render(request, "view_my_orders.html", context)
+
+
+# def admin_settings(request):
+#     initial = get_values()
+#     print(initial)
+#     form = CustomConfigForm(initial=initial, request=request)
+
+#     if request.method == 'POST':
+#         if form.is_valid():
+#             form.save()
+#             messages.info(request, "Settings Updated successfully!")
+#             return HttpResponseRedirect('.')
+#         else:
+#             messages.warning(request, "Failed!")
+#     context = {
+#         'form':form,
+#     }
+#     return render(request, "admin_settings.html", context)
+
+# def get_values():
+#     """
+#     Get dictionary of values from the backend
+#     :return:
+#     """
+
+#     # First load a mapping between config name and default value
+#     default_initial = ((name, options[0])
+#                        for name, options in settings.CONSTANCE_CONFIG.items())
+#     # Then update the mapping with actually values from the backend
+#     initial = dict(default_initial, **dict(config._backend.mget(settings.CONSTANCE_CONFIG_FIELDSETS)))
+
+#     return initial

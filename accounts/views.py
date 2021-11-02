@@ -7,6 +7,7 @@ from django.shortcuts import render,redirect, get_object_or_404
 from inventory.models import ItemCategory, Supplier, Unit, Item
 from pos.models import Customer, OrderItem, Order
 from constance import config
+from django.db.models import Count
 
 # Create your views here.
 @login_required
@@ -14,6 +15,8 @@ def system_dashboard(request):
     suppliers_count = Supplier.objects.all().count()
     customers_count = Customer.objects.all().count()
     orders_count = Order.objects.filter(user=request.user).count()
+    count_my_customers = Order.objects.filter(user = request.user, ordered = False).count()
+    # filter(user = request.user, ordered = False).count(distinct = True)
     context={
         'home':'Home',
         'header':'Home', 
@@ -22,6 +25,7 @@ def system_dashboard(request):
         'customers_count':customers_count,
         'orders_count':orders_count,
         'config':config,
+        'count_my_customers':count_my_customers,
         }
     return render(request, 'system_dashboard.html', context)
 

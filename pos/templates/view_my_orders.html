@@ -10,251 +10,160 @@
  
 
     <!-- Content Wrapper. Contains page content -->
-    <div class="content ml-2 mr-2 mt-2" style="max-height: 500px;">
-        <!-- Small Box (Stat card) -->
-        <div class="row">
-
-            <div class="col-6">
-              <!-- small card -->
-              <div class="card">
-                <div class="card-header bg-secondary">
-                  <h3 class="card-title"><i class="fa fa-money-bill"></i> UNPAID ORDERS</h3> <h5 class="text-right"><b>TOTAL: {{sum_unpaid_orders}}</b></h5>
-                </div>
-                <!-- /.card-header -->
-                <div class="card-body">
-                  <table class="table table-bordered table-striped dataTable dtr-inline">
-                    <thead>
-                    <tr role="row">
-                      <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Order ID</th>
-                      <th class="text-left">Customer</th>
-                      <th class="sorting text-right" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Total</th>
-                    
-                    </tr>
-                    </thead>
-                    <tbody>
+    <div class="content ml-2 mr-2 mt-2" style="max-height: 500px;">   
+      <!-- small card -->
+      <div class="card col-12">
+        <div class="card-header bg-secondary">
+          <h3 class="card-title"><i class="fa fa-money-bill"></i> UNPAID ORDERS</h3> <h5 class="text-right"><b>TOTAL: {{sum_unpaid_orders}}</b></h5>
+        </div>
+        <!-- /.card-header -->
+        <div class="card-body">
+          <table class="table table-bordered table-striped js-dataTable-buttons" id="unpaid-orders-table">
+            <thead>
+            <tr role="row">
+              <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Order ID</th>
+              <th class="text-left">Customer</th>
+              <th class="sorting text-right" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Total</th>
+            
+            </tr>
+            </thead>
+            <tbody>
+      
               
-                      <tr role="row" class="odd">
+        
+                {% for unpaid_order in unpaid_orders %}
+              <tr role="row" class="odd">
                 
-                        {% for unpaid_order in unpaid_orders %}
-                        
-                            <td class="text-left"><a href="{% url 'personal_order_list' unpaid_order.id %}">{{unpaid_order.get_code}}</a></td>
-                            <td class="text-left"><a href="{% url 'personal_order_list' unpaid_order.id %}">{{unpaid_order.customer}}</a></td>
-                            <td class="text-right">{{unpaid_order.order_total_due}}</td>
-                      <tr>
-                          {% endfor %}
-                  
-                    
-                      <td colspan="2" class="text-right">
-                       <b> GRAND TOTAL </b>
-                      </td>
-              
-                      <td class="text-right">
-                        <b>{{sum_unpaid_orders}}</b>
-                      </td>
-                    </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-              <div class="card mb-4">
-                <div class="card-header bg-secondary">
-                  <h3 class="card-title"><i class="fa fa-money-bill-wave"></i> PAID ORDERS</h3>  <h5 class="text-right"><b>TOTAL: {{sum_paid_orders}}</b></h5>
-                </div>
-                <!-- /.card-header -->
-                <div class="card-body">
-                  
-                  <div class="row">
-                    <div class="block-content block-content-full">
-                      <table  class="table table-bordered table-striped js-dataTable-buttons">
-                  <thead>
-                  <tr role="row"> 
-                    <th>Order ID</th>
-                    <th class="sorting_asc" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Rendering engine: activate to sort column descending">Customer Name</th>
-                    <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Total Bill</th>
-                    <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Date</th><th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Cashier</th>
-                    <th class="sorting" tabindex="0" aria-controls="example1">Action</th></tr>
-                  </thead>
-                  <tbody>
-                  {% for paid_order in paid_orders %}
-                  <tr role="row" class="odd">
-                    <td>{{paid_order.get_code}}</td>
-                    <td tabindex="0" class="sorting_1">{{paid_order.customer}}</td>
-                    <td>{{paid_order.order_total_cost}}</td>
-                    <td>{{paid_order.order_date }}</td>
-                    <td>{{paid_order.user.full_name}}</td>
-                    <td class="project-actions text-left">
-                      <a class="btn btn-info btn-sm" data-toggle="modal" data-target="#order_details{{paid_order.id}}">
-                          <i class="fas fa-trash">
-                          </i>
-                          View Bill Items
-                      </a>
+                    <td class="text-left"><a href="{% url 'personal_order_list' unpaid_order.id %}">{{unpaid_order.get_code}}</a></td>
+                    <td class="text-left"><a href="{% url 'personal_order_list' unpaid_order.id %}">{{unpaid_order.customer}}</a></td>
+                    <td class="text-right">{{unpaid_order.order_total_due}}</td>
+              <tr>
+                  {% endfor %}
+              </tr>
+            </tbody>
+            <tfoot>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+      <div class="card mb-4 col-12">
+        <div class="card-header bg-secondary">
+          <h3 class="card-title"><i class="fa fa-money-bill-wave"></i> PAID ORDERS</h3>  <h5 class="text-right"><b>TOTAL: {{sum_paid_orders}}</b></h5>
+        </div>
+        <!-- /.card-header -->
+        <div class="card-body">
+        
+          <div>
+          <div class="block-content block-content-full">
+            <table  class="table table-bordered table-striped js-dataTable-buttons">
+            <thead>
+            <tr role="row"> 
+              <th>Order ID</th>
+              <th class="sorting_asc" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Rendering engine: activate to sort column descending">Customer Name</th>
+              <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Total Bill</th>
+              <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Date</th><th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Cashier</th>
+              <th class="sorting" tabindex="0" aria-controls="example1">Action</th></tr>
+            </thead>
+            <tbody>
+            {% for paid_order in paid_orders %}
+            <tr role="row" class="odd">
+              <td>{{paid_order.get_code}}</td>
+              <td tabindex="0" class="sorting_1">{{paid_order.customer}}</td>
+              <td>{{paid_order.order_total_cost}}</td>
+              <td>{{paid_order.order_date }}</td>
+              <td>{{paid_order.user.full_name}}</td>
+              <td class="project-actions text-left">
+                <a class="btn btn-info btn-sm" data-toggle="modal" data-target="#order_details{{paid_order.id}}">
+                    <i class="fas fa-trash">
+                    </i>
+                    View Bill Items
+                </a>
 
-                      <!--View Bill Modal-->
-                      <div class="modal fade" id="order_details{{paid_order.id}}">
-                        <div class="modal-dialog modal-dialog-centered modal-lg">
-                          <div class="modal-content">
-                            <div class="modal-header">
-                              <h4 class="modal-title">{{paid_order.get_code}} : {{paid_order.customer}} </h4> 
-                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                              </button>
-                            </div>
-                            <div class="modal-body">
-                              
-                              <form action="{% url 'add_payment' %}" method="post" >
-                                {% csrf_token %}
+                <!--View Bill Modal-->
+                <div class="modal fade" id="order_details{{paid_order.id}}">
+                  <div class="modal-dialog modal-dialog-centered modal-lg">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h4 class="modal-title">{{paid_order.get_code}} : {{paid_order.customer}} </h4> 
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+                        
+                        <form action="{% url 'add_payment' %}" method="post" >
+                          {% csrf_token %}
+                            
+                          <div class="form-group">
+                            <div class="mb-4">
+                              <table class="table table-striped">
+                                {% if paid_order.items.all %}
+                                <thead>
+                                  <tr>
+                                    <th>#</th>
+                                    <th>Item</th>
+                                    <th>Price</th>
+                                    <th>Quantity</th>
+                                    <th>Total</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {% for ordered_item in paid_order.items.all %}
+                                  <tr>
+                                    <td>{{forloop.counter}}</td>
+                                    <td>{{ordered_item.item}}</td>
+                                    <td>{{ordered_item.price}}</td>
+                                    <td>{{ordered_item.quantity}}</td>
+                                    <td>{{ordered_item.get_total_amount}}</td>
+                                  </tr>
+                                  {% endfor %}
+                                  <tr>
+                                    <td colspan="4" class="text-right">VAT({{paid_order.vat_rate}}%)</td>
+                                    <td colspan="1">{{paid_order.get_vat_value}}</td>
+                                  </tr>
+                                  <tr>
+                                    <td colspan="4" class="text-right">TOTAL</td>
+                                    <td colspan="1" class="bg-dark" style="font-size: x-large;">{{paid_order.order_total_due}}</td>
+                                  </tr>
                                   
-                                <div class="form-group">
-                                  <div class="mb-4">
-                                    <table class="table table-striped">
-                                      {% if paid_order.items.all %}
-                                      <thead>
-                                        <tr>
-                                          <th>#</th>
-                                          <th>Item</th>
-                                          <th>Price</th>
-                                          <th>Quantity</th>
-                                          <th>Total</th>
-                                        </tr>
-                                      </thead>
-                                      <tbody>
-                                        {% for ordered_item in paid_order.items.all %}
-                                        <tr>
-                                          <td>{{forloop.counter}}</td>
-                                          <td>{{ordered_item.item}}</td>
-                                          <td>{{ordered_item.price}}</td>
-                                          <td>{{ordered_item.quantity}}</td>
-                                          <td>{{ordered_item.get_total_amount}}</td>
-                                        </tr>
-                                        {% endfor %}
-                                        <tr>
-                                          <td colspan="4" class="text-right">VAT({{paid_order.vat_rate}}%)</td>
-                                          <td colspan="1">{{paid_order.get_vat_value}}</td>
-                                        </tr>
-                                        <tr>
-                                          <td colspan="4" class="text-right">TOTAL</td>
-                                          <td colspan="1" class="bg-dark" style="font-size: x-large;">{{paid_order.order_total_due}}</td>
-                                        </tr>
-                                        
-                                      </tbody>
-                                      {% else %}
-                                      <div>No Items in Order!</div>
-                                      {% endif %}
-                                
-                                    </table>
-                                  
-                                  </div>
-                                </div>
-                                
+                                </tbody>
+                                {% else %}
+                                <div>No Items in Order!</div>
+                                {% endif %}
+                          
+                              </table>
                             
                             </div>
-                            <div class="modal-footer justify-content-between">
-                              <button type="button" class="btn btn-lg btn-default" data-dismiss="modal">Close</button>
-                            </div>
                           </div>
-                        </form>
-                          <!-- /.modal-content -->
-                        </div>
-                      </div>
-                      <!--End View Bill Modal-->
-
-                    </td>
-                    
-                  </tr>
-                  {% endfor %}
-              </tbody>
-                  <tfoot>
-                  </tfoot>
-                </table>
-              </div>
-              
-              <div><br></div>
-                  </div>
-                  
-                <!-- /.card-body -->
-                </div>
-              </div>
-            </div>
-            <div class="col-6">
-              <div class="card">
-                  <div class="card-header bg-secondary">
-                      <h3 class="card-title"><i class="fa fa-users"></i> SELECT / ADD NEW CUSTOMER</h3>
-                  </div>
-                  
-                    
-                        
-                        <form action="{% url 'add_customer_to_order' %}" method="post"  class="mt-2 mb-2 ml-2 mr-2">
-                          {% csrf_token %}
-                          <div class="input-group-prepend " >
-                            <select class="form-control payment_form pos_form" name="customer_name" >
-                              {% for customers in customers %}
-                                <option value="{{customers.name}}" class="pos_form"> {{customers.name}} {% if customers.phone_number %} ({{customers.phone_number}}){% endif %}</option>
-                              {%endfor%}
-                            </select>
-                            <button type="submit" name="button" class="main_btn btn btn-secondary ml-2" data-toggle="modal" data-target="#customerModal" style="width: 100px;">Select</button>
-                          </div>
-                        </form>
-
-
-                        <div class="ml-2 mb-2 mt-2 mr-2">
                           
-                              
-                              <form action="{% url 'add_new_customer_from_pos_dash' %}" method="post" >
-                                {% csrf_token %}
-                                
-                                <!-- {{form}} -->
-                              <div class="row">
-                                <div class="form-group col-6 mb-0 " >
-                                    {{form.name|as_crispy_field}}
-                                </div>
-                                <div class="form-group col-6 mb-0" >
-                                    {{form.phone_number|as_crispy_field}}
-                                </div>
-                              </div>
-                              <div class="mt-2 mb-2">
-                                <button type="submit" class="btn btn-secondary main_btn" style="float: right;"> Submit</button>
-                              </div>
-                              </form>
-                         
-                        </div>
                       
-                   
-                 
-              </div>
-              <div class="card">
-                  <div class="card-header bg-secondary">
-                      <h3 class="card-title"><i class="fa fa-users"></i> MY CUSTOMERS</h3> <h5 class="text-right">TOTAL: {{count_my_customers}}</h5>
-                  </div>
-                  <div class="row ml-1 mr-1">
-                  {% for unpaid_order in unpaid_orders %}
-                      <div class="col-3 mb-4">
-                        
-                          <a class="block block-rounded block-link-pop" href="{% url 'personal_order_list' unpaid_order.id %}" >
-                              <div class="small-box bg-light dashboard_menu_item block-content block-content-full text-center bg-city">
-                                  <div class="item item-2x item-circle bg-white-10 py-3 my-3 mx-auto js-appear-enabled animated fadeIn" data-toggle="appear" data-offset="50" data-class="animated fadeIn">
-                                      <i class="icon fa fa-users fa-3x"></i>
-                                  </div>
-                                  <div class="text-dark" id="customer">
-                                      {{unpaid_order.customer}}
-                                  </div>
-                              </div>
-                          </a>
-                        
                       </div>
-                  
-                  {% endfor %}
-                  </div> 
-              </div>
-            </div>
-            
+                      <div class="modal-footer justify-content-between">
+                        <button type="button" class="btn btn-lg btn-default" data-dismiss="modal">Close</button>
+                      </div>
+                    </div>
+                  </form>
+                    <!-- /.modal-content -->
+                  </div>
+                </div>
+                <!--End View Bill Modal-->
+
+              </td>
+              
+            </tr>
+            {% endfor %}
+        </tbody>
+            <tfoot>
+            </tfoot>
+            </table>
+          </div>
+      
+          <div><br></div>
+          </div>
+          
+        <!-- /.card-body -->
         </div>
-        <!-- ./col -->
-        
+      </div> 
     </div>
-
-    <!-- /.row -->
-    <!-- Small Box (Stat card) -->
-</script>
-
 
 {% endblock %}

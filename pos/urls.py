@@ -26,5 +26,8 @@ urlpatterns = [
     path('index', index, name='index'),
 
     path('view_my_orders', view_my_orders, name='view_my_orders'),
+    # path('admin_settings', admin_settings, name='admin_settings'),
+
+    
     
 ]

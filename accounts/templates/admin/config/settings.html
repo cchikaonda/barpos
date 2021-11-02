@@ -1,0 +1,23 @@
+{% extends 'base_pos.html' %}
+{% load static %}
+{% load widget_tweaks %}
+{% load crispy_forms_tags %}
+
+{% block body %}
+<div class="content ml-4 mr-4">
+    <div class="form-group">
+        <form action="" method="POST">
+            {% csrf_token %}
+            <!-- {{form|crispy}} -->
+            {{form.QUICK_SALE|as_crispy_field}}
+            <div>
+               <button class="btn btn-success" type="submit">Save</button>
+            </div>
+
+            
+        </form>
+       
+        
+    </div>
+</div>
+{% endblock %}

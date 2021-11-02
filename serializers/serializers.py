@@ -47,7 +47,6 @@ class ItemCategorySerializer(serializers.ModelSerializer):
 
 class ItemSerializer(serializers.ModelSerializer):
     unit = ItemUnitSerializer()
-    supplier_name = SupplierSerializer()
     category = ItemCategorySerializer()
     class Meta:
         model = Item
@@ -66,6 +65,3 @@ class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = '__all__'
-
-        # fields = ('customer', 'user', 'items')
-    

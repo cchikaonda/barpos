@@ -8,6 +8,18 @@ from .forms import UserAdminCreationForm, UserAdminChangeForm
 from constance.admin import ConstanceAdmin, ConstanceForm, Config
 
 from accounts.models import CustomUser
+from constance.admin import ConstanceAdmin, ConstanceForm, Config
+
+class CustomConfigForm(ConstanceForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+#... do stuff to make your settings form nice ...
+# class ConfigAdmin(ConstanceAdmin):
+#     change_list_form = CustomConfigForm
+#     change_list_template = 'admin/config/settings.html'
+# admin.site.unregister([Config])
+# admin.site.register([Config], ConfigAdmin)
 
 # Register your models here.
 CustomUser = get_user_model()
