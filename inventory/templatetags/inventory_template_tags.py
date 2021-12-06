@@ -64,3 +64,15 @@ def unit_count(user):
     if user.is_authenticated:
         qs = Unit.objects.all().count()
     return qs
+
+@register.filter
+def supplier_count(user):
+    if user.is_authenticated:
+        qs = Supplier.objects.all().count()
+    return qs
+
+@register.filter
+def stock_count(user):
+    if user.is_authenticated:
+        qs = Stock.objects.all().count()
+    return qs

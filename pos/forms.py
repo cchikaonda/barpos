@@ -8,7 +8,7 @@ from django_countries.fields import CountryField
 # from constance.admin import ConstanceAdmin, ConstanceForm, Config
 from djmoney.forms.widgets import MoneyWidget
 from django.contrib.auth import authenticate, login, logout, get_user_model
-from pos.models import Customer, Payment
+from pos.models import Customer, LayByOrders, Payment
 from inventory.models import Item
 
 class CustomMoneyWidget(MoneyWidget):
@@ -26,11 +26,11 @@ class AddPaymentForm(forms.ModelForm):
         self.fields['paid_amount'].widget = CustomMoneyWidget(amount_widget = paid_amount.widget, currency_widget = currency.widget)
     class Meta:
         model = Payment
-        fields = ('payment_mode','paid_amount','reference',)
+        fields = ('payment_mode','paid_amount','reference','customer')
         widgets = {
                 'paid_amount': forms.TextInput(attrs={'class': 'form-control pos_form',}),
-                'payment_mode': forms.Select(attrs={'class': 'form-control pos_form',}),
                 'reference': forms.TextInput(attrs={'class': 'form-control pos_form',}),
+                'payment_mode': forms.TextInput(attrs={'class': 'form-control pos_form','readonly':'readonly'}),
         }
     
 class CashPaymentForm(forms.ModelForm):
@@ -59,8 +59,24 @@ class SearchForm(forms.ModelForm):
 class AddCustomerForm(forms.ModelForm):
     class Meta:
         model = Customer
-        fields = ('name', 'phone_number',)
+        fields = ('name', 'phone_number','address')
         widgets = {
             'name': forms.TextInput(attrs={'class': 'pos_form'}),
             'phone_number': forms.TextInput(attrs={'class': 'pos_form', 'id':'phone_number'})
         }
+
+class AddLayByPaymentForm(forms.ModelForm):
+     def __init__(self, *args, **kwargs):
+        super(AddLayByPaymentForm, self).__init__(*args, **kwargs)
+        paid_amount, currency = self.fields['paid_amount'].fields
+        self.fields['paid_amount'].widget = CustomMoneyWidget(amount_widget = paid_amount.widget, currency_widget = currency.widget)
+     class Meta:
+        model = Payment
+        fields = ('payment_mode','paid_amount','reference','customer')
+        widgets = {
+                'paid_amount': forms.TextInput(attrs={'class': 'form-control pos_form',}),
+                'payment_mode': forms.TextInput(attrs={'class': 'form-control pos_form','readonly':'readonly'}),
+                'reference': forms.TextInput(attrs={'class': 'form-control pos_form',}),
+        }
+
+         

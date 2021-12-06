@@ -73,12 +73,12 @@
 
                </li>
               
-               <li class="nav-header">INVENTORY OPTIONS</li>
+              <li class="nav-header">INVENTORY OPTIONS</li>
               <li class="nav-item has-treeview menu-open">
                 <a href="#" class="nav-link" id="link-options" >
                   <i class="nav-icon fas fa-th"></i>
                   <p>
-                    Items
+                    MANAGE ITEMS
                     <i class="right fas fa-angle-left"></i>
                   </p>
                 </a>
@@ -103,7 +103,30 @@
                   </li>
                 </ul>
               </li>
-              
+              <li class="nav-item has-treeview menu-open">
+                <a href="#" class="nav-link" id="link-options" >
+                  <i class="nav-icon fas fa-th"></i>
+                  <p>
+                   MANAGE STOCK
+                    <i class="right fas fa-angle-left"></i>
+                  </p>
+                </a>
+                <ul class="nav nav-treeview">
+                  <li class="nav-item">
+                    <a href="{% url 'stock_list' %}" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Stock list <span class="badge badge-info right">{{request.user|stock_count}}</span> </p>
+                    </a>
+                  </li>
+
+                  <li class="nav-item">
+                    <a href="{% url 'supplier_list' %}" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Supplier list <span class="badge badge-info right">{{request.user|supplier_count}}</span> </p>
+                    </a>
+                  </li>
+                </ul>
+              </li>
               <li class="nav-header">SYSTEM SETTINGS</li>
               <li class="nav-item">
                 <a href="{% url 'user_list' %}" class="nav-link">
@@ -230,78 +253,262 @@
     </script>
 
 <!--Data Tables Functionality Scripts-->
-<script>
-  $(function () {
-    $('#product-table').DataTable({
-      "paging": true,
-      "lengthChange": false,
-      "searching": true,
-      "ordering": true,
-      "info": true,
-      "autoWidth": false,
-      "responsive": true,
-    });
-  });
+    <script>
+      $(function () {
+        $('#product-table').DataTable({
+          "paging": true,
+          "lengthChange": false,
+          "searching": true,
+          "ordering": true,
+          "info": true,
+          "autoWidth": false,
+          "responsive": true,
+        });
+      });
 
-  $(function () {
-    $('#category-table').DataTable({
-      "paging": true,
-      "lengthChange": false,
-      "searching": true,
-      "ordering": true,
-      "info": true,
-      "autoWidth": false,
-      "responsive": true,
-    });
-  });
+      $(function () {
+        $('#category-table').DataTable({
+          "paging": true,
+          "lengthChange": false,
+          "searching": true,
+          "ordering": true,
+          "info": true,
+          "autoWidth": false,
+          "responsive": true,
+        });
+      });
 
-  $(function () {
-    $('#unit-table').DataTable({
-      "paging": true,
-      "lengthChange": false,
-      "searching": true,
-      "ordering": true,
-      "info": true,
-      "autoWidth": false,
-      "responsive": true,
-    });
-  });
+      $(function () {
+        $('#unit-table').DataTable({
+          "paging": true,
+          "lengthChange": false,
+          "searching": true,
+          "ordering": true,
+          "info": true,
+          "autoWidth": false,
+          "responsive": true,
+        });
+      });
 
-  $(function () {
-    $('#user-table').DataTable({
-      "paging": true,
-      "lengthChange": false,
-      "searching": true,
-      "ordering": true,
-      "info": true,
-      "autoWidth": false,
-      "responsive": true,
-    });
-  });
-  
-</script>
+      $(function () {
+        $('#user-table').DataTable({
+          "paging": true,
+          "lengthChange": false,
+          "searching": true,
+          "ordering": true,
+          "info": true,
+          "autoWidth": false,
+          "responsive": true,
+        });
+      });
+
+      $(function () {
+        $('#stock-table').DataTable({
+          "paging": true,
+          "lengthChange": false,
+          "searching": true,
+          "ordering": true,
+          "info": true,
+          "autoWidth": false,
+          "responsive": true,
+        });
+      });
+
+      $(function () {
+        $('#supplier-table').DataTable({
+          "paging": true,
+          "lengthChange": false,
+          "searching": true,
+          "ordering": true,
+          "info": true,
+          "autoWidth": false,
+          "responsive": true,
+        });
+      });
+
+      $(function () {
+        $('#item-table').DataTable({
+          "paging": true,
+          "lengthChange": false,
+          "searching": true,
+          "ordering": true,
+          "info": true,
+          "autoWidth": false,
+          "responsive": true,
+        });
+      });
+    
+      // Bar Chart for sales
+      $(function () {
+      'use strict'
+
+      var ticksStyle = {
+        fontColor: '#495057',
+        fontStyle: 'bold'
+      }
+
+      var mode      = 'index'
+      var intersect = true
+
+      var $salesChart = $('#sales-chart')
+      var salesChart  = new Chart($salesChart, {
+        type   : 'bar',
+        data   : {
+          labels  : ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'],
+          datasets: [
+            {
+              backgroundColor: '#28a745',
+              borderColor    : '#28a745',
+              data           :  [{{monday_total_sales.amount}}, {{tuesday_total_sales.amount}}, {{wednesday_total_sales.amount}}, {{thursday_total_sales.amount}}, {{friday_total_sales.amount}}, {{saturday_total_sales.amount}}, {{sunday_total_sales.amount}}]
+            },
+            {
+              backgroundColor: '#6c757d',
+              borderColor    : '#6c757d',
+              data           : [{{lw_monday_total_sales.amount}}, {{lw_tuesday_total_sales.amount}}, {{lw_wednesday_total_sales.amount}}, {{lw_thursday_total_sales.amount}}, {{lw_friday_total_sales.amount}}, {{lw_saturday_total_sales.amount}}, {{lw_sunday_total_sales.amount}}]
+            }
+          ]
+        },
+        options: {
+          maintainAspectRatio: false,
+          tooltips           : {
+            mode     : mode,
+            intersect: intersect
+          },
+          hover              : {
+            mode     : mode,
+            intersect: intersect
+          },
+          legend             : {
+            display: false
+          },
+          scales             : {
+            yAxes: [{
+              // display: false,
+              gridLines: {
+                display      : true,
+                lineWidth    : '4px',
+                color        : 'rgba(0, 0, 0, .2)',
+                zeroLineColor: 'transparent'
+              },
+              ticks    : $.extend({
+                beginAtZero: true,
+
+                // Include a dollar sign in the ticks
+                callback: function (value, index, values) {
+                  // if (value >= 1000) {
+                  //   value /= 1000
+                  //   value += 'k'
+                  // }
+                  return 'MWK ' + value
+                }
+              }, ticksStyle)
+            }],
+            xAxes: [{
+              display  : true,
+              gridLines: {
+                display: false
+              },
+              ticks    : ticksStyle
+            }]
+          }
+        }
+      })
+
+      var $visitorsChart = $('#visitors-chart')
+      var visitorsChart  = new Chart($visitorsChart, {
+        data   : {
+          labels  : ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'],
+          datasets: [{
+            type                : 'line',
+            data                : [{{monday_total_sales.amount}}, {{tuesday_total_sales.amount}}, {{wednesday_total_sales.amount}}, {{thursday_total_sales.amount}}, {{friday_total_sales.amount}}, {{saturday_total_sales.amount}}, {{sunday_total_sales.amount}}],
+            backgroundColor     : 'transparent',
+            borderColor         : '#28a745',
+            pointBorderColor    : '#28a745',
+            pointBackgroundColor: '#28a745',
+            fill                : false
+            // pointHoverBackgroundColor: '#007bff',
+            // pointHoverBorderColor    : '#007bff'
+          },
+            {
+              type                : 'line',
+              data                : [{{lw_monday_total_sales.amount}}, {{lw_tuesday_total_sales.amount}}, {{lw_wednesday_total_sales.amount}}, {{lw_thursday_total_sales.amount}}, {{lw_friday_total_sales.amount}}, {{lw_saturday_total_sales.amount}}, {{lw_sunday_total_sales.amount}}],
+              backgroundColor     : 'tansparent',
+              borderColor         : '#6c757d',
+              pointBorderColor    : '#6c757d',
+              pointBackgroundColor: '#6c757d',
+              fill                : false
+              // pointHoverBackgroundColor: '#ced4da',
+              // pointHoverBorderColor    : '#ced4da'
+            }]
+        },
+        options: {
+          maintainAspectRatio: false,
+          tooltips           : {
+            mode     : mode,
+            intersect: intersect
+          },
+          hover              : {
+            mode     : mode,
+            intersect: intersect
+          },
+          legend             : {
+            display: false
+          },
+          scales             : {
+            yAxes: [{
+              // display: false,
+              gridLines: {
+                display      : true,
+                lineWidth    : '4px',
+                color        : 'rgba(0, 0, 0, .2)',
+                zeroLineColor: 'transparent'
+              },
+              ticks    : $.extend({
+                beginAtZero : true,
+                suggestedMax: 200,
+                callback: function (value, index, values) {
+                  // if (value >= 1000) {
+                  //   value /= 1000
+                  //   value += 'k'
+                  // }
+                  return 'MWK ' + value
+                }
+              }, ticksStyle)
+            }],
+            xAxes: [{
+              display  : true,
+              gridLines: {
+                display: false
+              },
+              ticks    : ticksStyle
+            }]
+          }
+        }
+      })
+    })
 
 
+    </script>
 
 <!-- Logout Modal-->
-<div id="logout_confirm" class="modal fade" role="dialog">
-  <div class="modal-dialog">
-<!-- Modal content-->
-  <div class="modal-content">
-    <div class="modal-header">
-      <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-        <span aria-hidden="true">×</span>
-      </button>
+  <div id="logout_confirm" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+  <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">×</span>
+        </button>
+      </div>
+      <div class="modal-body text-center"><b><h3>Are you sure you want to logout ?</h3></b></div>
+      <div class="modal-footer">
+        <button class="btn btn-primary confirm_button" data-dismiss="modal" type="button">NO</button>
+        <a href="{% url 'logout_request' %}" ><button class="btn btn-danger confirm_button" type="button">YES</button></a>
+      </div>
     </div>
-    <div class="modal-body text-center"><b><h3>Are you sure you want to logout ?</h3></b></div>
-    <div class="modal-footer">
-      <button class="btn btn-primary confirm_button" data-dismiss="modal" type="button">NO</button>
-      <a href="{% url 'logout_request' %}" ><button class="btn btn-danger confirm_button" type="button">YES</button></a>
-    </div>
+  <!-- Logout Modal -->
   </div>
-<!-- Logout Modal -->
-</div>
-</div>
+  </div>
 
 </body>
 

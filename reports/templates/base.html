@@ -47,7 +47,7 @@
 
     
 </head>
-<body class="hold-transition layout-fixed layout-navbar-fixed layout-footer-fixed">
+<body class="hold-transition layout-fixed layout-navbar-fixed layout-footer-fixed" onload="realtimeClock()">
     <div class="wrapper">
         <!-- Navbar -->
         {% include 'header.html' %}
@@ -103,7 +103,7 @@
 <!-- Bootstrap4 Duallistbox -->
 <script src="{% static '/plugins/bootstrap4-duallistbox/jquery.bootstrap-duallistbox.min.js' %}"></script>
 <!-- InputMask -->
-<script src="{% static '/plugins/moment/moment.min.js'  %}"></script>
+<script src="{% static '/plugins/moment/moment.min.js' %}"></script>
 <script src="{% static '/plugins/inputmask/min/jquery.inputmask.bundle.min.js' %}"></script>
 <!-- date-range-picker -->
 <script src="{% static '/plugins/daterangepicker/daterangepicker.js' %}"></script>
@@ -115,6 +115,7 @@
 <!-- Bootstrap Switch -->
 <script src="{% static '/plugins/bootstrap-switch/js/bootstrap-switch.min.js' %}"></script>
 
+<script src="{% static '/custom_js/current_date_time.js' %}"></script>
 
 
 <!-- OPTIONAL SCRIPTS -->
@@ -148,5 +149,13 @@
 
 <!--Spinner JS-->
 <script src="{% static '/custom_js/spinner.js' %}"></script>
+
+<script src="{% static '/custom_js/pdf.js' %}"></script>
+<script src="{% static '/custom_js/html2pdf.bundle.min.js' %}"></script>
+
+<script src="{% static '/custom_js/excel.js' %}"></script>
+<script src="{% static '/custom_js/table2excel.js' %}"></script>
+
+
 
 </html>

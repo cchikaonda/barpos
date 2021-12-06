@@ -19,10 +19,10 @@
     <div class="content ml-2 mr-2 mt-2" style="max-height: 500px;">
         <!-- Small Box (Stat card) -->
         <div class="row">
-            {% if request.user.admin == True %}
+            <!-- {% if request.user.admin == True %}
             <div class="col-lg-3 col-6">
-              <!-- small card -->
-              <a href="">
+              
+              <a href="{% url 'supplier_list_pos' %}">
                 <div class="small-box bg-light dashboard_menu_item">
                     <div class="inner text-secondary">
                     <h3>Suppliers</h3>
@@ -35,10 +35,10 @@
                 </div>
               </a>
             </div>
-            {% endif %}
+            {% endif %} -->
 
             <div class="col-lg-3 col-6">
-              <a href="{% url 'customers_list' %}">
+              <a href="{% url 'customer_list_pos' %}">
               <!-- small card -->
                   <div class="small-box bg-light dashboard_menu_item">
                   
@@ -90,12 +90,29 @@
                 </div>
             </a>
             </div>
+
+            <!-- ./col -->
+            <div class="col-lg-3 col-6">
+            <!-- small card -->
+            <a href="{% url 'reports_dashboard' %}">
+              <div class="small-box bg-light dashboard_menu_item">
+                <div class="inner text-secondary">
+                  
+                  <p><h3>Reports<sup style="font-size: 20px"></sup></h3></p> 
+                </div>
+                <div class="icon">
+                  <i class="fa fa-chart-bar"></i>
+                </div>
+              </div>
+            </a>
+            </div>
+            <!-- ./col -->
         </div>
         <!-- ./col -->
-        {% if request.user.is_admin == True %}
+        
         <div class="row">
-          <div class="col-lg-3 col-6">
-            <!-- small card -->
+          <!-- <div class="col-lg-3 col-6">
+            
             <a href="#">
             <div class="small-box bg-light dashboard_menu_item">
                 <div class="inner text-secondary">
@@ -106,10 +123,11 @@
                 </div>
             </div>
             </a>
-        </div>
+        </div> -->
         <!-- ./col -->
+<!-- 
         <div class="col-lg-3 col-6">
-            <!-- small card -->
+           
             <a href="{% url 'inventory_dashboard' %}">
             <div class="small-box bg-light dashboard_menu_item">
                 <div class="inner text-secondary">
@@ -122,39 +140,28 @@
                 </div>
             </div>
             </a>
-        </div>
-         <!-- ./col -->
-         <div class="col-lg-3 col-6">
-          <!-- small card -->
-          <a href="{% url 'reports_dashboard' %}">
-            <div class="small-box bg-light dashboard_menu_item">
-              <div class="inner text-secondary">
-                
-                <p><h3>Reports<sup style="font-size: 20px"></sup></h3></p> 
-              </div>
-              <div class="icon">
-                <i class="fa fa-chart-bar"></i>
-              </div>
+        </div> -->
+
+         
+
+        {% if request.user.is_admin == True %}
+            <div class="col-lg-3 col-6">
+              <!-- small card -->
+              <a href="{% url 'inventory_dashboard' %}">
+                <div class="small-box bg-light dashboard_menu_item">
+                  <div class="inner text-secondary">
+                    <p> <h3>Back Office<sup style="font-size: 20px"></sup></h3> </p>
+                  </div>
+                  <div class="icon">
+                    <i class="fa fa-cogs"></i>
+                  </div>
+                </div>
+              </a>
             </div>
-          </a>
-        </div>
-        <!-- ./col -->
-        <div class="col-lg-3 col-6">
-          <!-- small card -->
-          <a href="{% url 'pos_dashboard' %}">
-            <div class="small-box bg-light dashboard_menu_item">
-              <div class="inner text-secondary">
-                <p> <h3>Admin<sup style="font-size: 20px"></sup></h3> </p>
-              </div>
-              <div class="icon">
-                <i class="fa fa-cogs"></i>
-              </div>
-            </div>
-          </a>
-        </div>
-        <!-- ./col -->
-        <!-- ./col -->
-        {%endif%}
+            <!-- ./col -->
+            <!-- ./col -->
+            {%endif%}
+        
       </div>
 
     <!-- /.row -->

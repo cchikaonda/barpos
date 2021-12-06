@@ -1,12 +1,12 @@
 from django.shortcuts import render,redirect, get_object_or_404
-from inventory.models import ItemCategory, Unit, Item
-from pos.models import Customer, OrderItem, Order, Payment
+from inventory.models import ItemCategory, Unit, Item, Supplier
+from pos.models import Customer, LayByOrders, OrderItem, Order, Payment
 from django.contrib import messages
 from constance import config
 from django.utils import timezone
 from datetime import date, timedelta, datetime
 from django.core.exceptions import ObjectDoesNotExist
-from pos.forms import AddPaymentForm, CashPaymentForm, SearchForm, AddCustomerForm
+from pos.forms import AddPaymentForm, CashPaymentForm, SearchForm, AddCustomerForm, AddLayByPaymentForm
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 
@@ -18,6 +18,7 @@ from django.db.models import Count
 from django.contrib.auth.decorators import login_required
 from accounts.admin import CustomConfigForm
 from barpos import settings
+import time
 
 
 
@@ -44,7 +45,6 @@ def index(request):
 def pos_dashboard(request):   
     if 'opened_order' in request.session:
         del request.session['opened_order']
-    print(config.QUICK_SALE)
     if config.QUICK_SALE == 'yes':
         return redirect('add_customer_to_order')
     customers = Customer.objects.all()
@@ -72,19 +72,17 @@ def pos_dashboard(request):
 
 @login_required
 def add_customer_to_order(request):
-    order_date = timezone.now()
+    # order_date = timezone.now()
     if request.method == "POST":
         selected_customer = request.POST.get('customer_name')
         customer = Customer.objects.get(name=selected_customer)
         try: 
             #check if there is already order for the customer
             check_order = Order.objects.get(user = request.user, customer = customer, ordered = False)
-        
             if check_order:
                 return redirect('/pos/personal_order_list/'+ str(check_order.id))
-
         except ObjectDoesNotExist:
-            order = Order.objects.create(user = request.user, order_date = order_date, customer=customer)
+            order = Order.objects.create(user = request.user, customer = customer)
             order.save()
         return redirect('/pos/personal_order_list/'+ str(order.id))
     else:
@@ -95,7 +93,7 @@ def add_customer_to_order(request):
             if check_order:
                 return redirect('/pos/personal_order_list/'+ str(check_order.id))  
         except ObjectDoesNotExist:
-            order = Order.objects.create(user = request.user, order_date = order_date, customer=customer)
+            order = Order.objects.create(user = request.user, customer=customer)
             order.save()
             return redirect('/pos/personal_order_list/'+ str(order.id))
 
@@ -126,16 +124,11 @@ def add_payment(request):
     if request.method == "POST":
         order_id =request.session['opened_order']
         order = Order.objects.get(id = order_id, user = request.user, ordered=False)
-
-        # customer_id = request.POST.get('customer')
-        # order = Order.objects.get(customer = customer_id, ordered = False, active=True )
-        # items_in_order = get_items_in_order(order)
-        #print(items_in_order)
         try:
             if form.is_valid():
-                # print(request.POST)
                 paid_amount = form.cleaned_data.get('paid_amount')
-                payment_mode = request.POST.get('payment_mode') 
+                payment_mode = request.POST.get('payment_mode')
+                print(payment_mode)
                 
                 payment = Payment()
                 payment.payment_mode = payment_mode
@@ -143,18 +136,19 @@ def add_payment(request):
             
                 if str(payment_mode).lower() == str('Cash').lower():
                     reference = 'CASH'
+                    payment.payment_mode = reference
+                    payment.reference = reference
+                elif str(payment_mode).lower() == str('Lay By').lower():
+                    reference = 'Lay By'
+                    payment.payment_mode = reference
                     payment.reference = reference
                 else:
                     reference = form.cleaned_data.get('reference') 
                     payment.reference = reference
                 
-                #print(payment_mode)
-                #print(paid_amount)
-                #print('customer_id')
-                #print(customer_id)
-                
-                order.paid_amount = payment
                 payment.save()
+                print(payment.payment_mode)
+                order.paid_amount = payment
                 order.save()
                 request.session['opened_order'] = order.id
             return redirect('/pos/personal_order_list/'+ str(order.id))
@@ -180,9 +174,12 @@ def complete_order_only(order, request):
         order_item.ordered = True
         order_item.save()
     order.ordered = True
-    # order.active = False
     order.vat_p = order.vat_rate
     order.vat_cost = order.get_vat_value
+    payment = Payment()
+    payment.paid_amount = order.order_total_cost
+    payment.save()
+    order.add(payment)
     order.save()
     request.session['opened_order'] = order.id
 
@@ -190,9 +187,7 @@ def complete_order_only(order, request):
 @login_required
 def complete_order(request):
     order_id =request.session['opened_order']
-    print(order_id)
     order = Order.objects.get(id = order_id)
-    print(order)
     order.customer.total_orders +=1
     order.customer.save()
     order.order_total_cost = order.order_total_due()
@@ -205,6 +200,10 @@ def complete_order(request):
     order.ordered = True
     order.vat_p = order.vat_rate
     order.vat_cost = order.get_vat_value
+    payment = Payment()
+    payment.paid_amount = order.order_total_cost
+    payment.save()
+    order.paid_amount = payment
     order.save()
     return redirect("pos_dashboard")
 
@@ -248,14 +247,17 @@ def customers_list(request):
 
 @login_required
 def personal_order_list(request, id):
-    payment_form = AddPaymentForm(initial={"payment_mode":['Cash', ], "paid_amount":['']})
-    airtel_money_payment_form = AddPaymentForm(initial={"payment_mode":['Airtel Money', ], "paid_amount":['']})
-    mpamba_payment_form = AddPaymentForm(initial={"payment_mode":['Mpamba', ], "paid_amount":['']})
+    layby_payment_form = AddLayByPaymentForm(initial={"payment_mode":'Lay By', "paid_amount":['']})
+    payment_form = AddPaymentForm(initial={"payment_mode":'Cash', "paid_amount":[''],})
+    airtel_money_payment_form = AddPaymentForm(initial={"payment_mode":'Airtel Money', "paid_amount":['']})
+    mpamba_payment_form = AddPaymentForm(initial={"payment_mode":'Mpamba', "paid_amount":['']})
     order = get_object_or_404(Order,id=id)
-
+    try:
+        layb_order = LayByOrders.objects.get(order_id = order.id)
+    except ObjectDoesNotExist:
+        layb_order = ""
     request.session['opened_order'] = order.id
     # all_order_related = Order.objects.prefetch_related('customer','items','user',).all()
-    # print(all_order_related)
     unsettled_orders = Order.objects.filter(user=request.user, ordered = False, order_total_cost__gt = 0.0)
 
     save_order(order, request)
@@ -266,10 +268,10 @@ def personal_order_list(request, id):
     items = None
     item_cat_id = request.GET.get('category')
     if item_cat_id:
-        items = Item.get_all_items_by_category_id(item_cat_id)
+        items = Item.get_all_items_by_category_id(item_cat_id).filter(active=True).filter(quantity_at_hand__gt=0)
         item_count = items.count()
     else:
-        items = Item.get_all_items()
+        items = Item.get_all_items().filter(active=True).filter(quantity_at_hand__gt=0)
         item_count = items.count()
     all_items_count = Item.objects.count()
     category = ItemCategory.objects.filter(id=item_cat_id)
@@ -279,8 +281,6 @@ def personal_order_list(request, id):
     if query is not None:
         items = (items.filter(barcode__startswith  = query) | items.filter(item_name__startswith  = query))|items.filter(item_name__icontains = query)
     item_search_form = SearchForm()
-
-    #print(order.default_amount_paid())
     context = {
         'order':order,
         'item_categories':item_categories,
@@ -298,6 +298,8 @@ def personal_order_list(request, id):
         'unsettled_orders':unsettled_orders,
         'item_search_form':item_search_form,
         'config':config,
+        'layby_payment_form':layby_payment_form,
+        'layb_order':layb_order,
 
     }
     return render(request, 'personal_order_list.html',context )
@@ -305,7 +307,7 @@ def personal_order_list(request, id):
 @login_required
 def save_order(order, request):
     order.order_total_cost = order.order_total_due()
-    # order.active = True
+    order.vat_cost = order.get_vat_value
     order.save()
     return order
 
@@ -313,7 +315,6 @@ def save_order(order, request):
 def save_bill(request):
     order_id = request.session['opened_order']
     order = Order.objects.get(id = order_id, user = request.user, ordered=False)
-    # order.active = False
     save_order(order, request)
     return redirect('pos_dashboard')
 
@@ -343,22 +344,26 @@ def add_to_cart(request, slug):
         order = Order_qs[0]
         customer = order.customer
         order_id_in_ordered_items = order.get_code()
+        print("getting order items....")
+        # time.sleep(5)
         order_item, created = OrderItem.objects.get_or_create(order_id = order_id_in_ordered_items, item=item, user = request.user, ordered = False, customer=customer)
         #check if the order item is in the order
         if order.items.filter(item__slug = item.slug).exists():
-            item.quantity_at_hand -=1
-            order_item.quantity +=1
-            order_item.customer = order.customer
-            order_item.save()
-            item.save()
+            if item.quantity_at_hand > 0:
+                item.quantity_at_hand -=1
+                order_item.quantity +=1
+                order_item.customer = order.customer
+                order_item.save()
+                item.save()
         else:
-            order_item.quantity = 1
-            order.items.add(order_item)
-            order_item.customer = order.customer
-            order_item.order_id = order.get_code()
-            order_item.save()
-            item.quantity_at_hand -=1
-            item.save()
+            if item.quantity_at_hand > 0:
+                order_item.quantity = 1
+                order.items.add(order_item)
+                order_item.customer = order.customer
+                order_item.order_id = order.get_code()
+                order_item.save()
+                item.quantity_at_hand -=1
+                item.save()
     else:
         messages.info(request, "Item not in order")
     return redirect('/pos/personal_order_list/'+ str(order_id))
@@ -411,9 +416,15 @@ def remove_single_item_from_cart(request, slug):
                 item.quantity_at_hand +=1
                 order_item.save()
                 item.save()
-            else:
+            elif order_item.quantity == 1:
+                order_item.quantity -=1
+                item.quantity_at_hand +=1
                 order_item.delete()
                 item.save()
+            # else:
+            #     item.quantity_at_hand +=1
+            #     order_item.delete()
+            #     item.save()
             return redirect('/pos/personal_order_list/'+ str(order.id))
         else:
             return redirect('/pos/personal_order_list/'+ str(order.id))
@@ -575,10 +586,64 @@ def view_my_orders(request):
     }
     return render(request, "view_my_orders.html", context)
 
+def supplier_list_pos(request):
+    suppliers = Supplier.objects.all()
+    context = {
+        'suppliers': suppliers,
+        'header': 'Manage Suppliers',
+        'config':config,
+    }
+    return render(request, 'suppliers/supplier_list_pos.html', context)
+
+def customer_list_pos(request):
+    customers = Customer.objects.all()
+    context = {
+        'customers': customers,
+        'header': 'Manage customers',
+        'config':config,
+    }
+    return render(request, 'customers/customer_list_pos.html', context)
+
+# def add_layby_payment(request):
+#     form = AddLayByPaymentForm.POST or None)
+#     if request.method == "POST":
+#         order_id =request.session['opened_order']
+#         order = Order.objects.get(id = order_id, user = request.user, ordered=False)
+
+#         # customer_id = request.POST.get('customer')
+#         # order = Order.objects.get(customer = customer_id, ordered = False, active=True )
+#         # items_in_order = get_items_in_order(order)
+#         try:
+#             if form.is_valid():
+#                 paid_amount = form.cleaned_data.get('paid_amount')
+#                 payment_mode = request.POST.get('payment_mode') 
+                
+#                 payment = Payment()
+#                 payment.payment_mode = payment_mode
+#                 payment.paid_amount = paid_amount
+            
+#                 if str(payment_mode).lower() == str('Cash').lower():
+#                     reference = 'CASH'
+#                     payment.reference = reference
+#                 else:
+#                     reference = form.cleaned_data.get('reference') 
+#                     payment.reference = reference
+#                 order.paid_amount = payment
+#                 payment.save()
+#                 order.save()
+#                 request.session['opened_order'] = order.id
+#             return redirect('/pos/personal_order_list/'+ str(order.id))
+#         except ObjectDoesNotExist:
+#             messages.info(request, "You do not have an active order")
+#             order = Order.objects.get(user = request.user, ordered = False)
+#             request.session['opened_order'] = order.id
+#             return redirect('/pos/personal_order_list/'+ str(order.id))
+#         return None
+
+
 
 # def admin_settings(request):
 #     initial = get_values()
-#     print(initial)
 #     form = CustomConfigForm(initial=initial, request=request)
 
 #     if request.method == 'POST':

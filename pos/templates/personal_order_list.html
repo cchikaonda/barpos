@@ -86,7 +86,13 @@
                       <td>{{ordered_item.item}}</td>
                       <td class="text-right"><a href="{%url 'remove_single_item_from_cart' ordered_item.item.slug %}"><button class="btn btn-outline-info"><i class="fas fa-minus"></i></button></td>
                       <td class="text-center"></a>{{ordered_item.quantity}}</td>
-                      <td><a href="{%url 'add_to_cart' ordered_item.item.slug %}"><button class="btn btn-outline-info"><i class="fas fa-plus"></i></button></a></td>
+                      
+                      <td>
+                        {% if ordered_item.item.quantity_at_hand > 0 %}
+                        <a href="{%url 'add_to_cart' ordered_item.item.slug %}"><button class="btn btn-outline-info" id="add-to-cat-button"><i class="fas fa-plus"></i></button></a>
+                        {% endif %}
+                      </td>
+                      
                       <td>{{ordered_item.price}}</td>
                       <td class="text-right">{{ordered_item.get_total_amount}}</td>
                       <td class="text-center"> <a href="{{ordered_item.item.get_remove_from_cart_url }}"> <button class="btn btn-outline-info"><i class="fas fa-times"></i></button></td>
@@ -99,7 +105,12 @@
                       <td colspan="2" class="text-right">{{order.order_total}}</td> 
                     </tr>
                     <tr>
-                      <td colspan="6" class="text-right">VAT({{config.TAX_NAME}}%)</td>
+                      <td colspan="6" class="text-right">TAXABLE @({{config.TAX_NAME}}%)</td>
+                      <td colspan="2" class="text-right">{{order.get_taxable_value}}</td>
+                      
+                    </tr>
+                    <tr>
+                      <td colspan="6" class="text-right">VAT @({{config.TAX_NAME}}%)</td>
                       <td colspan="2" class="text-right">{{order.get_vat_value}}</td>
                       
                     </tr>
@@ -146,17 +157,20 @@
                   <a href="{% url 'print_receipt_only' %}"><button class="btn btn-secondary mr-2 ml-2 posoption_button" style="float: left;"><i class="fas fa-print"></i> Print Bill</button> </a>
                   {% if order.paid_amount.paid_amount %}
                   
-                  {% if order.paid_amount.paid_amount > order.order_total_due %}
+                  {% if order.paid_amount.paid_amount > order.order_total_due or order.paid_amount.paid_amount == order.order_total_due %}
                   <a data-toggle="modal" data-target="#produceReceiptModal"><button class="btn btn-success mr-2 ml-2 posoption_button" style="float: right;"><i class="fas fa-arrow-right"></i> Checkout</button> </a> 
                   {% endif %}
                   {% endif %}
 
   
-                  {% if order.items %}
+                  {% if order.items and order.order_total_due > order.paid_amount.paid_amount %}
                   <!-- <a href="{% url 'save_bill' %}"><button class="btn btn-secondary mr-2 ml-2 posoption_button" style="float: right;"><i class="fas fa-save"></i> Save Bill</button> </a> -->
                   <a data-toggle="modal" data-target="#produceReceiptSavedBillModal"><button class="btn btn-info mr-2 ml-2 posoption_button" style="float: left;"><i class="fas fa-save"></i> Save Bill</button> </a>
+                  {% if order.paid_amount.payment_mode == 'Lay By' %}
+                  <a data-toggle="modal" data-target="#laybyModal"><button class="btn btn-secondary mr-2 ml-2 posoption_button" style="float: center;"><i class="fas fa-money-bill-alt"></i> Add Another Payment</button> </a>
+                  {% else %}
                   <a data-toggle="modal" data-target="#cashModal"><button class="btn btn-success mr-2 ml-2 posoption_button" style="float: right;"><i class="fas fa-money-bill-alt"></i> Pay Cash</button> </a>
-                  
+                  {% endif %}
                   {% endif %}
                   
                   
@@ -171,35 +185,40 @@
       </div>
 
 
-{% if order.items %}
-      <!--OTHER PAYMENTS-->
-  <div >
-    <div class="card collapsed-card" id="other_payments">
-        <div class="card-header">
-           
-            <h3 class="card-title">OTHER PAYMENTS</a></h3>
+{% if order.items and order.order_total_due > order.paid_amount.paid_amount %}
 
-            <div class="card-tools">
-        
-                <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-plus"></i>
-                </button>
-                <button type="button" class="btn btn-tool" data-card-widget="remove"><i class="fas fa-times"></i>
-                </button>
-            </div>
-        </div>
-        <!-- /.card-header -->
-        <div class="card-body">
-            <div class="table-responsive">
-                
+{% if order.paid_amount.payment_mode == 'Lay By' %}
+{% else %}
+  <!--OTHER PAYMENTS-->
+  <div >
+      <div class="card collapsed-card" id="other_payments">
+          <div class="card-header">
+            
+              <h3 class="card-title">OTHER PAYMENTS</a></h3>
+
+              <div class="card-tools">
+          
+                  <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-plus"></i>
+                  </button>
+                  <button type="button" class="btn btn-tool" data-card-widget="remove"><i class="fas fa-times"></i>
+                  </button>
               </div>
-              <div class="mt-2">
-              <a data-toggle="modal" data-target="#airtelMoneyModal"><button class="btn btn-danger mr-2 ml-2 posoption_button" style="float: left;"><i class="fas fa-money-bill-alt"></i> Airtel Money</button> </a>
-              <a data-toggle="modal" data-target="#mpambaModal"><button class="btn btn-success mr-2 ml-2 posoption_button" style="float: right;"><i class="fas fa-money-bill-alt"></i> Mpamba </button> </a>
-            </div>
-        </div>    
-    </div>
-</div>
-<!--END OTHER PAYMENTS-->
+          </div>
+          <!-- /.card-header -->
+          <div class="card-body">
+              <div class="table-responsive">
+                  
+                </div>
+                <div class="mt-2">
+                <!-- <a data-toggle="modal" data-target="#airtelMoneyModal"><button class="btn btn-danger mr-2 ml-2 posoption_button" style="float: left;"><i class="fas fa-money-bill-alt"></i> Airtel Money</button> </a> -->
+                <a data-toggle="modal" data-target="#laybyModal"><button class="btn btn-secondary mr-2 ml-2 posoption_button" style="float: center;"><i class="fas fa-money-bill-alt"></i> Lay By </button> </a>
+                <!-- <a data-toggle="modal" data-target="#mpambaModal"><button class="btn btn-success mr-2 ml-2 posoption_button" style="float: right;"><i class="fas fa-money-bill-alt"></i> Mpamba </button> </a> -->
+              </div>
+          </div>    
+      </div>
+  </div>
+  <!--END OTHER PAYMENTS-->
+{% endif %}
 {% endif %}
     
   </div>
@@ -306,6 +325,9 @@
     <!--END ITEMS TABLE-->
 <!--END ROW-->
 </div>
+
+
+
 
 
 {% endblock %}

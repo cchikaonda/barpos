@@ -237,11 +237,11 @@
           
                   <tr role="row" class="odd">
             
-                      {% for today_s in ptoday %}
+                      {% for this_month_s in thismonthsales %}
                     
-                        <th class="text-left">{{today_s.category__category_name}}</th>
-                        <td class="text-center">{{today_s.total_quantity}}</td>
-                        <td class="text-right">{{today_s.sales_total}}</td>
+                        <th class="text-left">{{this_month_s.category__category_name}}</th>
+                        <td class="text-center">{{this_month_s.total_quantity}}</td>
+                        <td class="text-right">{{this_month_s.sales_total}}</td>
                   <tr>
                       {% endfor %}
               
@@ -251,10 +251,10 @@
                   </td>
           
                   <td class="text-center">
-                    <b>{{grand_today.grand_quantity}}</b>
+                    <b>{{grand_thismonth.grand_quantity}}</b>
                   </td>
                   <td class="text-right">
-                   <b> {{grand_total.grand_total}}</b>
+                   <b> {{grand_total_thismonth.grand_total}}</b>
                   </td>
           
                 </tr>
@@ -284,11 +284,11 @@
           
                   <tr role="row" class="odd">
             
-                      {% for today_s in ptoday %}
+                      {% for lastmonth_s in lastmonthsales %}
                     
-                        <th class="text-left">{{today_s.category__category_name}}</th>
-                        <td class="text-center">{{today_s.total_quantity}}</td>
-                        <td class="text-right">{{today_s.sales_total}}</td>
+                        <th class="text-left">{{lastmonth_s.category__category_name}}</th>
+                        <td class="text-center">{{lastmonth_s.total_quantity}}</td>
+                        <td class="text-right">{{lastmonth_s.sales_total}}</td>
                   <tr>
                       {% endfor %}
               
@@ -298,10 +298,10 @@
                   </td>
           
                   <td class="text-center">
-                    <b>{{grand_today.grand_quantity}}</b>
+                    <b>{{grand_lastmonth.grand_quantity}}</b>
                   </td>
                   <td class="text-right">
-                   <b> {{grand_total.grand_total}}</b>
+                   <b> {{grand_total_lastmonth.grand_total}}</b>
                   </td>
           
                 </tr>
@@ -334,11 +334,11 @@
           
                   <tr role="row" class="odd">
             
-                      {% for today_s in ptoday %}
+                      {% for this_year_s in this_year_sales %}
                     
-                        <th class="text-left">{{today_s.category__category_name}}</th>
-                        <td class="text-center">{{today_s.total_quantity}}</td>
-                        <td class="text-right">{{today_s.sales_total}}</td>
+                        <th class="text-left">{{this_year_s.category__category_name}}</th>
+                        <td class="text-center">{{this_year_s.total_quantity}}</td>
+                        <td class="text-right">{{this_year_s.sales_total}}</td>
                   <tr>
                       {% endfor %}
               
@@ -348,10 +348,10 @@
                   </td>
           
                   <td class="text-center">
-                    <b>{{grand_today.grand_quantity}}</b>
+                    <b>{{grand_this_year.grand_quantity}}</b>
                   </td>
                   <td class="text-right">
-                   <b> {{grand_total.grand_total}}</b>
+                   <b> {{grand_total_this_year.grand_total}}</b>
                   </td>
           
                 </tr>
@@ -382,11 +382,11 @@
           
                   <tr role="row" class="odd">
             
-                      {% for today_s in ptoday %}
+                      {% for last_year_s in last_year_sales %}
                     
-                        <th class="text-left">{{today_s.category__category_name}}</th>
-                        <td class="text-center">{{today_s.total_quantity}}</td>
-                        <td class="text-right">{{today_s.sales_total}}</td>
+                        <th class="text-left">{{last_year_s.category__category_name}}</th>
+                        <td class="text-center">{{last_year_s.total_quantity}}</td>
+                        <td class="text-right">{{last_year_s.sales_total}}</td>
                   <tr>
                       {% endfor %}
               
@@ -396,10 +396,10 @@
                   </td>
           
                   <td class="text-center">
-                    <b>{{grand_today.grand_quantity}}</b>
+                    <b>{{grand_last_year.grand_quantity}}</b>
                   </td>
                   <td class="text-right">
-                   <b> {{grand_total.grand_total}}</b>
+                   <b> {{grand_total_last_year.grand_total}}</b>
                   </td>
           
                 </tr>

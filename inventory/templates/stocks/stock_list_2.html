@@ -1,0 +1,22 @@
+{%for stock in stocks%}
+<tr>
+    <td>{{ stock.batch }}</td>
+    <td>{{ stock.item.item_name }}</td>
+    <td>{{ stock.supplier_name.name}}</td>
+    <td>{{ stock.ordered_price }}</td>
+    <td class="text-center">{{ stock.previous_quantity }}</td>
+    <td class="text-center">{{ stock.stock_in }}</td>
+    <td class="text-center">{{ stock.new_quantity }}</td>
+    <td>{{ stock.created_at}}</td>
+    <td>{{ stock.updated_at }}</td>
+    
+
+    <td class="text-center">
+        <div class="btn-group">
+            <button type="button"  class="btn btn-sm btn-light show-form-delete" data-url="{% url 'stock_delete' stock.id %}" data-toggle="tooltip" title="Delete {{ items.item_name }}">
+                <a class="fa fa-fw fa-times"> </a>
+            </button>
+        </div>
+    </td>
+</tr>
+{% endfor %}

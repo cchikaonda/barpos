@@ -1,0 +1,9 @@
+{% for supplier in suppliers %}
+<tr>
+    <td>{{ forloop.counter }}</td>
+    <td>{{ supplier.name }}</td>
+    <td>{{ supplier.address }}</td>
+    <td>{{ supplier.phone_number }}</td>
+    <td>{{ supplier.description }}</td>
+</tr>
+{% endfor %}

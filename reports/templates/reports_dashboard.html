@@ -1,20 +1,22 @@
 {% extends 'base_reports.html' %}
 {% block body %}
 {% load crispy_forms_tags %}
-<div id="spinner-box" class="text-center mt-3 mb-2">
-  <div class="spinner-border text-success" role="status">
-  </div>
-</div>
-<div id="page-content" class="page-content">
+<style>
+  .report-type-button{
+    width: 120;
+    height: 100;
+  }
+</style>
+<div id="page-content" class="page-content ml-2 mr-2">
     <div class="row mt-2">
       <div class="col-12 col-sm-6 col-md-3">
         <div class="info-box">
-          <span class="info-box-icon bg-info elevation-1"><i class="fas fa-money-bill"></i></span>
+          <span class="info-box-icon bg-secondary elevation-1"><i class="fas fa-money-bill"></i></span>
 
           <div class="info-box-content">
-            <span class="info-box-text">Today's Total Sales</span>
+            <span class="info-box-text">TODAY'S SALES</span>
             <span class="info-box-number">
-              {{todays_sales}}
+              {{todays_total_sales}}
             </span>
           </div>
           <!-- /.info-box-content -->
@@ -24,11 +26,11 @@
       <!-- /.col -->
       <div class="col-12 col-sm-6 col-md-3">
         <div class="info-box mb-3">
-          <span class="info-box-icon bg-danger elevation-1"><i class="fas fa-thumbs-up"></i></span>
+          <span class="info-box-icon bg-secondary elevation-1"><i class="fas fa-thumbs-up"></i></span>
 
           <div class="info-box-content">
-            <span class="info-box-text">Yesterday's Total Sales</span>
-            <span class="info-box-number">{{yesterdays_sales}}</span>
+            <span class="info-box-text">YESTERDAY'S SALES</span>
+            <span class="info-box-number">{{yesterday_total_sales}}</span>
           </div>
           <!-- /.info-box-content -->
         </div>
@@ -40,11 +42,11 @@
 
       <div class="col-12 col-sm-6 col-md-3">
         <div class="info-box mb-3">
-          <span class="info-box-icon bg-success elevation-1"><i class="fas fa-shopping-cart"></i></span>
+          <span class="info-box-icon bg-secondary elevation-1"><i class="fas fa-shopping-cart"></i></span>
 
           <div class="info-box-content" >
-            <span class="info-box-text">All Bills</span>
-            <span class="info-box-number">{{all_orders_count}}</span>
+            <span class="info-box-text">GROSS SALES</span>
+            <span class="info-box-number">{{sales_overtime}}</span>
           </div>
           <!-- /.info-box-content -->
         </div>
@@ -53,11 +55,11 @@
       <!-- /.col -->
       <div class="col-12 col-sm-6 col-md-3">
         <div class="info-box mb-3">
-          <span class="info-box-icon bg-warning elevation-1"><i class="fas fa-users"></i></span>
+          <span class="info-box-icon bg-secondary elevation-1"><i class="fas fa-users"></i></span>
 
           <div class="info-box-content">
-            <span class="info-box-text">Customers</span>
-            <span class="info-box-number">{{customers_count}}</span>
+            <span class="info-box-text">GROSS SALES TAX</span>
+            <span class="info-box-number">{{sales_tax}}</span>
           </div>
           <!-- /.info-box-content -->
         </div>
@@ -65,411 +67,253 @@
       </div>
       <!-- /.col -->
     </div>
-    <a href="{% url 'sales_report' %}"> <button class="btn btn-success mt-2 mb-2 ml-2"> Sales Report</button> </a>
-    <a href="{% url 'summery_of_sales' %}"> <button class="btn btn-success mt-2 mb-2 ml-2"> Sales Summery Report</button> </a>
-    <div class="col-12 col-sm-12">
-      <div class="card card-primary card-outline card-outline-tabs">
-        <div class="card-header p-0 border-bottom-0">
-          <ul class="nav nav-tabs" id="custom-tabs-four-tab" role="tablist">
-            <li class="nav-item">
-              <a class="nav-link show active" id="custom-tabs-four-home-tab" data-toggle="pill" href="#custom-tabs-four-home" role="tab" aria-controls="custom-tabs-four-home" aria-selected="True">Sales Reports</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" id="custom-tabs-four-messages-tab" data-toggle="pill" href="#custom-tabs-four-messages" role="tab" aria-controls="custom-tabs-four-messages" aria-selected="false">Inventory Reports</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" id="custom-tabs-four-settings-tab" data-toggle="pill" href="#custom-tabs-four-settings" role="tab" aria-controls="custom-tabs-four-settings" aria-selected="false">Payment Reports</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" id="custom-tabs-four-register-closers-tab" data-toggle="pill" href="#custom-tabs-four-register-closers" role="tab" aria-controls="custom-tabs-four-register-closers" aria-selected="false">Register Closures</a>
-            </li>
-            <li class="nav-item">
-            <a class="nav-link" id="custom-tabs-four-gift-cards-tab" data-toggle="pill" href="#custom-tabs-four-gift-cards" role="tab" aria-controls="custom-tabs-four-gift-cards" aria-selected="false">Gift Card Reports</a>
-            </li>
-          </ul>
-        </div>
-        <div class="card-body">
-          <div class="tab-content" id="custom-tabs-four-tabContent">
-            <div class="tab-pane fade show active" id="custom-tabs-four-home" role="tabpanel" aria-labelledby="custom-tabs-four-home-tab">
-              <div class="card">
-                <div class="card-header">
-                  <h3 class="card-title">Sales Report <strong>(From {{from_date}} To {{to_date}} )</strong> </h3>
-                  </div>
-                
-                <div class="row ml-3">
-                      <div class="card col-5 ml-2 mr-2 mt-2 mb-2">
-                        <div class="header">
-                        </div>
-                        <div class="row">
-                            <form action="{% url 'reports_dashboard' %}" method="post" class="row">
-                              {% csrf_token %}
-                                  <div class="mt-2 ml-4">
-                                    <label for="measure">Select Period</label>
-                                    <div class="input-group">
-                                    
-                                      <div class="input-group-prepend">
-                                        <span class="input-group-text"><i class="far fa-calendar-alt"></i></span>
-                  
-                                      </div>
-                                        <select class="form-control" id="example-select" name="report_period">
-                                          <i class="far fa-calendar-alt"> <option value="0">Please select</option></i>
-                                            <option value="1" id="today_option" >Today</option>
-                                            <option value="2">Yesterday</option>
-                                            <option value="3">Last 7 Days</option>
-                                            <option value="4">Last 30 Days</option>
-                                            <option value="5">This Month</option>
-                                            <option value="6">Last Month</option>
-                                        </select>
-                                    </div>
-                                  </div>
-                                  
-                                  <div class="ml-4 mt-2 mb-4">
-                                    <label for="date-rage">Category</label>
-                                      <div class="input-group-prepend " >
-                                        <select class="form-control" name="item_categories_option" >
-                                          <option  value="0">Please select</option>
-                                          <option value="1">All Categories</option>
-                                          {% for item_cat in item_categories %}
-                                            <option value="{{item_cat.category_name}}"> {{item_cat.category_name}}</option>
-                                          {%endfor%}
-                                        </select>
-                                        <button type="submit" name="button" class=" btn btn-info ml-2" data-toggle="modal" data-target="#customerModal" style="width: 100px;">Select</button>
-                                      </div>
-                                  </div>
-                            </form>
-                        </div>
-                      </div>
-                      
-                      <div class="card collapsed-card col-5 mr-2 ml-2 mt-2 mb-4">
-                        <div class="card-header">
-                          <h3 class="card-title"><strong>Custom Date Range </strong></h3>
-                          <div class="card-tools">
-                      
-                              <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-plus"></i>
-                              </button>
-                              <button type="button" class="btn btn-tool" data-card-widget="remove"><i class="fas fa-times"></i>
-                              </button>
-                          </div>
-                        </div>
-                        <div class="card-body">
-                          <form action="" method="POST">
-                            {% csrf_token %}
-                              <div class="row">
-                              <div class="form-group mt-2 ml-4">
-                                {{form.start_date_time|as_crispy_field}}
-                              </div>
-                              <div class="form-group mt-2 ml-2">
-                                {{form.end_date_time|as_crispy_field}}
-                              </div>
-                              <div class="mt-2 ml-3 ">
-                                <label for="date-rage" class="text-white">.</label> <br>
-                                <button type="submit" class="btn btn-info" style="float: right;"> Submit</button>
-                              </div>
-                          </div>
-                          </form>
-                        </div>
-                      </div>
-                </div>
+    <div class="row">
+    
+        <div class="col-4">
+          <!-- small card -->
+          <a href="{% url 'sales_report' %}"> 
+          <div class="small-box bg-light dashboard_menu_item">
+              <div class="inner text-info">
+              <h3><i class="fas fa-money-bill"></i> Sales Reports</h3>
               </div>
-              </div>
-                <!-- /.card-header -->
-                <div class="card-body">
-                  <div id="example1_wrapper" class="dataTables_wrapper dt-bootstrap4">
-                    <div class="row">
-                      <div class="col-sm-12 col-md-6">
-                      <div class="dataTables_length" id="example1_length">
-                        </div></div><div class="col-sm-12 col-md-6"><div id="example1_filter" class="dataTables_filter"></div></div></div><div class="row"><div class="col-sm-12"><table id="example1" class="table table-bordered table-striped dataTable dtr-inline" role="grid" aria-describedby="example1_info">
-                    <thead>
-                    <tr role="row">
-                      <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Date</th>
-                      <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Cashier</th>
-                      <th>ITEM</th>
-                      <th class="sorting_asc" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Rendering engine: activate to sort column descending">Quantity</th>
-                      <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Browser: activate to sort column ascending">Unit Cost</th><th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Total</th>
-                    </thead>
-                    <tbody>
-                    {% for ordered_items in ordered_items %}
-                    <tr role="row" class="odd">
-                      <td>{{ordered_items.ordered_time}}</td>
-                      <td>{{ordered_items.user.full_name}}</td>
-                      <td>{{ordered_items.item}}</td>
-                      <td class="text-center">{{ordered_items.quantity}}</td>
-                      <td class="text-right">{{ordered_items.ordered_item_price}}</td>
-                      <td class="text-right">{{ordered_items.total}}</td>
-                      
-                    </tr>
-                    {% endfor %}
-                    <tr class="text-bold">
-                      <td colspan="3" class="text-right">
-                        TOTAL
-                      </td >
-                      
-                      <td class="text-center">
-                        {{total_ordered_quantity}}
-                      </td>
-                      <td>
-
-                      </td>
-                      <td class="text-right">
-                        {{ordered_total_sales}}
-                      </td>
-                    </tr>
-                    </tbody>
-                    <tfoot>
-                    </tfoot>
-                  </table>
-                </div>
-                
-                <div><br></div>
-              </div>
-            </div>
-                <!-- /.card-body -->
-                </div>
-              </div>
-            </div>
-            <div class="tab-pane fade" id="custom-tabs-four-messages" role="tabpanel" aria-labelledby="custom-tabs-four-messages-tab">
-              <div class="card">
-                <div class="card-header">
-                  <h3 class="card-title">Inventory Reports</h3>
-                </div>
-                <!-- /.card-header -->
-                <div class="card-body">
-                  <div id="example1_wrapper" class="dataTables_wrapper dt-bootstrap4">
-                    <div class="row">
-                      <div class="col-sm-12 col-md-6">
-                      <div class="dataTables_length" id="example1_length">
-                        </div></div><div class="col-sm-12 col-md-6"><div id="example1_filter" class="dataTables_filter"></div></div></div><div class="row"><div class="col-sm-12"><table id="example1" class="table table-bordered table-striped dataTable dtr-inline" role="grid" aria-describedby="example1_info">
-                    <thead>
-                    <tr role="row"> <th>Order ID</th><th class="sorting_asc" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Rendering engine: activate to sort column descending">Customer Name</th><th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Browser: activate to sort column ascending">Phone Number</th><th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Total Bill</th><th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Date</th><th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Cashier</th><th class="sorting" tabindex="0" aria-controls="example1">Action</th></tr>
-                    </thead>
-                    <tbody>
-                    {% for order in settled_orders %}
-                    <tr role="row" class="odd">
-                      <td><a href="{% url 'personal_order_list' order.id %}">{{order.get_code}}</a></td>
-                      <td tabindex="0" class="sorting_1">{{order.customer}}</td>
-                      <td>{{order.customer.phone_number}}</td>
-                      <td>{{order.order_total_cost}}</td>
-                      <td>{{order.order_date}}</td>
-                      <td>{{order.user.full_name}}</td>
-                      <td class="project-actions text-left">
-                        <a class="btn btn-success btn-sm" href="#">
-                            <i class="fas fa-money-bill-alt">
-                            </i>
-                            Pay Bill
-                        </a>
-                        <!-- <a class="btn btn-primary btn-sm" href="#">
-                            <i class="fas fa-pencil-alt">
-                            </i>
-                            Add Item
-                        </a> -->
-                        <a class="btn btn-info btn-sm" href="{% url 'personal_order_list' order.id %}">
-                            <i class="fas fa-trash">
-                            </i>
-                            View Bill Items
-                        </a>
-                      </td>
-                      
-                    </tr>
-                    {% endfor %}
-                </tbody>
-                    <tfoot>
-                    </tfoot>
-                  </table>
-                </div>
-                
-                <div><br></div>
-              </div>
-            </div>
-                <!-- /.card-body -->
-                </div>
-              </div>
-            </div>
-            <div class="tab-pane fade" id="custom-tabs-four-settings" role="tabpanel" aria-labelledby="custom-tabs-four-settings-tab">
-              <div class="card">
-                <div class="card-header">
-                  <h3 class="card-title">All Orders</h3>
-                </div>
-                <!-- /.card-header -->
-                <div class="card-body">
-                  <div id="example1_wrapper" class="dataTables_wrapper dt-bootstrap4">
-                    <div class="row">
-                      <div class="col-sm-12 col-md-6">
-                      <div class="dataTables_length" id="example1_length">
-                        </div></div><div class="col-sm-12 col-md-6"><div id="example1_filter" class="dataTables_filter"></div></div></div><div class="row"><div class="col-sm-12"><table id="example1" class="table table-bordered table-striped dataTable dtr-inline" role="grid" aria-describedby="example1_info">
-                    <thead>
-                    <tr role="row"> <th>Order ID</th><th class="sorting_asc" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Rendering engine: activate to sort column descending">Customer Name</th><th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Browser: activate to sort column ascending">Phone Number</th><th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Total Bill</th><th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Date</th><th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Cashier</th><th class="sorting" tabindex="0" aria-controls="example1">Action</th></tr>
-                    </thead>
-                    <tbody>
-                    {% for order in orders %}
-                    <tr role="row" class="odd">
-                      <td><a href="{% url 'personal_order_list' order.id %}">{{order.get_code}}</a></td>
-                      <td tabindex="0" class="sorting_1">{{order.customer}}</td>
-                      <td>{{order.customer.phone_number}}</td>
-                      <td>{{order.order_total_cost}}</td>
-                      <td>{{order.order_date}}</td>
-                      <td>{{order.user.full_name}}</td>
-                      <td class="project-actions text-left">
-                        <a class="btn btn-success btn-sm" href="#" data-toggle="modal" data-target="#directPayment">
-                            <i class="fas fa-money-bill-alt">
-                            </i>
-                            Pay Bill
-                        </a>
-                        
-          
-                        <!-- <a class="btn btn-primary btn-sm" href="#">
-                            <i class="fas fa-pencil-alt">
-                            </i>
-                            Add Item
-                        </a> -->
-                        <a class="btn btn-info btn-sm" href="{% url 'personal_order_list' order.id %}">
-                            <i class="fas fa-trash">
-                            </i>
-                            View Bill Items
-                        </a>
-                      </td>
-                      
-                    </tr>
-                    {% endfor %}
-                </tbody>
-                    <tfoot>
-                    </tfoot>
-                  </table>
-                </div>
-                
-                <div><br></div>
-              </div>
-            </div>
-                <!-- /.card-body -->
-                </div>
-              </div>
-            </div>
-            <div class="tab-pane fade" id="custom-tabs-four-register-closers" role="tabpanel" aria-labelledby="custom-tabs-four-register-closers-tab">
-                <div class="card">
-                  <div class="card-header">
-                    <h3 class="card-title">Register Closures</h3>
-                  </div>
-                  <!-- /.card-header -->
-                  <div class="card-body">
-                    <div id="example1_wrapper" class="dataTables_wrapper dt-bootstrap4">
-                      <div class="row">
-                        <div class="col-sm-12 col-md-6">
-                        <div class="dataTables_length" id="example1_length">
-                          </div></div><div class="col-sm-12 col-md-6"><div id="example1_filter" class="dataTables_filter"></div></div></div><div class="row"><div class="col-sm-12"><table id="example1" class="table table-bordered table-striped dataTable dtr-inline" role="grid" aria-describedby="example1_info">
-                      <thead>
-                      <tr role="row"> <th>Order ID</th><th class="sorting_asc" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Rendering engine: activate to sort column descending">Customer Name</th><th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Browser: activate to sort column ascending">Phone Number</th><th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Total Bill</th><th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Date</th><th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Cashier</th><th class="sorting" tabindex="0" aria-controls="example1">Action</th></tr>
-                      </thead>
-                      <tbody>
-                      {% for order in orders %}
-                      <tr role="row" class="odd">
-                        <td><a href="{% url 'personal_order_list' order.id %}">{{order.get_code}}</a></td>
-                        <td tabindex="0" class="sorting_1">{{order.customer}}</td>
-                        <td>{{order.customer.phone_number}}</td>
-                        <td>{{order.order_total_cost}}</td>
-                        <td>{{order.order_date}}</td>
-                        <td>{{order.user.full_name}}</td>
-                        <td class="project-actions text-left">
-                          <a class="btn btn-success btn-sm" href="#" data-toggle="modal" data-target="#directPayment">
-                              <i class="fas fa-money-bill-alt">
-                              </i>
-                              Pay Bill
-                          </a>
-                          
-            
-                          <!-- <a class="btn btn-primary btn-sm" href="#">
-                              <i class="fas fa-pencil-alt">
-                              </i>
-                              Add Item
-                          </a> -->
-                          <a class="btn btn-info btn-sm" href="{% url 'personal_order_list' order.id %}">
-                              <i class="fas fa-trash">
-                              </i>
-                              View Bill Items
-                          </a>
-                        </td>
-                        
-                      </tr>
-                      {% endfor %}
-                  </tbody>
-                      <tfoot>
-                      </tfoot>
-                    </table>
-                  </div>
-                  
-                  <div><br></div>
-                </div>
-              </div>
-                  <!-- /.card-body -->
-                  </div>
-                </div>
-            </div>
-            <div class="tab-pane fade" id="custom-tabs-four-gift-cards" role="tabpanel" aria-labelledby="custom-tabs-four-gift-cards-tab">
-            <div class="card">
-                <div class="card-header">
-                <h3 class="card-title">Gift Cards</h3>
-                </div>
-                <!-- /.card-header -->
-                <div class="card-body">
-                <div id="example1_wrapper" class="dataTables_wrapper dt-bootstrap4">
-                    <div class="row">
-                    <div class="col-sm-12 col-md-6">
-                    <div class="dataTables_length" id="example1_length">
-                        </div></div><div class="col-sm-12 col-md-6"><div id="example1_filter" class="dataTables_filter"></div></div></div><div class="row"><div class="col-sm-12"><table id="example1" class="table table-bordered table-striped dataTable dtr-inline" role="grid" aria-describedby="example1_info">
-                    <thead>
-                    <tr role="row"> <th>Order ID</th><th class="sorting_asc" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Rendering engine: activate to sort column descending">Customer Name</th><th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Browser: activate to sort column ascending">Phone Number</th><th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Total Bill</th><th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Date</th><th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Cashier</th><th class="sorting" tabindex="0" aria-controls="example1">Action</th></tr>
-                    </thead>
-                    <tbody>
-                    {% for order in orders %}
-                    <tr role="row" class="odd">
-                    <td><a href="{% url 'personal_order_list' order.id %}">{{order.get_code}}</a></td>
-                    <td tabindex="0" class="sorting_1">{{order.customer}}</td>
-                    <td>{{order.customer.phone_number}}</td>
-                    <td>{{order.order_total_cost}}</td>
-                    <td>{{order.order_date}}</td>
-                    <td>{{order.user.full_name}}</td>
-                    <td class="project-actions text-left">
-                        <a class="btn btn-success btn-sm" href="#" data-toggle="modal" data-target="#directPayment">
-                            <i class="fas fa-money-bill-alt">
-                            </i>
-                            Pay Bill
-                        </a>
-                        
-        
-                        <!-- <a class="btn btn-primary btn-sm" href="#">
-                            <i class="fas fa-pencil-alt">
-                            </i>
-                            Add Item
-                        </a> -->
-                        <a class="btn btn-info btn-sm" href="{% url 'personal_order_list' order.id %}">
-                            <i class="fas fa-trash">
-                            </i>
-                            View Bill Items
-                        </a>
-                    </td>
-                    
-                    </tr>
-                    {% endfor %}
-                </tbody>
-                    <tfoot>
-                    </tfoot>
-                </table>
-                </div>
-                
-                <div><br></div>
-            </div>
-            </div>
-                <!-- /.card-body -->
-                </div>
-            </div>
-            </div>
           </div>
-        <!-- /.card -->
+          </a>
+        </div>
+        <!-- ./col -->
+        <div class="col-4">
+            <!-- small card -->
+            <a href="{% url 'summery_of_sales' %}">
+            <div class="small-box bg-light dashboard_menu_item">
+                <div class="inner text-info">
+                <h3><i class="fas fa-chart-bar"></i> Sales Summary Report</h3>
+                </div>
+            </div>
+            </a>
+        </div>
+        <!-- ./col -->
+        <div class="col-4">
+            <!-- small card -->
+            <a href="#">
+            <div class="small-box bg-light dashboard_menu_item">
+                <div class="inner text-info">
+                <h3><i class="fas fa-warehouse"></i> Stock/Inventory Report</h3>
+                </div>
+            </div>
+            </a>
+        </div>
+    
+        <div class="col-4">
+          <!-- solid sales graph -->
+          <div class="card bg-gradient-light">
+            <div class="card-header border-0">
+              <h3 class="card-title">
+                <i class="fas fa-th mr-1"></i>
+                Sales Graph
+              </h3>
+
+              <div class="card-tools">
+                <button type="button" class="btn bg-info btn-sm" data-card-widget="collapse">
+                  <i class="fas fa-minus"></i>
+                </button>
+                <button type="button" class="btn bg-info btn-sm" data-card-widget="remove">
+                  <i class="fas fa-times"></i>
+                </button>
+              </div>
+            </div>
+            <div class="card-body">
+              <canvas class="chart" id="sales-report-chart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+            </div>
+            <div class="d-flex flex-row justify-content-end">
+              <span class="mr-4 mb-2">
+                <i class="fas fa-square text-success"></i> This week
+              </span>
+  
+              <span class="mr-4 mb-2">
+                <i class="fas fa-square text-gray"></i> Last week
+              </span>
+            </div>
+            <!-- /.card-body -->
+            </div>
+        </div>
+          <!-- /.card -->
+        <div class="col-4">
+          <!-- solid sales graph -->
+          <div class="card bg-gradient-light">
+            <div class="card-header border-0">
+              <h3 class="card-title">
+                <i class="fas fa-th mr-1"></i>
+                Items in Stock
+              </h3>
+
+              <div class="card-tools">
+                <button type="button" class="btn bg-info btn-sm" data-card-widget="collapse">
+                  <i class="fas fa-minus"></i>
+                </button>
+                <button type="button" class="btn bg-info btn-sm" data-card-widget="remove">
+                  <i class="fas fa-times"></i>
+                </button>
+              </div>
+            </div>
+            <div class="card-body">
+              <canvas class="chart" id="items-chart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+            </div>
+            <div class="d-flex flex-row justify-content-end">
+              <span class="mr-4 mb-2">
+                <i class="fas fa-square text-success"></i> Quantity at Hand
+              </span>
+            </div>
+            <!-- /.card-body -->
+          </div>
+          <!-- /.card -->
+          
+        </div>
+<!-- 
+        <div class="col-4">
+          
+          <div class="card bg-gradient-light">
+            <div class="card-header border-0">
+              <h3 class="card-title">
+                <i class="fas fa-th mr-1"></i>
+                Sales Graph
+              </h3>
+
+              <div class="card-tools">
+                <button type="button" class="btn bg-info btn-sm" data-card-widget="collapse">
+                  <i class="fas fa-minus"></i>
+                </button>
+                <button type="button" class="btn bg-info btn-sm" data-card-widget="remove">
+                  <i class="fas fa-times"></i>
+                </button>
+              </div>
+            </div>
+            <div class="card-body">
+              <canvas class="chart" id="jjdjd" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+            </div>
+            <div class="d-flex flex-row justify-content-end">
+              <span class="mr-4 mb-2">
+                <i class="fas fa-square text-success"></i> This week
+              </span>
+  
+              <span class="mr-4 mb-2">
+                <i class="fas fa-square text-gray"></i> Last week
+              </span>
+            </div>
+           
+          </div>
+         
+          
+        </div> -->
+
+        <div class="col-4">
+          <!-- solid sales graph -->
+          <div class="card bg-gradient-light">
+            <div class="card-header border-0">
+              <h3 class="card-title">
+                <i class="fas fa-th mr-1"></i>
+                Sales Graph
+              </h3>
+
+              <div class="card-tools">
+                <button type="button" class="btn bg-info btn-sm" data-card-widget="collapse">
+                  <i class="fas fa-minus"></i>
+                </button>
+                <button type="button" class="btn bg-info btn-sm" data-card-widget="remove">
+                  <i class="fas fa-times"></i>
+                </button>
+              </div>
+            </div>
+            <div class="card-body">
+              <canvas class="chart" id="sales-line-chart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+            </div>
+            <div class="d-flex flex-row justify-content-end">
+              <span class="mr-4 mb-2">
+                <i class="fas fa-square text-success"></i> This week
+              </span>
+  
+              <span class="mr-4 mb-2">
+                <i class="fas fa-square text-gray"></i> Last week
+              </span>
+            </div>
+            <!-- /.card-body -->
+          </div>
+
+          <!-- /.card --> 
+        </div>
+<!-- 
+        <div class="col-4">
+        
+          <div class="card bg-gradient-light">
+            <div class="card-header border-0">
+              <h3 class="card-title">
+                <i class="fas fa-th mr-1"></i>
+                Sales Graph
+              </h3>
+
+              <div class="card-tools">
+                <button type="button" class="btn bg-info btn-sm" data-card-widget="collapse">
+                  <i class="fas fa-minus"></i>
+                </button>
+                <button type="button" class="btn bg-info btn-sm" data-card-widget="remove">
+                  <i class="fas fa-times"></i>
+                </button>
+              </div>
+            </div>
+            <div class="card-body">
+              <canvas class="chart" id="abc" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+            </div>
+            <div class="d-flex flex-row justify-content-end">
+              <span class="mr-4 mb-2">
+                <i class="fas fa-square text-success"></i> This week
+              </span>
+  
+              <span class="mr-4 mb-2">
+                <i class="fas fa-square text-gray"></i> Last week
+              </span>
+            </div>
+            
+            </div>
+        </div> -->
+          <!-- /.card -->
+        
+          <!-- <div class="col-4">
+         
+          <div class="card bg-gradient-light">
+            <div class="card-header border-0">
+              <h3 class="card-title">
+                <i class="fas fa-th mr-1"></i>
+                Sales Graph
+              </h3>
+
+              <div class="card-tools">
+                <button type="button" class="btn bg-info btn-sm" data-card-widget="collapse">
+                  <i class="fas fa-minus"></i>
+                </button>
+                <button type="button" class="btn bg-info btn-sm" data-card-widget="remove">
+                  <i class="fas fa-times"></i>
+                </button>
+              </div>
+            </div>
+            <div class="card-body">
+              <canvas class="chart" id="cc" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+            </div>
+            <div class="d-flex flex-row justify-content-end">
+              <span class="mr-4 mb-2">
+                <i class="fas fa-square text-success"></i> This week
+              </span>
+  
+              <span class="mr-4 mb-2">
+                <i class="fas fa-square text-gray"></i> Last week
+              </span>
+            </div>
+            
+          </div>
+         
+          
+          </div> -->
     </div>
-</div>
-
-
-
-
+    </div>
 {% endblock %}
+
 
 
 

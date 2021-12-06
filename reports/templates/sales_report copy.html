@@ -1,0 +1,721 @@
+{% extends 'base.html' %}
+
+
+{% block title %}
+
+{% endblock title %}
+
+{% block content %}
+
+<div id="spinner-box" class="text-center mt-3"> 
+    <div class="fa fa-spinner fa-spin fa-fw" role="status">
+    </div>
+    <span v-if="progress">Loading...</span>
+</div>
+
+<!-- /.card-header -->
+<div id="page-content" class="card-body not-visible">
+  {% include 'report_filter_section.html' %}
+    <div id="example1_wrapper" class="dataTables_wrapper dt-bootstrap4 mb-4">
+      <div class="row">
+        <div class="col-sm-12 col-md-6">
+        <div class="dataTables_length" id="example1_length">
+          </div></div><div class="col-sm-12 col-md-6"><div id="example1_filter" class="dataTables_filter"></div></div></div><div class="row"><div class="col-sm-12">
+    <table id="sales_report_table" class="table table-bordered table-striped dataTable dtr-inline js-dataTable-buttons" role="grid" aria-describedby="example1_info">
+      <thead>
+      <tr role="row">
+        <th class="text-left" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Date</th>
+        <th class="text-left" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Time</th>
+        <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Item Name</th>
+        <th class="sorting text-center" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Quantity</th>
+        <th class="text-right">Unit Price</th>
+        <th class="sorting text-right" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Total</th>
+      </thead>
+      <tbody>
+      {% for ordered_items in ordered_items %}
+      <tr role="row" class="odd">
+        <td class="text-left">{{ordered_items.ordered_time| date:"d/m/Y"}}</td>
+        <td class="text-left">{{ordered_items.ordered_time| date:"H:m:s"}}</td>
+        <td>{{ordered_items.item}}</td>
+        <td class="text-center">{{ordered_items.quantity}}</td>
+        <td class="text-right">{{ordered_items.ordered_item_price}}</td>
+        <td class="text-right">{{ordered_items.ordered_items_total}}</td>
+      </tr>
+      {% endfor %}
+      <tr class="text-bold">
+        
+        <td class="text-right " colspan="3">
+          TOTAL
+        </td >
+       
+        <td class="text-center">
+          {{sum_ordered_items_count}}
+        </td>
+        <td >
+
+        </td>
+        <td class="text-right">
+          {{total_cost_items_ordered}}
+        </td>
+        
+      </tr>
+      <tr class="text-bold">
+        
+        <td class="text-right " colspan="5">
+          TOTAL VAT
+        </td >
+       
+    
+        <td class="text-right">
+          {{sum_total_vat}}
+        </td>
+        
+      </tr>
+      <tr class="text-bold">
+        
+        <td class="text-right " colspan="5">
+          GRAND TOTAL
+        </td >
+       
+        <td class="text-right">
+          {{grand_total_sales}}
+        </td>
+        
+      </tr>
+      </tbody>
+      <tfoot>
+      </tfoot>
+    </table>
+  </div>
+  
+  <div><br></div>
+</div>
+</div>
+  <!-- /.card-body -->
+</div>
+
+<!-- Dynamic Table with Export Buttons -->
+<div class="block">
+  <div class="block-header">
+      <h3 class="block-title">Dynamic Table <small>Export Buttons</small></h3>
+  </div>
+  <div class="block-content block-content-full">
+      <!-- DataTables init on table by adding .js-dataTable-buttons class, functionality is initialized in js/pages/be_tables_datatables.min.js which was auto compiled from _es6/pages/be_tables_datatables.js -->
+      <table class="table table-bordered table-striped table-vcenter js-dataTable-buttons">
+          <thead>
+              <tr>
+                  <th class="text-center" style="width: 80px;">ID</th>
+                  <th>Name</th>
+                  <th class="d-none d-sm-table-cell" style="width: 30%;">Email</th>
+                  <th class="d-none d-sm-table-cell" style="width: 15%;">Access</th>
+                  <th style="width: 15%;">Registered</th>
+              </tr>
+          </thead>
+          <tbody>
+              <tr>
+                  <td class="text-center font-size-sm">1</td>
+                  <td class="font-w600 font-size-sm">
+                      <a href="be_pages_generic_blank.html">Jose Parker</a>
+                  </td>
+                  <td class="d-none d-sm-table-cell font-size-sm">
+                      client1<em class="text-muted">@example.com</em>
+                  </td>
+                  <td class="d-none d-sm-table-cell">
+                      <span class="badge badge-success">VIP</span>
+                  </td>
+                  <td>
+                      <em class="text-muted font-size-sm">6 days ago</em>
+                  </td>
+              </tr>
+              <tr>
+                  <td class="text-center font-size-sm">2</td>
+                  <td class="font-w600 font-size-sm">
+                      <a href="be_pages_generic_blank.html">Albert Ray</a>
+                  </td>
+                  <td class="d-none d-sm-table-cell font-size-sm">
+                      client2<em class="text-muted">@example.com</em>
+                  </td>
+                  <td class="d-none d-sm-table-cell">
+                      <span class="badge badge-danger">Disabled</span>
+                  </td>
+                  <td>
+                      <em class="text-muted font-size-sm">5 days ago</em>
+                  </td>
+              </tr>
+              <tr>
+                  <td class="text-center font-size-sm">3</td>
+                  <td class="font-w600 font-size-sm">
+                      <a href="be_pages_generic_blank.html">Jose Mills</a>
+                  </td>
+                  <td class="d-none d-sm-table-cell font-size-sm">
+                      client3<em class="text-muted">@example.com</em>
+                  </td>
+                  <td class="d-none d-sm-table-cell">
+                      <span class="badge badge-primary">Personal</span>
+                  </td>
+                  <td>
+                      <em class="text-muted font-size-sm">5 days ago</em>
+                  </td>
+              </tr>
+              <tr>
+                  <td class="text-center font-size-sm">4</td>
+                  <td class="font-w600 font-size-sm">
+                      <a href="be_pages_generic_blank.html">Marie Duncan</a>
+                  </td>
+                  <td class="d-none d-sm-table-cell font-size-sm">
+                      client4<em class="text-muted">@example.com</em>
+                  </td>
+                  <td class="d-none d-sm-table-cell">
+                      <span class="badge badge-info">Business</span>
+                  </td>
+                  <td>
+                      <em class="text-muted font-size-sm">6 days ago</em>
+                  </td>
+              </tr>
+              <tr>
+                  <td class="text-center font-size-sm">5</td>
+                  <td class="font-w600 font-size-sm">
+                      <a href="be_pages_generic_blank.html">Brian Cruz</a>
+                  </td>
+                  <td class="d-none d-sm-table-cell font-size-sm">
+                      client5<em class="text-muted">@example.com</em>
+                  </td>
+                  <td class="d-none d-sm-table-cell">
+                      <span class="badge badge-info">Business</span>
+                  </td>
+                  <td>
+                      <em class="text-muted font-size-sm">2 days ago</em>
+                  </td>
+              </tr>
+              <tr>
+                  <td class="text-center font-size-sm">6</td>
+                  <td class="font-w600 font-size-sm">
+                      <a href="be_pages_generic_blank.html">Brian Cruz</a>
+                  </td>
+                  <td class="d-none d-sm-table-cell font-size-sm">
+                      client6<em class="text-muted">@example.com</em>
+                  </td>
+                  <td class="d-none d-sm-table-cell">
+                      <span class="badge badge-danger">Disabled</span>
+                  </td>
+                  <td>
+                      <em class="text-muted font-size-sm">2 days ago</em>
+                  </td>
+              </tr>
+              <tr>
+                  <td class="text-center font-size-sm">7</td>
+                  <td class="font-w600 font-size-sm">
+                      <a href="be_pages_generic_blank.html">David Fuller</a>
+                  </td>
+                  <td class="d-none d-sm-table-cell font-size-sm">
+                      client7<em class="text-muted">@example.com</em>
+                  </td>
+                  <td class="d-none d-sm-table-cell">
+                      <span class="badge badge-primary">Personal</span>
+                  </td>
+                  <td>
+                      <em class="text-muted font-size-sm">9 days ago</em>
+                  </td>
+              </tr>
+              <tr>
+                  <td class="text-center font-size-sm">8</td>
+                  <td class="font-w600 font-size-sm">
+                      <a href="be_pages_generic_blank.html">Betty Kelley</a>
+                  </td>
+                  <td class="d-none d-sm-table-cell font-size-sm">
+                      client8<em class="text-muted">@example.com</em>
+                  </td>
+                  <td class="d-none d-sm-table-cell">
+                      <span class="badge badge-danger">Disabled</span>
+                  </td>
+                  <td>
+                      <em class="text-muted font-size-sm">10 days ago</em>
+                  </td>
+              </tr>
+              <tr>
+                  <td class="text-center font-size-sm">9</td>
+                  <td class="font-w600 font-size-sm">
+                      <a href="be_pages_generic_blank.html">Lori Moore</a>
+                  </td>
+                  <td class="d-none d-sm-table-cell font-size-sm">
+                      client9<em class="text-muted">@example.com</em>
+                  </td>
+                  <td class="d-none d-sm-table-cell">
+                      <span class="badge badge-primary">Personal</span>
+                  </td>
+                  <td>
+                      <em class="text-muted font-size-sm">8 days ago</em>
+                  </td>
+              </tr>
+              <tr>
+                  <td class="text-center font-size-sm">10</td>
+                  <td class="font-w600 font-size-sm">
+                      <a href="be_pages_generic_blank.html">Judy Ford</a>
+                  </td>
+                  <td class="d-none d-sm-table-cell font-size-sm">
+                      client10<em class="text-muted">@example.com</em>
+                  </td>
+                  <td class="d-none d-sm-table-cell">
+                      <span class="badge badge-info">Business</span>
+                  </td>
+                  <td>
+                      <em class="text-muted font-size-sm">2 days ago</em>
+                  </td>
+              </tr>
+              <tr>
+                  <td class="text-center font-size-sm">11</td>
+                  <td class="font-w600 font-size-sm">
+                      <a href="be_pages_generic_blank.html">Sara Fields</a>
+                  </td>
+                  <td class="d-none d-sm-table-cell font-size-sm">
+                      client11<em class="text-muted">@example.com</em>
+                  </td>
+                  <td class="d-none d-sm-table-cell">
+                      <span class="badge badge-primary">Personal</span>
+                  </td>
+                  <td>
+                      <em class="text-muted font-size-sm">4 days ago</em>
+                  </td>
+              </tr>
+              <tr>
+                  <td class="text-center font-size-sm">12</td>
+                  <td class="font-w600 font-size-sm">
+                      <a href="be_pages_generic_blank.html">Scott Young</a>
+                  </td>
+                  <td class="d-none d-sm-table-cell font-size-sm">
+                      client12<em class="text-muted">@example.com</em>
+                  </td>
+                  <td class="d-none d-sm-table-cell">
+                      <span class="badge badge-success">VIP</span>
+                  </td>
+                  <td>
+                      <em class="text-muted font-size-sm">7 days ago</em>
+                  </td>
+              </tr>
+              <tr>
+                  <td class="text-center font-size-sm">13</td>
+                  <td class="font-w600 font-size-sm">
+                      <a href="be_pages_generic_blank.html">Albert Ray</a>
+                  </td>
+                  <td class="d-none d-sm-table-cell font-size-sm">
+                      client13<em class="text-muted">@example.com</em>
+                  </td>
+                  <td class="d-none d-sm-table-cell">
+                      <span class="badge badge-danger">Disabled</span>
+                  </td>
+                  <td>
+                      <em class="text-muted font-size-sm">3 days ago</em>
+                  </td>
+              </tr>
+              <tr>
+                  <td class="text-center font-size-sm">14</td>
+                  <td class="font-w600 font-size-sm">
+                      <a href="be_pages_generic_blank.html">Carol White</a>
+                  </td>
+                  <td class="d-none d-sm-table-cell font-size-sm">
+                      client14<em class="text-muted">@example.com</em>
+                  </td>
+                  <td class="d-none d-sm-table-cell">
+                      <span class="badge badge-success">VIP</span>
+                  </td>
+                  <td>
+                      <em class="text-muted font-size-sm">10 days ago</em>
+                  </td>
+              </tr>
+              <tr>
+                  <td class="text-center font-size-sm">15</td>
+                  <td class="font-w600 font-size-sm">
+                      <a href="be_pages_generic_blank.html">Amanda Powell</a>
+                  </td>
+                  <td class="d-none d-sm-table-cell font-size-sm">
+                      client15<em class="text-muted">@example.com</em>
+                  </td>
+                  <td class="d-none d-sm-table-cell">
+                      <span class="badge badge-danger">Disabled</span>
+                  </td>
+                  <td>
+                      <em class="text-muted font-size-sm">2 days ago</em>
+                  </td>
+              </tr>
+              <tr>
+                  <td class="text-center font-size-sm">16</td>
+                  <td class="font-w600 font-size-sm">
+                      <a href="be_pages_generic_blank.html">Megan Fuller</a>
+                  </td>
+                  <td class="d-none d-sm-table-cell font-size-sm">
+                      client16<em class="text-muted">@example.com</em>
+                  </td>
+                  <td class="d-none d-sm-table-cell">
+                      <span class="badge badge-success">VIP</span>
+                  </td>
+                  <td>
+                      <em class="text-muted font-size-sm">6 days ago</em>
+                  </td>
+              </tr>
+              <tr>
+                  <td class="text-center font-size-sm">17</td>
+                  <td class="font-w600 font-size-sm">
+                      <a href="be_pages_generic_blank.html">Brian Stevens</a>
+                  </td>
+                  <td class="d-none d-sm-table-cell font-size-sm">
+                      client17<em class="text-muted">@example.com</em>
+                  </td>
+                  <td class="d-none d-sm-table-cell">
+                      <span class="badge badge-info">Business</span>
+                  </td>
+                  <td>
+                      <em class="text-muted font-size-sm">5 days ago</em>
+                  </td>
+              </tr>
+              <tr>
+                  <td class="text-center font-size-sm">18</td>
+                  <td class="font-w600 font-size-sm">
+                      <a href="be_pages_generic_blank.html">Lori Moore</a>
+                  </td>
+                  <td class="d-none d-sm-table-cell font-size-sm">
+                      client18<em class="text-muted">@example.com</em>
+                  </td>
+                  <td class="d-none d-sm-table-cell">
+                      <span class="badge badge-info">Business</span>
+                  </td>
+                  <td>
+                      <em class="text-muted font-size-sm">2 days ago</em>
+                  </td>
+              </tr>
+              <tr>
+                  <td class="text-center font-size-sm">19</td>
+                  <td class="font-w600 font-size-sm">
+                      <a href="be_pages_generic_blank.html">Henry Harrison</a>
+                  </td>
+                  <td class="d-none d-sm-table-cell font-size-sm">
+                      client19<em class="text-muted">@example.com</em>
+                  </td>
+                  <td class="d-none d-sm-table-cell">
+                      <span class="badge badge-danger">Disabled</span>
+                  </td>
+                  <td>
+                      <em class="text-muted font-size-sm">10 days ago</em>
+                  </td>
+              </tr>
+              <tr>
+                  <td class="text-center font-size-sm">20</td>
+                  <td class="font-w600 font-size-sm">
+                      <a href="be_pages_generic_blank.html">Sara Fields</a>
+                  </td>
+                  <td class="d-none d-sm-table-cell font-size-sm">
+                      client20<em class="text-muted">@example.com</em>
+                  </td>
+                  <td class="d-none d-sm-table-cell">
+                      <span class="badge badge-danger">Disabled</span>
+                  </td>
+                  <td>
+                      <em class="text-muted font-size-sm">2 days ago</em>
+                  </td>
+              </tr>
+              <tr>
+                  <td class="text-center font-size-sm">21</td>
+                  <td class="font-w600 font-size-sm">
+                      <a href="be_pages_generic_blank.html">Brian Cruz</a>
+                  </td>
+                  <td class="d-none d-sm-table-cell font-size-sm">
+                      client21<em class="text-muted">@example.com</em>
+                  </td>
+                  <td class="d-none d-sm-table-cell">
+                      <span class="badge badge-primary">Personal</span>
+                  </td>
+                  <td>
+                      <em class="text-muted font-size-sm">6 days ago</em>
+                  </td>
+              </tr>
+              <tr>
+                  <td class="text-center font-size-sm">22</td>
+                  <td class="font-w600 font-size-sm">
+                      <a href="be_pages_generic_blank.html">Alice Moore</a>
+                  </td>
+                  <td class="d-none d-sm-table-cell font-size-sm">
+                      client22<em class="text-muted">@example.com</em>
+                  </td>
+                  <td class="d-none d-sm-table-cell">
+                      <span class="badge badge-primary">Personal</span>
+                  </td>
+                  <td>
+                      <em class="text-muted font-size-sm">9 days ago</em>
+                  </td>
+              </tr>
+              <tr>
+                  <td class="text-center font-size-sm">23</td>
+                  <td class="font-w600 font-size-sm">
+                      <a href="be_pages_generic_blank.html">Ryan Flores</a>
+                  </td>
+                  <td class="d-none d-sm-table-cell font-size-sm">
+                      client23<em class="text-muted">@example.com</em>
+                  </td>
+                  <td class="d-none d-sm-table-cell">
+                      <span class="badge badge-danger">Disabled</span>
+                  </td>
+                  <td>
+                      <em class="text-muted font-size-sm">2 days ago</em>
+                  </td>
+              </tr>
+              <tr>
+                  <td class="text-center font-size-sm">24</td>
+                  <td class="font-w600 font-size-sm">
+                      <a href="be_pages_generic_blank.html">Judy Ford</a>
+                  </td>
+                  <td class="d-none d-sm-table-cell font-size-sm">
+                      client24<em class="text-muted">@example.com</em>
+                  </td>
+                  <td class="d-none d-sm-table-cell">
+                      <span class="badge badge-danger">Disabled</span>
+                  </td>
+                  <td>
+                      <em class="text-muted font-size-sm">10 days ago</em>
+                  </td>
+              </tr>
+              <tr>
+                  <td class="text-center font-size-sm">25</td>
+                  <td class="font-w600 font-size-sm">
+                      <a href="be_pages_generic_blank.html">Jeffrey Shaw</a>
+                  </td>
+                  <td class="d-none d-sm-table-cell font-size-sm">
+                      client25<em class="text-muted">@example.com</em>
+                  </td>
+                  <td class="d-none d-sm-table-cell">
+                      <span class="badge badge-primary">Personal</span>
+                  </td>
+                  <td>
+                      <em class="text-muted font-size-sm">6 days ago</em>
+                  </td>
+              </tr>
+              <tr>
+                  <td class="text-center font-size-sm">26</td>
+                  <td class="font-w600 font-size-sm">
+                      <a href="be_pages_generic_blank.html">Jack Greene</a>
+                  </td>
+                  <td class="d-none d-sm-table-cell font-size-sm">
+                      client26<em class="text-muted">@example.com</em>
+                  </td>
+                  <td class="d-none d-sm-table-cell">
+                      <span class="badge badge-info">Business</span>
+                  </td>
+                  <td>
+                      <em class="text-muted font-size-sm">10 days ago</em>
+                  </td>
+              </tr>
+              <tr>
+                  <td class="text-center font-size-sm">27</td>
+                  <td class="font-w600 font-size-sm">
+                      <a href="be_pages_generic_blank.html">Carol White</a>
+                  </td>
+                  <td class="d-none d-sm-table-cell font-size-sm">
+                      client27<em class="text-muted">@example.com</em>
+                  </td>
+                  <td class="d-none d-sm-table-cell">
+                      <span class="badge badge-danger">Disabled</span>
+                  </td>
+                  <td>
+                      <em class="text-muted font-size-sm">3 days ago</em>
+                  </td>
+              </tr>
+              <tr>
+                  <td class="text-center font-size-sm">28</td>
+                  <td class="font-w600 font-size-sm">
+                      <a href="be_pages_generic_blank.html">Jack Estrada</a>
+                  </td>
+                  <td class="d-none d-sm-table-cell font-size-sm">
+                      client28<em class="text-muted">@example.com</em>
+                  </td>
+                  <td class="d-none d-sm-table-cell">
+                      <span class="badge badge-primary">Personal</span>
+                  </td>
+                  <td>
+                      <em class="text-muted font-size-sm">3 days ago</em>
+                  </td>
+              </tr>
+              <tr>
+                  <td class="text-center font-size-sm">29</td>
+                  <td class="font-w600 font-size-sm">
+                      <a href="be_pages_generic_blank.html">Alice Moore</a>
+                  </td>
+                  <td class="d-none d-sm-table-cell font-size-sm">
+                      client29<em class="text-muted">@example.com</em>
+                  </td>
+                  <td class="d-none d-sm-table-cell">
+                      <span class="badge badge-success">VIP</span>
+                  </td>
+                  <td>
+                      <em class="text-muted font-size-sm">6 days ago</em>
+                  </td>
+              </tr>
+              <tr>
+                  <td class="text-center font-size-sm">30</td>
+                  <td class="font-w600 font-size-sm">
+                      <a href="be_pages_generic_blank.html">Amber Harvey</a>
+                  </td>
+                  <td class="d-none d-sm-table-cell font-size-sm">
+                      client30<em class="text-muted">@example.com</em>
+                  </td>
+                  <td class="d-none d-sm-table-cell">
+                      <span class="badge badge-success">VIP</span>
+                  </td>
+                  <td>
+                      <em class="text-muted font-size-sm">8 days ago</em>
+                  </td>
+              </tr>
+              <tr>
+                  <td class="text-center font-size-sm">31</td>
+                  <td class="font-w600 font-size-sm">
+                      <a href="be_pages_generic_blank.html">Scott Young</a>
+                  </td>
+                  <td class="d-none d-sm-table-cell font-size-sm">
+                      client31<em class="text-muted">@example.com</em>
+                  </td>
+                  <td class="d-none d-sm-table-cell">
+                      <span class="badge badge-success">VIP</span>
+                  </td>
+                  <td>
+                      <em class="text-muted font-size-sm">2 days ago</em>
+                  </td>
+              </tr>
+              <tr>
+                  <td class="text-center font-size-sm">32</td>
+                  <td class="font-w600 font-size-sm">
+                      <a href="be_pages_generic_blank.html">Betty Kelley</a>
+                  </td>
+                  <td class="d-none d-sm-table-cell font-size-sm">
+                      client32<em class="text-muted">@example.com</em>
+                  </td>
+                  <td class="d-none d-sm-table-cell">
+                      <span class="badge badge-info">Business</span>
+                  </td>
+                  <td>
+                      <em class="text-muted font-size-sm">7 days ago</em>
+                  </td>
+              </tr>
+              <tr>
+                  <td class="text-center font-size-sm">33</td>
+                  <td class="font-w600 font-size-sm">
+                      <a href="be_pages_generic_blank.html">Laura Carr</a>
+                  </td>
+                  <td class="d-none d-sm-table-cell font-size-sm">
+                      client33<em class="text-muted">@example.com</em>
+                  </td>
+                  <td class="d-none d-sm-table-cell">
+                      <span class="badge badge-warning">Trial</span>
+                  </td>
+                  <td>
+                      <em class="text-muted font-size-sm">5 days ago</em>
+                  </td>
+              </tr>
+              <tr>
+                  <td class="text-center font-size-sm">34</td>
+                  <td class="font-w600 font-size-sm">
+                      <a href="be_pages_generic_blank.html">Jose Wagner</a>
+                  </td>
+                  <td class="d-none d-sm-table-cell font-size-sm">
+                      client34<em class="text-muted">@example.com</em>
+                  </td>
+                  <td class="d-none d-sm-table-cell">
+                      <span class="badge badge-danger">Disabled</span>
+                  </td>
+                  <td>
+                      <em class="text-muted font-size-sm">8 days ago</em>
+                  </td>
+              </tr>
+              <tr>
+                  <td class="text-center font-size-sm">35</td>
+                  <td class="font-w600 font-size-sm">
+                      <a href="be_pages_generic_blank.html">Alice Moore</a>
+                  </td>
+                  <td class="d-none d-sm-table-cell font-size-sm">
+                      client35<em class="text-muted">@example.com</em>
+                  </td>
+                  <td class="d-none d-sm-table-cell">
+                      <span class="badge badge-info">Business</span>
+                  </td>
+                  <td>
+                      <em class="text-muted font-size-sm">4 days ago</em>
+                  </td>
+              </tr>
+              <tr>
+                  <td class="text-center font-size-sm">36</td>
+                  <td class="font-w600 font-size-sm">
+                      <a href="be_pages_generic_blank.html">Justin Hunt</a>
+                  </td>
+                  <td class="d-none d-sm-table-cell font-size-sm">
+                      client36<em class="text-muted">@example.com</em>
+                  </td>
+                  <td class="d-none d-sm-table-cell">
+                      <span class="badge badge-danger">Disabled</span>
+                  </td>
+                  <td>
+                      <em class="text-muted font-size-sm">7 days ago</em>
+                  </td>
+              </tr>
+              <tr>
+                  <td class="text-center font-size-sm">37</td>
+                  <td class="font-w600 font-size-sm">
+                      <a href="be_pages_generic_blank.html">Lisa Jenkins</a>
+                  </td>
+                  <td class="d-none d-sm-table-cell font-size-sm">
+                      client37<em class="text-muted">@example.com</em>
+                  </td>
+                  <td class="d-none d-sm-table-cell">
+                      <span class="badge badge-warning">Trial</span>
+                  </td>
+                  <td>
+                      <em class="text-muted font-size-sm">7 days ago</em>
+                  </td>
+              </tr>
+              <tr>
+                  <td class="text-center font-size-sm">38</td>
+                  <td class="font-w600 font-size-sm">
+                      <a href="be_pages_generic_blank.html">Jose Wagner</a>
+                  </td>
+                  <td class="d-none d-sm-table-cell font-size-sm">
+                      client38<em class="text-muted">@example.com</em>
+                  </td>
+                  <td class="d-none d-sm-table-cell">
+                      <span class="badge badge-info">Business</span>
+                  </td>
+                  <td>
+                      <em class="text-muted font-size-sm">5 days ago</em>
+                  </td>
+              </tr>
+              <tr>
+                  <td class="text-center font-size-sm">39</td>
+                  <td class="font-w600 font-size-sm">
+                      <a href="be_pages_generic_blank.html">Jeffrey Shaw</a>
+                  </td>
+                  <td class="d-none d-sm-table-cell font-size-sm">
+                      client39<em class="text-muted">@example.com</em>
+                  </td>
+                  <td class="d-none d-sm-table-cell">
+                      <span class="badge badge-success">VIP</span>
+                  </td>
+                  <td>
+                      <em class="text-muted font-size-sm">10 days ago</em>
+                  </td>
+              </tr>
+              <tr>
+                  <td class="text-center font-size-sm">40</td>
+                  <td class="font-w600 font-size-sm">
+                      <a href="be_pages_generic_blank.html">Adam McCoy</a>
+                  </td>
+                  <td class="d-none d-sm-table-cell font-size-sm">
+                      client40<em class="text-muted">@example.com</em>
+                  </td>
+                  <td class="d-none d-sm-table-cell">
+                      <span class="badge badge-danger">Disabled</span>
+                  </td>
+                  <td>
+                      <em class="text-muted font-size-sm">8 days ago</em>
+                  </td>
+              </tr>
+          </tbody>
+      </table>
+  </div>
+</div>
+<!-- END Dynamic Table with Export Buttons -->
+
+{% endblock content %}

@@ -28,6 +28,10 @@ urlpatterns = [
     path('view_my_orders', view_my_orders, name='view_my_orders'),
     # path('admin_settings', admin_settings, name='admin_settings'),
 
+
+
+    path('supplier_list_pos/', supplier_list_pos, name = 'supplier_list_pos'),  
+    path('customers/customer_list_pos/', customer_list_pos, name = 'customer_list_pos'),
     
     
 ]

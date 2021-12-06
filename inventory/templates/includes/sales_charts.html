@@ -1,0 +1,201 @@
+<div class="row">
+    <!-- Left col -->
+    <section class="col-lg-6 connectedSortable">
+      <!-- Custom tabs (Charts with tabs)-->
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">
+            <i class="fas fa-chart-pie mr-1"></i>
+            Sales
+          </h3>
+        </div><!-- /.card-header -->
+        <!-- /.card-body -->
+        <div class="card-body">
+          <div class="d-flex">
+            <p class="d-flex flex-column">
+              <span class="text-bold text-lg">{{sales_overtime}}</span>
+              <span>Sales Over Time</span>
+            </p>
+            <p class="ml-auto d-flex flex-column text-right">
+              <span class="text-success">
+                <i class="fas fa-arrow-up"></i>{{total_cog}}
+              </span>
+              <span class="text-muted">Total Cost of Goods Over Time</span>
+            </p>
+          </div>
+          <!-- /.d-flex -->
+
+          <div class="position-relative mb-4">
+            <canvas id="sales-chart" height="200"></canvas>
+          </div>
+          <div class="d-flex flex-row justify-content-end">
+            <span class="mr-2">
+              <i class="fas fa-square text-success"></i> This week
+            </span>
+
+            <span>
+              <i class="fas fa-square text-gray"></i> Last week
+            </span>
+          </div>
+        </div>
+      </div>
+      <!-- /.card -->
+
+      <div class="card">
+        <div class="card-header border-0">
+          <h3 class="card-title">Items running out of stock</h3>
+          <div class="card-tools">
+            <a href="#" class="btn btn-tool btn-sm">
+              <i class="fas fa-download"></i>
+            </a>
+            <a href="#" class="btn btn-tool btn-sm">
+              <i class="fas fa-bars"></i>
+            </a>
+          </div>
+        </div>
+        <div class="card-body table-responsive p-0">
+          <table class="table table-striped table-valign-middle">
+            <thead>
+            <tr>
+              <th>Item</th>
+              <th>Price</th>
+              <th class="text-center border-bottom" >Items in stock</th>
+              <th class="text-center">Re-order level</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for item in items_run_out_of_stock %}
+            <tr>
+              <td>
+                <img src="{{item.image.url}}" alt="Product 1" class="img-circle img-size-32 mr-2">
+                {{item.item_name}}
+              </td>
+              <td>{{item.selling_price}}
+                {% if item.discount_price %}
+                 <del>{{item.price.amount}}</del> 
+                {% endif %}
+              <td class="text-center">
+                <small class="text-danger mr-1">
+                  <i class="fas fa-arrow-down"></i>
+                  {{item.percentage}}
+                </small>
+                {{item.quantity_at_hand}}
+              </td>
+              <td class="text-center">
+                {{item.reorder_level}}
+              </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+    <!-- /.Left col -->
+    <!-- right col (We are only adding the ID to make the widgets sortable)-->
+    <section class="col-lg-6 connectedSortable">
+
+      <div class="card">
+        <div class="card-header border-0">
+          <div class="d-flex justify-content-between">
+            <h3 class="card-title border-bottom">This week and last week sales by day</h3>
+            <!-- <a href="javascript:void(0);">View Report</a> -->
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="d-flex">
+            <p class="d-flex flex-column">
+              <span class="text-bold text-lg">{{sales_overtime}}</span>
+              <span>Sales Over Time</span>
+            </p>
+            <!-- <p class="ml-auto d-flex flex-column text-right">
+              <span class="text-success">
+                <i class="fas fa-arrow-up"></i> 12.5%
+              </span>
+              <span class="text-muted">Since last week</span>
+            </p> -->
+          </div>
+          <!-- /.d-flex -->
+
+          <div class="position-relative mb-4">
+            <canvas id="visitors-chart" height="200"></canvas>
+          </div>
+
+          <div class="d-flex flex-row justify-content-end">
+            <span class="mr-2">
+              <i class="fas fa-square text-success"></i> This Week
+            </span>
+
+            <span>
+              <i class="fas fa-square text-gray"></i> Last Week
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header border-0">
+          <h3 class="card-title">Profit and Loss</h3>
+          <div class="card-tools">
+            <a href="#" class="btn btn-sm btn-tool">
+              <i class="fas fa-download"></i>
+            </a>
+            <a href="#" class="btn btn-sm btn-tool">
+              <i class="fas fa-bars"></i>
+            </a>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center border-bottom mb-3">
+            <p class="text-success text-xl">
+              <i class="ion ion-ios-refresh-empty"></i>
+            </p>
+            <p class="d-flex flex-column text-right">
+              <span class="font-weight-bold">
+                <i class="ion ion-android-arrow-up text-success"></i> {{sales_overtime}}
+              </span>
+              <span class="text-muted">TOTAL SALES</span>
+            </p>
+          </div>
+          <!-- /.d-flex -->
+          <div class="d-flex justify-content-between align-items-center border-bottom mb-3">
+            <p class="text-warning text-xl">
+              <i class="ion ion-ios-cart-outline"></i>
+            </p>
+            <p class="d-flex flex-column text-right">
+              <span class="font-weight-bold">
+                <i class="ion ion-android-arrow-up text-warning"></i> {{total_cog_sold}}
+              </span>
+              <span class="text-muted">COST OF GOODS SOLD(COGS)</span>
+            </p>
+          </div>
+          <div class="d-flex justify-content-between align-items-center border-bottom mb-3">
+            <p class="text-warning text-xl">
+              <i class="ion ion-ios-cart-outline"></i>
+            </p>
+            <p class="d-flex flex-column text-right">
+              <span class="font-weight-bold">
+                <i class="ion ion-android-arrow-up text-warning"></i> {{total_tax}}
+              </span>
+              <span class="text-muted">TOTAL TAX</span>
+            </p>
+          </div>
+          
+          <!-- /.d-flex -->
+          <div class="d-flex justify-content-between align-items-center mb-0">
+            <p class="text-danger text-xl">
+              <i class="ion ion-ios-people-outline"></i>
+            </p>
+            <p class="d-flex flex-column text-right">
+              <span class="font-weight-bold">
+                <i class="ion ion-android-arrow-down text-danger"></i> {{profit}}
+              </span>
+              <span class="text-muted">PROFIT</span>
+            </p>
+          </div>
+          <!-- /.d-flex -->
+        </div>
+      </div>
+    </section>
+    <!-- right col -->
+  </div>

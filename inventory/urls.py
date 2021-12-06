@@ -33,4 +33,13 @@ urlpatterns = [
     path('customers/customer_update/<int:id>/', customer_update, name = 'customer_update'),
     path('customers/customer_delete/<int:id>/', customer_delete, name = 'customer_delete'),
 
+    path('stock_list/', stock_list, name = 'stock_list'),  
+    path('stock_create/', stock_create, name = 'stock_create'),
+    path('stock_delete/<int:id>/', stock_delete, name = 'stock_delete'),
+
+    path('supplier_list/', supplier_list, name = 'supplier_list'),  
+    path('supplier_create/', supplier_create, name = 'supplier_create'),
+    path('supplier_update/<int:id>/', supplier_update, name = 'supplier_update'),
+    path('supplier_delete/<int:id>/', supplier_delete, name = 'supplier_delete'),
+
 ]

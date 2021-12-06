@@ -21,7 +21,7 @@
                 <tbody>
                 {% for item in items %}
                   <tr role="row" class="odd">
-                    <td tabindex="0" class="sorting_1"><a href="{{item.get_add_to_cart_url}}" class="text-info">{{item.item_name}}</a></td>
+                    <td tabindex="0" class="sorting_1"><a href="{{item.get_add_to_cart_url}}" class="text-info" id="item-button" >{{item.item_name}}</a></td>
                     <td>{{item.category}}</td>
                     <td>{{item.selling_price}}</td>
                   </tr>

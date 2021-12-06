@@ -9,6 +9,8 @@ urlpatterns = [
     path('sales_report', sales_report, name = 'sales_report'),
     path('sales_report_data', sales_report_data, name = 'sales_report_data'),
     path('summery_of_sales', summery_of_sales, name = 'summery_of_sales'),
+    path('sales_report_custom_range', sales_report_custom_range, name = 'sales_report_custom_range'),
+    
     
       
 ]

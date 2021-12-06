@@ -21,6 +21,12 @@ class AddItemForm(forms.ModelForm):
                                                   'data-post-text': 'characters'})
         }
 
+class AddSupplierForm(forms.ModelForm):
+    class Meta:
+        model = Supplier
+        fields = ('name','address','phone_number','description')
+
+
 class AddCategoryForm(forms.ModelForm):
     class Meta:
         model = ItemCategory
@@ -30,7 +36,12 @@ class AddUnitForm(forms.ModelForm):
     class Meta:
         model = Unit
         fields = ('unit_short_name', 'unit_description', )
-
+    
+class AddStockForm(forms.ModelForm):
+    class Meta:
+        model = Stock
+        fields = ('item', 'batch', 'supplier_name','ordered_price','stock_in','unit_quantity')
+    
 class UserAdminCreationForm(forms.ModelForm):
     # a form for creating new users. Includes all the required fields
     #plus a repeated password

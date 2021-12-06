@@ -14,11 +14,14 @@ from accounts.models import CustomUser
 from inventory.models import Item
 from django.db.models.functions import Abs
 from phonenumber_field.modelfields import PhoneNumberField
+from django.db.models.signals import post_save, pre_save
+from django.dispatch import receiver
+
 
 class Customer(models.Model):
     name = models.CharField(unique=True, max_length=120)
     phone_number = PhoneNumberField(null = True, blank = True, max_length = 16)
-    # phone_number = models.CharField(max_length=15, null = True)
+    address = models.TextField()
     total_orders = models.IntegerField(default=0)
 
     def __str__(self):
@@ -26,14 +29,14 @@ class Customer(models.Model):
         return '{0}'.format(self.name)
     
 class OrderItem(models.Model):
-    user = models.ForeignKey(CustomUser, on_delete = models.SET_NULL, null = True, related_name="user")
+    order_id = models.CharField(default="", max_length=30)
+    user = models.ForeignKey(CustomUser, on_delete = models.SET_NULL, null = True)
     item = models.ForeignKey(Item, on_delete = models.CASCADE)
     customer = models.ForeignKey(Customer, on_delete = models.SET_NULL, null = True)
     ordered = models.BooleanField(default=False)
     quantity = models.IntegerField(default=0)
     ordered_item_price = MoneyField(max_digits=14, decimal_places=2, default_currency='MWK', default= 0.0)
     ordered_items_total = MoneyField(max_digits=14, decimal_places=2, default_currency='MWK', default= 0.0)
-    order_id = models.ImageField(null = True)
     ordered_time = models.DateTimeField(auto_now_add=True, null = True)
 
     
@@ -64,6 +67,10 @@ class OrderItem(models.Model):
     def get_ordered_item_category(self):
         return self.item.category
 
+@receiver(post_save, sender=OrderItem)
+def update_orderitem_quantities(sender, instance, **kwargs):
+    OrderItem.objects.filter(id=instance.id).update(ordered_item_price=instance.price, ordered_items_total = instance.amount)
+
 
 
 class Payment(models.Model):
@@ -71,25 +78,30 @@ class Payment(models.Model):
         ('Cash','Cash'),
         ('Mpamba', 'Mpamba'),
         ('Airtel Money', 'Airtel Money'),
+        ('Lay By', 'Lay By'),
         
     )
     customer = models.ForeignKey(Customer, on_delete = models.SET_NULL, null = True)
     payment_mode = models.CharField(max_length = 15, choices = payment_options)
     paid_amount = MoneyField(max_digits=14, decimal_places=2, default_currency='MWK', null = True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     reference = models.CharField(max_length = 30, null= True,)
+
+
 
     def __str__(self):
         return '{0}'.format(self.paid_amount)
+
+
     
     
 class Order(models.Model):
     def gen_code(self):
             return 'ORD%04d'%self.pk
-    
     code = models.CharField(max_length=50, null=True, default="0000")
-    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, null = True)
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null = True)
-    # active = models.BooleanField(default=False)
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     items = models.ManyToManyField(OrderItem)
     order_date = models.DateTimeField(auto_now_add=True)
     ordered = models.BooleanField(default=False)
@@ -97,6 +109,12 @@ class Order(models.Model):
     order_total_cost = MoneyField(max_digits=14, decimal_places=2, default_currency='MWK', default= 0.0)
     vat_p = models.FloatField(default=config.TAX_NAME)
     vat_cost = MoneyField(max_digits=14, decimal_places=2, default_currency='MWK', default= 0.0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    # updated_at = models.DateTimeField(auto_now=True)
+
+    def __init__(self, *args, **kwargs):
+        super(Order, self).__init__(*args, **kwargs)
+        self.original_paid_amount = self.paid_amount
 
     
 
@@ -106,6 +124,11 @@ class Order(models.Model):
     @property
     def vat_rate(self):
         return float(config.TAX_NAME)
+    
+    @property
+    def vat_rate_minus_100(self):
+        return 100 - self.vat_p 
+    
     
     @property
     def get_code(self):
@@ -119,9 +142,12 @@ class Order(models.Model):
     def get_vat_value(self):
         return self.vat_rate / 100.00 * self.order_total()
 
+    @property
+    def get_taxable_value(self):
+        return self.vat_rate_minus_100 / 100.00 * self.order_total()
         
     def order_total_due(self):
-        return self.order_total() +  self.get_vat_value
+        return self.get_taxable_value +  self.get_vat_value
     
     def service_fee(self):
         return float(config.SERVICE_FEE_A)
@@ -177,3 +203,86 @@ class Order(models.Model):
     # @property()
     def get_customer(self):
         return self.items.customer
+
+# @receiver(post_save, sender=Payment)
+# def update_ordered_date_if_payment_is_done(sender, instance, **kwargs):
+#     instance.paid_amount
+
+
+@receiver(post_save, sender=Order)
+def save_layby_orders(sender, instance, **kwargs):
+    if instance.get_payment_mode == "Lay By" and instance.paid_amount != instance.original_paid_amount:
+        order = Order.objects.get(id=instance.id)
+        
+        layby_order, created = LayByOrders.objects.get_or_create(order_id = order)
+        new_layby_order = LayByOrders.objects.get(id = layby_order.id)
+
+        # sum_paid_and_balance = order.paid_amount.paid_amount + new_layby_order.get_order_balance
+        
+        
+        if order.paid_amount.paid_amount > new_layby_order.get_order_balance and order.ordered == True:
+            paid = Payment()
+            paid.paid_amount = new_layby_order.get_order_balance
+            paid.payment_mode = order.paid_amount.payment_mode
+            paid.save()
+        else:
+            paid = Payment()
+            paid.paid_amount = order.paid_amount.paid_amount
+            paid.payment_mode = order.paid_amount.payment_mode
+            paid.save()
+
+        new_layby_order.payments.add(paid)
+
+        total = 0
+        for payment in new_layby_order.payments.all():
+            total += payment.paid_amount
+        LayByOrders.objects.filter(id = layby_order.id).update(sum_paid = total)
+        
+        order_payment = Payment()
+        order_payment.paid_amount = total
+        order_payment.payment_mode = order.paid_amount.payment_mode
+        order_payment.save()
+        Order.objects.filter(id=instance.id).update(paid_amount=order_payment)
+
+
+        # znew_layby_order.update(sum_paid = total)
+        # layby_order.update(get_sum_paid = payment)
+
+    # OrderItem.objects.filter(id=instance.id).update(ordered_item_price=instance.price, ordered_items_total = instance.amount)
+
+class LayByOrders(models.Model):
+    order_id = models.ForeignKey(Order, on_delete=models.CASCADE)
+    payments = models.ManyToManyField(Payment)
+    sum_paid = MoneyField(max_digits=14, decimal_places=2, default_currency='MWK', default= 0.0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+
+    @property
+    def get_order_id(self):
+        return self.order_id.get_code
+    
+    @property
+    def get_customer(self):
+        return self.order_id.customer
+    
+    @property
+    def get_order_price(self):
+        return self.order_id.order_total_cost
+
+    @property
+    def get_sum_paid(self):
+        total = 0
+        for payment in self.payments.all():
+            total += payment.paid_amount
+        return total
+    
+    @property
+    def get_order_balance(self):
+        return self.get_order_price - self.get_sum_paid
+    
+    
+
+
+
+
