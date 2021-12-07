@@ -4,7 +4,7 @@ from django.views.generic import TemplateView
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.shortcuts import render,redirect, get_object_or_404
-from inventory.models import ItemCategory, Unit, Item, Stock
+from inventory.models import ItemCategory, Unit, Item, Stock, Supplier
 from pos.models import Customer,OrderItem, Order
 from inventory.forms import *
 from pos.forms import *
@@ -527,11 +527,11 @@ def customer_delete(request, id):
 
 @login_required
 def stock_list(request):
-    stocks = Stock.objects.all()
+    stocks = Stock.objects.all().order_by('item__item_name')
     item_cats = ItemCategory.get_all_item_categories()
     item_cat_id = request.GET.get('category')
     if item_cat_id != None:
-        stocks = Stock.objects.all().filter(item__category = item_cat_id)
+        stocks = Stock.objects.all().filter(item__category = item_cat_id).order_by('item__item_name')
     context = {
         'stocks': stocks,
         'header': 'Manage Stocks',

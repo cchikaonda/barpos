@@ -11,6 +11,7 @@
 
     <!-- Content Wrapper. Contains page content -->
     <div class="content ml-2 mr-2 mt-2" style="max-height: 500px;">   
+      {% if unpaid_orders %}
       <!-- small card -->
       <div class="card col-12">
         <div class="card-header bg-secondary">
@@ -46,6 +47,7 @@
           </table>
         </div>
       </div>
+      {% endif %}
       <div class="card mb-4 col-12">
         <div class="card-header bg-secondary">
           <h3 class="card-title"><i class="fa fa-money-bill-wave"></i> PAID ORDERS</h3>  <h5 class="text-right"><b>TOTAL: {{sum_paid_orders}}</b></h5>
@@ -70,7 +72,7 @@
               <td>{{paid_order.get_code}}</td>
               <td tabindex="0" class="sorting_1">{{paid_order.customer}}</td>
               <td>{{paid_order.order_total_cost}}</td>
-              <td>{{paid_order.order_date }}</td>
+              <td>{{paid_order.order_date| date:"d/m/Y"}}, {{paid_order.order_date| date:"H:m:s"}}</td>
               <td>{{paid_order.user.full_name}}</td>
               <td class="project-actions text-left">
                 <a class="btn btn-info btn-sm" data-toggle="modal" data-target="#order_details{{paid_order.id}}">

@@ -13,9 +13,9 @@
     <div class="content ml-2 mr-2 mt-2">
         <!-- Small Box (Stat card) -->
         <div class="row">
-
+          
             <div class="col-6">
-              
+              {% if unpaid_orders %}
               <div class="card mb-4">
                 <div class="card-header bg-secondary">
                   <h3 class="card-title"><i class="fa fa-money-bill-wave"></i> UNPAID ORDERS/LAYBY ORDERS</h3>  <h5 class="text-right"><b>TOTAL: {{sum_unpaid_orders}}</b></h5>
@@ -142,7 +142,9 @@
                 <!-- /.card-body -->
                 </div>
               </div>
+              {% endif %}
             </div>
+          
             <div class="col-6">
               <div class="card">
                   <div class="card-header bg-secondary">
@@ -192,6 +194,7 @@
                    
                  
               </div>
+              {% if unpaid_orders %}
               <div class="card">
                   <div class="card-header bg-secondary">
                       <h3 class="card-title"><i class="fa fa-users"></i> MY CUSTOMERS</h3> <h5 class="text-right">TOTAL: {{count_my_customers}}</h5>
@@ -216,6 +219,7 @@
                   {% endfor %}
                   </div> 
               </div>
+              {% endif %}
             </div>
             
         </div>
