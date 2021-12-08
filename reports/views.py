@@ -34,6 +34,7 @@ from django.db.models import AutoField,IntegerField,FloatField,ExpressionWrapper
 
 from djmoney.models.managers import understands_money
 from inventory import views as inventory_views
+
 @login_required
 def reports_dashboard(request):
     items = Item.objects.all()
@@ -292,7 +293,7 @@ def get_total_quantity_for_each_day(todays_ordered_items):
         total_quantity += todays_ordered_item.quantity
     return total_quantity
 
-
+@login_required
 def sales_report(request):
     item_cat = "All Categories"
     report_period = "All Days"
@@ -306,9 +307,10 @@ def sales_report(request):
 
     ordered_items = all_days_sales(report_period)
     
-    lay_by_orders = LayByOrders.objects.all()
+    # lay_by_orders = LayByOrders.objects.filter(order_id__ordered = False)
 
     today = timezone.now().date()
+    report_time = timezone.now()
     yesterday = today -timedelta(days=1)
     
     if request.method == "POST":
@@ -321,22 +323,47 @@ def sales_report(request):
         elif report_period == 1:
             ordered_items = todays_ordered_items(item_cat)
             report_period = "Today"
+            lay_by_orders = LayByOrders.objects.filter(payments__created_at__gte = today)
+            print(lay_by_orders)
         elif report_period == 2:
             ordered_items = yesterday_ordered_items(item_cat)
-            lay_by_orders.filter(payments__created_at__range = [yesterday, today])
+            lay_by_orders = LayByOrders.objects.filter(payments__created_at__gte = yesterday, payments__created_at__lt = today)
             report_period = "Yesterday"
         elif report_period == 3:
             ordered_items = last_7_days_ordered_items(item_cat)
             report_period = "Last 7 Days"
+
+            date_today = datetime.now().date()
+            seven_days_b4 = date_today-timedelta(days=7)
+            lay_by_orders = LayByOrders.objects.filter(payments__created_at__range = [seven_days_b4, date_today])
+            
         elif report_period == 4:
             ordered_items= last_30_days_ordered_items(item_cat)
             report_period = "Last 30 Days"
+
+            date_today = datetime.now().date()
+            thirty_days_b4 = date_today-timedelta(days=30)
+            lay_by_orders = LayByOrders.objects.filter(payments__created_at__range = [thirty_days_b4, date_today])
         elif report_period == 5:
             ordered_items = this_month_ordered_items(item_cat)
             report_period = "This Month"
+            
+            today = datetime.now()
+            this_month_firstday = datetime.now().date().replace(day=1)
+            lay_by_orders = LayByOrders.objects.filter(payments__created_at__range = [this_month_firstday, today])
         elif report_period == 6:
             ordered_items = last_month_ordered_items(item_cat)
             report_period = "Last Month"
+
+            today = datetime.now().date()
+            this_month_firstday = today.replace(day=1)
+            last_monthlastday = this_month_firstday - timedelta(days=1)
+            last_monthlastday2 = last_monthlastday
+            last_monthfirstday = last_monthlastday2.replace(day=1)
+            lay_by_orders = LayByOrders.objects.filter(payments__created_at__range = [last_monthfirstday, last_monthlastday])
+            
+    else:
+        lay_by_orders = LayByOrders.objects.all()
         
     sum_total_vat = Money(0.0, 'MWK')
     # orders_with_ordered_items = Order.objects.all()
@@ -355,7 +382,7 @@ def sales_report(request):
     sum_layby_paid_amount = Money('0.0', 'MWK')
     for lay_by_orders in lay_by_orders:
         if lay_by_orders.sum_paid < lay_by_orders.get_order_price:
-            sum_layby_paid_amount += lay_by_orders.order_id.paid_amount.paid_amount
+            sum_layby_paid_amount =+ lay_by_orders.order_id.paid_amount.paid_amount
 
     total_cash_in_hand = sum_layby_paid_amount + total_cost_items_ordered
 
@@ -372,10 +399,11 @@ def sales_report(request):
         "net_total_sales":net_total_sales,
         "sum_layby_paid_amount":sum_layby_paid_amount,
         "total_cash_in_hand":total_cash_in_hand,
+        "report_time":report_time,
     }
     return render(request, 'sales_report.html',context)
 
-
+@login_required
 def sales_report_custom_range(request):
     form = SearchBetweenTwoDatesForm()
     item_cat = "All Categories"
@@ -452,6 +480,7 @@ def lmonth(x):
     lmo = last_month_ordered_items(x)
     return lmo
 
+@login_required
 def summery_of_sales(request):
     item_cats = ItemCategory.objects.all()
     #all days sales

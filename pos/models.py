@@ -256,6 +256,9 @@ class LayByOrders(models.Model):
     sum_paid = MoneyField(max_digits=14, decimal_places=2, default_currency='MWK', default= 0.0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return '{1} {0}'.format(self.order_id.id, self.order_id.code)
     
 
     @property

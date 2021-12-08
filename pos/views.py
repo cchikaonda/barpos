@@ -29,7 +29,7 @@ import qrcode.image.svg
 from io import BytesIO
 from django.db.models.query import *
 
-
+@login_required
 def index(request):
     context = {}
     #generating QR Code
@@ -551,7 +551,7 @@ def view_order_items(request, id):
     }
     return render(request, 'view_order_items.html', context)
 
-
+@login_required
 def view_my_orders(request):
     if 'opened_order' in request.session:
         del request.session['opened_order']
@@ -586,6 +586,7 @@ def view_my_orders(request):
     }
     return render(request, "view_my_orders.html", context)
 
+@login_required
 def supplier_list_pos(request):
     suppliers = Supplier.objects.all()
     context = {
@@ -595,6 +596,7 @@ def supplier_list_pos(request):
     }
     return render(request, 'suppliers/supplier_list_pos.html', context)
 
+@login_required
 def customer_list_pos(request):
     customers = Customer.objects.all()
     context = {
