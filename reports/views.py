@@ -57,7 +57,7 @@ def reports_dashboard(request):
     orders_with_ordered_items = Order.objects.filter(items__in = ordered_items)
 
     for sales_all_time in sales_all_time:
-        sales_overtime += sales_all_time.paid_amount.paid_amount
+        sales_overtime += sales_all_time.sum_paid_amount
         sales_tax += sales_all_time.vat_cost
     
     monday_total_sales = inventory_views.get_total_sales_this_week(2)
@@ -252,7 +252,7 @@ def get_todays_total_sales():
     total_sales = Order.objects.filter(paid_amount__created_at__gte=today_date)
     sum_total_cost = 0
     for total_sales in total_sales:
-        sum_total_cost += total_sales.paid_amount.paid_amount
+        sum_total_cost += total_sales.sum_paid_amount
     return sum_total_cost
 
 def get_yesterday_total_sales():
@@ -266,8 +266,7 @@ def get_yesterday_total_sales():
     print(total_sales)
     sum_total_cost = 0
     for total_sales in total_sales:
-        sum_total_cost += total_sales.paid_amount.paid_amount
-        print(total_sales.paid_amount.paid_amount)
+        sum_total_cost += total_sales.sum_paid_amount
     return sum_total_cost
 
 
@@ -328,7 +327,7 @@ def sales_report(request):
             print(lay_by_orders)
         elif report_period == 2:
             ordered_items = yesterday_ordered_items(item_cat)
-            lay_by_orders = LayByOrders.objects.filter(payments__created_at__gte = yesterday, payments__created_at__lt = today)
+            lay_by_orders = Order.objects.filter(created_at__gte = yesterday, created_at__lt = today)
             report_period = "Yesterday"
         elif report_period == 3:
             ordered_items = last_7_days_ordered_items(item_cat)
@@ -336,7 +335,7 @@ def sales_report(request):
 
             date_today = datetime.now().date()
             seven_days_b4 = date_today-timedelta(days=7)
-            lay_by_orders = LayByOrders.objects.filter(payments__created_at__range = [seven_days_b4, date_today])
+            lay_by_orders = Order.objects.filter(created_at__range = [seven_days_b4, date_today])
             
         elif report_period == 4:
             ordered_items= last_30_days_ordered_items(item_cat)
@@ -344,14 +343,14 @@ def sales_report(request):
 
             date_today = datetime.now().date()
             thirty_days_b4 = date_today-timedelta(days=30)
-            lay_by_orders = LayByOrders.objects.filter(payments__created_at__range = [thirty_days_b4, date_today])
+            lay_by_orders = Order.objects.filter(payments__created_at__range = [thirty_days_b4, date_today])
         elif report_period == 5:
             ordered_items = this_month_ordered_items(item_cat)
             report_period = "This Month"
             
             today = datetime.now()
             this_month_firstday = datetime.now().date().replace(day=1)
-            lay_by_orders = LayByOrders.objects.filter(payments__created_at__range = [this_month_firstday, today])
+            lay_by_orders = Order.objects.filter(created_at__range = [this_month_firstday, today])
         elif report_period == 6:
             ordered_items = last_month_ordered_items(item_cat)
             report_period = "Last Month"
@@ -361,11 +360,11 @@ def sales_report(request):
             last_monthlastday = this_month_firstday - timedelta(days=1)
             last_monthlastday2 = last_monthlastday
             last_monthfirstday = last_monthlastday2.replace(day=1)
-            lay_by_orders = LayByOrders.objects.filter(payments__created_at__range = [last_monthfirstday, last_monthlastday])
+            lay_by_orders = Order.objects.filter(ordered = False, created_at__range = [last_monthfirstday, last_monthlastday])
             
     else:
         # lay_by_orders = LayByOrders.objects.all()
-        lay_by_orders = Payment.objects.all()
+        lay_by_orders = Order.objects.filter(ordered = False)
         
     sum_total_vat = Money(0.0, 'MWK')
     # orders_with_ordered_items = Order.objects.all()
@@ -386,10 +385,7 @@ def sales_report(request):
     print(sum_layby_paid_amount)
    
     for lay_by_orders in lay_by_orders:
-        # if lay_by_orders.sum_paid < lay_by_orders.get_order_price:
-        print(lay_by_orders.paid_amount)
-        if str(lay_by_orders.paid_amount) != "None":
-            sum_layby_paid_amount += lay_by_orders.paid_amount
+        sum_layby_paid_amount += lay_by_orders.sum_paid_amount
 
     total_cash_in_hand = sum_layby_paid_amount + total_cost_items_ordered
 

@@ -114,7 +114,7 @@ def get_total_sales_this_week(this_day):
         paid_amount__created_at__week_day=this_day)
     sum_total_cost = 0
     for total_sales in total_sales:
-        sum_total_cost += total_sales.paid_amount.paid_amount
+        sum_total_cost += total_sales.sum_paid_amount
     return sum_total_cost
     
 def get_total_lastwk_sale(this_day_lw):

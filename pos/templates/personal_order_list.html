@@ -120,21 +120,21 @@
                       <td colspan="1" class="text-right" style="background-color:#343a40; font-size: 100%; font-family: monospace; color: chartreuse;" class="col-md-6">TOTAL</td>
                       <td colspan="2" class="text-right" style="background-color:#343a40; font-size: 100%; font-family: monospace; color: chartreuse;" class="col-md-6">{{order.order_total_due}}</td>
                     </tr>
-                    {% if order.paid_amount.paid_amount >= order.order_total_cost %}
+                    {% if order.sum_paid_amount >= order.order_total_cost %}
                       <tr style="outline: none; border: none;">
                           <td colspan="3"  style="text-align: right; outline: none; background-color: rgba(171, 213, 238, 0.6);" class="text-info font-size-h4 font-w600" >AMOUNT TENDERED</td>
-                          <td colspan="2" style="background-color: rgba(171, 213, 238, 0.6); font-weight: bold;">{{order.paid_amount.paid_amount}}</td>
+                          <td colspan="2" style="background-color: rgba(171, 213, 238, 0.6); font-weight: bold;">{{order.sum_paid_amount}}</td>
                           <td colspan="1" class="text-info font-size-h4 font-w600 text-right" style="background-color: rgba(171, 227, 125, 0.6); font-weight: bold;">CHANGE</td>
                           <td colspan="2" class="text-right" style="background-color: rgba(171, 227, 125, 0.6); font-weight: bold;">{{order.get_change}}</td>
                       </tr>
                     {% else %}
                       <tr style="outline: none; border: none;">
-                        {% if order.paid_amount.paid_amount == order.default_amount_paid %}
+                        {% if order.sum_paid_amount == order.default_amount_paid %}
         
                         {% else %}
                         <td colspan="2"  style="text-align: right; outline: none;background-color: rgba(171, 213, 238, 0.6);" class="text-info font-size-h4 font-w600" >Amount Tendered is less than the Total Bill</td>
                         
-                        <td colspan="2" style="background-color: rgba(171, 213, 238, 0.6); font-weight: bold;">{{order.paid_amount.paid_amount}}</td>
+                        <td colspan="2" style="background-color: rgba(171, 213, 238, 0.6); font-weight: bold;">{{order.sum_paid_amount}}</td>
                         <td></td>
                         <td colspan="1" style="text-align: right; outline: none; background-color: rgba(214, 14, 7, 0.6); " class="font-size-h4 font-w600">BALANCE</td>
                         <td colspan="2" class="text-right" style="background-color: rgba(214, 14, 7, 0.6); font-weight: bold;">{{order.get_balance}}</td>
@@ -155,15 +155,15 @@
                   <!-- /.table-responsive -->
       
                   <a href="{% url 'print_receipt_only' %}"><button class="btn btn-secondary mr-2 ml-2 posoption_button" style="float: left;"><i class="fas fa-print"></i> Print Bill</button> </a>
-                  {% if order.paid_amount.paid_amount %}
+                  {% if order.sum_paid_amount %}
                   
-                  {% if order.paid_amount.paid_amount > order.order_total_due or order.paid_amount.paid_amount == order.order_total_due %}
+                  {% if order.sum_paid_amount > order.order_total_due or order.sum_paid_amount == order.order_total_due %}
                   <a data-toggle="modal" data-target="#produceReceiptModal"><button class="btn btn-success mr-2 ml-2 posoption_button" style="float: right;"><i class="fas fa-arrow-right"></i> Checkout</button> </a> 
                   {% endif %}
                   {% endif %}
 
   
-                  {% if order.items and order.order_total_due > order.paid_amount.paid_amount %}
+                  {% if order.items and order.order_total_due > order.sum_paid_amount %}
                   <!-- <a href="{% url 'save_bill' %}"><button class="btn btn-secondary mr-2 ml-2 posoption_button" style="float: right;"><i class="fas fa-save"></i> Save Bill</button> </a> -->
                   <a data-toggle="modal" data-target="#produceReceiptSavedBillModal"><button class="btn btn-info mr-2 ml-2 posoption_button" style="float: left;"><i class="fas fa-save"></i> Save Bill</button> </a>
                   {% if order.paid_amount.payment_mode == 'Lay By' %}
@@ -185,7 +185,7 @@
       </div>
 
 
-{% if order.items and order.order_total_due > order.paid_amount.paid_amount %}
+{% if order.items and order.order_total_due > order.sum_paid_amount %}
 
 {% if order.paid_amount.payment_mode == 'Lay By' %}
 {% else %}

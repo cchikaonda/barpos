@@ -8,7 +8,7 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from accounts.forms import UserAdminCreationForm, UserAdminChangeForm
 from constance.admin import ConstanceAdmin, ConstanceForm, Config
 
-from pos.models import Customer, OrderItem, Order, Payment,  LayByOrders
+from pos.models import Customer, OrderItem, Order, Payment
 from accounts.models import CustomUser
 
 # Register your models here.
@@ -30,7 +30,7 @@ class OrderItemAdmin(admin.ModelAdmin):
 admin.site.register(OrderItem, OrderItemAdmin)
 
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ('customer','get_code','user','vat_p','vat_cost','order_date','ordered','order_total_cost','paid_amount','get_balance','get_payment_mode','reference','created_at','vat_rate_minus_100')
+    list_display = ('customer','get_code','user','vat_p','vat_cost','order_date','ordered','order_total_cost','sum_paid_amount','sum_lay_by_payments','get_balance','created_at','vat_rate_minus_100','payment_mode')
     search_fields = ['order_date','customer']
     class Meta:
         model = CustomUser
@@ -43,12 +43,6 @@ class PaymentAdmin(admin.ModelAdmin):
         model = Payment
 admin.site.register(Payment, PaymentAdmin)
 
-class LayByOrdersAdmin(admin.ModelAdmin):
-    list_display = ('order_id','get_order_id', 'get_customer','get_order_price', 'get_sum_paid','get_order_balance', 'sum_paid','created_at','updated_at')
-    search_fields = ['order_id',]
-    class Meta:
-        model =  LayByOrders
-admin.site.register( LayByOrders,  LayByOrdersAdmin)
 
 
 

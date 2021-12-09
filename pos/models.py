@@ -82,7 +82,7 @@ class Payment(models.Model):
         
     )
     customer = models.ForeignKey(Customer, on_delete = models.SET_NULL, null = True)
-    payment_mode = models.CharField(max_length = 15, choices = payment_options)
+    payment_mode = models.CharField(max_length = 15, choices = payment_options, default='Cash')
     paid_amount = MoneyField(max_digits=14, decimal_places=2, default_currency='MWK', null = True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -105,16 +105,17 @@ class Order(models.Model):
     items = models.ManyToManyField(OrderItem)
     order_date = models.DateTimeField(auto_now_add=True)
     ordered = models.BooleanField(default=False)
-    paid_amount = models.ForeignKey(Payment, on_delete=models.CASCADE, default = 1)
+    paid_amount = models.ManyToManyField(Payment)
     order_total_cost = MoneyField(max_digits=14, decimal_places=2, default_currency='MWK', default= 0.0)
     vat_p = models.FloatField(default=config.TAX_NAME)
     vat_cost = MoneyField(max_digits=14, decimal_places=2, default_currency='MWK', default= 0.0)
     created_at = models.DateTimeField(auto_now_add=True)
+    payment_mode = models.CharField(max_length=50, null=True, default="Cash")
     # updated_at = models.DateTimeField(auto_now=True)
 
-    def __init__(self, *args, **kwargs):
-        super(Order, self).__init__(*args, **kwargs)
-        self.original_paid_amount = self.paid_amount
+    # def __init__(self, *args, **kwargs):
+    #     super(Order, self).__init__(*args, **kwargs)
+    #     self.original_paid_amount = self.paid_amount
 
     
 
@@ -134,9 +135,9 @@ class Order(models.Model):
     def get_code(self):
         return self.gen_code
     
-    @property
-    def reference(self):
-        return self.paid_amount.reference
+    # @property
+    # def reference(self):
+    #     return self.paid_amount.reference
 
     @property
     def get_vat_value(self):
@@ -182,15 +183,32 @@ class Order(models.Model):
     @property
     def get_payment_mode(self):
         return self.paid_amount.payment_mode
+
+    @property
+    def sum_paid_amount(self):
+        total = Money(0.0, 'MWK')
+        for payment in self.paid_amount.all():
+            total += payment.paid_amount
+        return total
+    
+    @property
+    def sum_lay_by_payments(self):
+        total = Money(0.0, 'MWK')
+        for payment in self.paid_amount.filter(payment_mode = 'Lay By'):
+            total += payment.paid_amount
+        return total
     
     def get_change(self):
-        change = self.paid_amount.paid_amount - self.order_total_due()
+        change = self.sum_paid_amount - self.order_total_due()
         return change
+    
+    
+
     
     def get_balance(self):
         default_amount = Money(0.0, 'MWK')
-        if self.paid_amount.paid_amount < self.order_total_due():
-            return -1 * (self.paid_amount.paid_amount - self.order_total_due())
+        if self.sum_paid_amount < self.order_total_due():
+            return -1 * (self.sum_paid_amount - self.order_total_due())
         else:
             return default_amount
     
@@ -204,84 +222,9 @@ class Order(models.Model):
     def get_customer(self):
         return self.items.customer
 
-# @receiver(post_save, sender=Payment)
-# def update_ordered_date_if_payment_is_done(sender, instance, **kwargs):
-#     instance.paid_amount
-
-
-@receiver(post_save, sender=Order)
-def save_layby_orders(sender, instance, **kwargs):
-    if instance.get_payment_mode == "Lay By" and instance.paid_amount != instance.original_paid_amount:
-        order = Order.objects.get(id=instance.id)
-        
-        layby_order, created = LayByOrders.objects.get_or_create(order_id = order)
-        new_layby_order = LayByOrders.objects.get(id = layby_order.id)
-
-        # sum_paid_and_balance = order.paid_amount.paid_amount + new_layby_order.get_order_balance
-        
-        
-        if order.paid_amount.paid_amount > new_layby_order.get_order_balance and order.ordered == True:
-            paid = Payment()
-            paid.paid_amount = new_layby_order.get_order_balance
-            paid.save()
-        else:
-            paid = Payment()
-            paid.paid_amount = order.paid_amount.paid_amount
-            paid.save()
-
-        new_layby_order.payments.add(paid)
-
-        total = 0
-        for payment in new_layby_order.payments.all():
-            total += payment.paid_amount
-        LayByOrders.objects.filter(id = layby_order.id).update(sum_paid = total)
-        
-        order_payment2 = Payment()
-        order_payment2.paid_amount = total
-        order_payment2.save()
-        Order.objects.filter(id=instance.id).update(paid_amount=order_payment2)
-
-
-        # znew_layby_order.update(sum_paid = total)
-        # layby_order.update(get_sum_paid = payment)
-
-    # OrderItem.objects.filter(id=instance.id).update(ordered_item_price=instance.price, ordered_items_total = instance.amount)
-
-class LayByOrders(models.Model):
-    order_id = models.ForeignKey(Order, on_delete=models.CASCADE)
-    payments = models.ManyToManyField(Payment)
-    sum_paid = MoneyField(max_digits=14, decimal_places=2, default_currency='MWK', default= 0.0)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return '{1} {0}'.format(self.order_id.id, self.order_id.code)
-    
-
-    @property
-    def get_order_id(self):
-        return self.order_id.get_code
-    
-    @property
-    def get_customer(self):
-        return self.order_id.customer
-    
-    @property
-    def get_order_price(self):
-        return self.order_id.order_total_cost
-
-    @property
-    def get_sum_paid(self):
-        total = 0
-        for payment in self.payments.all():
-            total += payment.paid_amount
-        return total
-    
-    @property
-    def get_order_balance(self):
-        return self.get_order_price - self.get_sum_paid
-    
-    
+@receiver(post_save, sender=Payment)
+def update_ordered_date_if_payment_is_done(sender, instance, **kwargs):
+    instance.paid_amount
 
 
 

@@ -1,6 +1,6 @@
 from django.shortcuts import render,redirect, get_object_or_404
 from inventory.models import ItemCategory, Unit, Item, Supplier
-from pos.models import Customer, LayByOrders, OrderItem, Order, Payment
+from pos.models import Customer,OrderItem, Order, Payment
 from django.contrib import messages
 from constance import config
 from django.utils import timezone
@@ -19,6 +19,7 @@ from django.contrib.auth.decorators import login_required
 from accounts.admin import CustomConfigForm
 from barpos import settings
 import time
+from djmoney.money import Money
 
 
 
@@ -76,6 +77,8 @@ def add_customer_to_order(request):
     if request.method == "POST":
         selected_customer = request.POST.get('customer_name')
         customer = Customer.objects.get(name=selected_customer)
+        default_paid_amount = Payment.objects.get(id=1)
+        print(default_paid_amount)
         try: 
             #check if there is already order for the customer
             check_order = Order.objects.get(user = request.user, customer = customer, ordered = False)
@@ -83,10 +86,12 @@ def add_customer_to_order(request):
                 return redirect('/pos/personal_order_list/'+ str(check_order.id))
         except ObjectDoesNotExist:
             order = Order.objects.create(user = request.user, customer = customer)
+            order.paid_amount.add(default_paid_amount)
             order.save()
         return redirect('/pos/personal_order_list/'+ str(order.id))
     else:
         customer = Customer.objects.get(id=1)
+        default_paid_amount = Payment.objects.get(id=1)
         try: 
             #check if there is already order for the customer
             check_order = Order.objects.get(user = request.user, customer = customer, ordered = False)
@@ -94,6 +99,7 @@ def add_customer_to_order(request):
                 return redirect('/pos/personal_order_list/'+ str(check_order.id))  
         except ObjectDoesNotExist:
             order = Order.objects.create(user = request.user, customer=customer)
+            order.paid_amount.add(default_paid_amount)
             order.save()
             return redirect('/pos/personal_order_list/'+ str(order.id))
 
@@ -148,7 +154,7 @@ def add_payment(request):
                 
                 payment.save()
                 print(payment.payment_mode)
-                order.paid_amount = payment
+                order.paid_amount.add(payment)
                 order.save()
                 request.session['opened_order'] = order.id
             return redirect('/pos/personal_order_list/'+ str(order.id))
@@ -179,7 +185,7 @@ def complete_order_only(order, request):
     payment = Payment()
     payment.paid_amount = order.order_total_cost
     payment.save()
-    order.add(payment)
+    order.paid_amount.add(payment)
     order.save()
     request.session['opened_order'] = order.id
 
@@ -203,7 +209,7 @@ def complete_order(request):
     payment = Payment()
     payment.paid_amount = order.order_total_cost
     payment.save()
-    order.paid_amount = payment
+    order.paid_amount.add(payment)
     order.save()
     return redirect("pos_dashboard")
 
@@ -252,10 +258,6 @@ def personal_order_list(request, id):
     airtel_money_payment_form = AddPaymentForm(initial={"payment_mode":'Airtel Money', "paid_amount":['']})
     mpamba_payment_form = AddPaymentForm(initial={"payment_mode":'Mpamba', "paid_amount":['']})
     order = get_object_or_404(Order,id=id)
-    try:
-        layb_order = LayByOrders.objects.get(order_id = order.id)
-    except ObjectDoesNotExist:
-        layb_order = ""
     request.session['opened_order'] = order.id
     # all_order_related = Order.objects.prefetch_related('customer','items','user',).all()
     unsettled_orders = Order.objects.filter(user=request.user, ordered = False, order_total_cost__gt = 0.0)
@@ -299,7 +301,7 @@ def personal_order_list(request, id):
         'item_search_form':item_search_form,
         'config':config,
         'layby_payment_form':layby_payment_form,
-        'layb_order':layb_order,
+
 
     }
     return render(request, 'personal_order_list.html',context )

@@ -8,7 +8,7 @@ from django_countries.fields import CountryField
 # from constance.admin import ConstanceAdmin, ConstanceForm, Config
 from djmoney.forms.widgets import MoneyWidget
 from django.contrib.auth import authenticate, login, logout, get_user_model
-from pos.models import Customer, LayByOrders, Payment
+from pos.models import Customer, Payment
 from inventory.models import Item
 
 class CustomMoneyWidget(MoneyWidget):
