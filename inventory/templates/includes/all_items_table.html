@@ -1,0 +1,39 @@
+
+        <div id="example1_wrapper" class="dataTables_wrapper dt-bootstrap4">
+          <div class="row">
+            <div class="col-sm-12 col-md-6">
+            <div class="dataTables_length" id="example1_length">
+              </div>
+            </div>
+            <div class="col-sm-12 col-md-6">
+              <div id="example1_filter" class="dataTables_filter"></div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-12">
+              <table id="search_item_table" class="table table-bordered table-striped dataTable dtr-inline" role="grid" aria-describedby="example1_info">
+                <thead>
+                <tr role="row">
+                  <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Item: activate to sort column ascending">Item</th>
+                  <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Category: activate to sort column ascending">Category</th>
+                  <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Price: activate to sort column ascending">Price</th></tr>
+                </thead>
+                <tbody>
+                {% for item in items %}
+                  <tr role="row" class="odd">
+                    <td tabindex="0" class="sorting_1"><a href="{{item.get_add_to_cart_url}}" class="text-info" id="item-button" >{{item.item_name}}</a></td>
+                    <td>{{item.category}}</td>
+                    <td>{{item.selling_price}}</td>
+                  </tr>
+                {% endfor %}
+                </tbody>
+                <tfoot>
+                </tfoot>
+              </table>
+        </div>
+        
+        <div><br></div>
+      </div>
+    </div>
+      
+

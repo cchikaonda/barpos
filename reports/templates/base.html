@@ -1,0 +1,161 @@
+{% load static %}
+{% load crispy_forms_tags %}
+{% get_media_prefix as MEDIA_URL %}
+{% load get_key_from_dictionary %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{home}}</title>
+
+    <link rel="stylesheet" href="{% static '/custom_css/page_loader.css' %}" type="text/css">
+  
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="{% static '/plugins/fontawesome-free/css/all.min.css' %}" type="text/css">
+
+     <!-- Ionicons -->
+     <link rel="stylesheet" href="{% static '/plugins/fontawesome-free/css/all.min.css' %}" type="text/css">
+     <!-- daterange picker -->
+    <link rel="stylesheet" href="{% static '/plugins/daterangepicker/daterangepicker.css' %}" type="text/css">
+
+     <!-- Bootstrap Color Picker -->
+     <link rel="stylesheet" href="{% static '/plugins/bootstrap-colorpicker/css/bootstrap-colorpicker.min.css' %}" type="text/css">
+
+    <!-- iCheck for checkboxes and radio inputs -->
+    <link rel="stylesheet" href="{% static '/plugins/icheck-bootstrap/icheck-bootstrap.min.css' %}" type="text/css">
+
+    <!-- Tempusdominus Bbootstrap 4 -->
+    <link rel="stylesheet" href="{% static '/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css' %}" type="text/css">
+
+    <!-- overlayScrollbars -->
+    <link rel="stylesheet" href="{% static '/plugins/overlayScrollbars/css/OverlayScrollbars.min.css' %}" type="text/css">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="{% static '/dist/css/adminlte.min.css' %}" type="text/css">
+    <!-- {{form.media.css }} -->
+
+    <link rel="stylesheet" href="{% static '/plugins/intl-tel-input-master/build/css/intlTelInput.css' %}" type="text/css">
+
+    <!-- Bootstrap4 Duallistbox -->
+    <link rel="stylesheet" href="{% static '/plugins/bootstrap4-duallistbox/bootstrap-duallistbox.min.css' %}" type="text/css">
+    <!-- Select2 -->
+    <link rel="stylesheet" href="{% static '/plugins/select2/css/select2.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static '/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css' %}" type="text/css">
+
+    <link rel="stylesheet" href="{% static '/plugins/bootstrap4-datetimepicker-master/build/css/bootstrap-datetimepicker.css' %}" type="text/css">
+
+    
+</head>
+<body class="hold-transition layout-fixed layout-navbar-fixed layout-footer-fixed" onload="realtimeClock()">
+    <div class="wrapper">
+        <!-- Navbar -->
+        {% include 'header.html' %}
+        <!-- /.navbar --> 
+        
+        {% if messages %}
+                    {% for message in messages %}
+                    <div class="mt-6 pt-2">
+                        <div class="alert alert-{{message.tags}}" alert-dismissible fade show role="alert">{{message}}
+                            <button type="button" class="close" data-dismiss = "alert" name="button">
+                            <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% endif %}
+        
+        {% block content %}
+
+        
+
+        {% endblock %}
+
+        <!-- /.content-wrapper -->
+
+        <!-- Main Footer -->
+    <footer class="main-footer bg-light text-info" style="margin-left: auto;">
+        <strong class="text-info">Copyright </a> <i class="text-info">&copy;</i> {% now "Y" %}<a > <a href="https://www.epsiloncomputech.com" target="_blank"  class="text-info">Epsilon Compu-Tech</a>.</strong>
+        All rights reserved.
+        <div class="float-right d-none d-sm-inline-block text-info">
+        <b>Version</b> 1.0.0
+        </div>
+    </footer>
+
+
+    </div>
+</body>
+
+
+<!-- REQUIRED SCRIPTS -->
+<!-- jQuery -->
+<script src="{% static '/plugins/jquery/jquery.min.js' %}"></script>
+<!-- Bootstrap -->
+<script src="{% static '/plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+<!-- overlayScrollbars -->
+<script src="{% static '/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js' %}"></script>
+<!-- AdminLTE App -->
+<script src="{% static '/dist/js/adminlte.js' %}"></script>
+
+
+<!-- Select2 -->
+<script src="{% static '/plugins/select2/js/select2.full.min.js' %} "></script>
+<!-- Bootstrap4 Duallistbox -->
+<script src="{% static '/plugins/bootstrap4-duallistbox/jquery.bootstrap-duallistbox.min.js' %}"></script>
+<!-- InputMask -->
+<script src="{% static '/plugins/moment/moment.min.js' %}"></script>
+<script src="{% static '/plugins/inputmask/min/jquery.inputmask.bundle.min.js' %}"></script>
+<!-- date-range-picker -->
+<script src="{% static '/plugins/daterangepicker/daterangepicker.js' %}"></script>
+
+<!-- bootstrap color picker -->
+<script src="{% static '/plugins/bootstrap-colorpicker/js/bootstrap-colorpicker.min.js' %}"></script>
+<!-- Tempusdominus Bootstrap 4 -->
+<script src="{% static '/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js' %}"></script>
+<!-- Bootstrap Switch -->
+<script src="{% static '/plugins/bootstrap-switch/js/bootstrap-switch.min.js' %}"></script>
+
+<script src="{% static '/custom_js/current_date_time.js' %}"></script>
+
+
+<!-- OPTIONAL SCRIPTS -->
+<script src="{% static '/dist/js/demo.js' %}"></script>
+
+<!-- PAGE PLUGINS -->
+<!-- jQuery Mapael -->
+<script src="{% static '/plugins/jquery-mousewheel/jquery.mousewheel.js' %}"></script>  
+<script src="{% static '/plugins/raphael/raphael.min.js' %}"></script>  
+<script src="{% static '/plugins/jquery-mapael/jquery.mapael.min.js' %}"></script>  
+<script src="{% static '/plugins/jquery-mapael/maps/usa_states.min.js' %}"></script>  
+
+<!-- PAGE SCRIPTS -->
+<script src="{% static '/custom_js/current_date_time.js' %}"></script>
+<!-- DataTables -->
+<script src="{% static '/plugins/datatables/jquery.dataTables.min.js' %}"></script>
+<script src="{% static '/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js' %}"></script>
+<script src="{% static '/plugins/datatables-responsive/js/dataTables.responsive.min.js' %}"></script>
+<script src="{% static '/plugins/datatables-responsive/js/responsive.bootstrap4.min.js' %}"></script>
+<!-- AdminLTE App -->
+<script src="{% static '/dist/js/adminlte.min.js' %}"></script>
+<!-- AdminLTE for demo purposes -->
+<script src="{% static '/dist/js/demo.js' %}"></script> 
+
+<script src="{% static '/custom_js/custom_tables.js' %}"></script>
+
+
+<script src="{% static '/plugins/intl-tel-input-master/build/js/intlTelInput.js' %}"></script>
+
+<script src="{% static '/plugins/bootstrap4-datetimepicker-master/build/js/bootstrap-datetimepicker.js' %}"></script>
+
+<!--Spinner JS-->
+<script src="{% static '/custom_js/spinner.js' %}"></script>
+
+<script src="{% static '/custom_js/pdf.js' %}"></script>
+<script src="{% static '/custom_js/html2pdf.bundle.min.js' %}"></script>
+
+<script src="{% static '/custom_js/excel.js' %}"></script>
+<script src="{% static '/custom_js/table2excel.js' %}"></script>
+
+
+
+</html>

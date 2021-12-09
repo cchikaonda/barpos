@@ -1,0 +1,18 @@
+{% for item_cats in item_cats %}
+  <tr>
+    <td>{{ forloop.counter }}</td>
+    <td>{{ item_cats.category_name|title }}</td>
+    <td>{{ item_cats.category_description|title }}</td>
+    <td> <span class="badge-pill badge-{{item_cats.category_link_colour}} ml-2 mr-2"></i></span> {{item_cats.category_colour}}</td>
+    <td class="text-center">
+      <div class="btn-group">
+          <button type="button" class="btn btn-sm btn-light show-form-update" data-url="{% url 'category_update' item_cats.id %}" data-toggle="tooltip" title="Edit {{ product_cats.category_name }} ">
+              <a class="fa fa-fw fa-pencil-alt"></a>
+          </button>
+          <button type="button" class="btn btn-sm btn-light show-form-delete" data-url="{% url 'category_delete' item_cats.id %}" data-toggle="tooltip" title="Delete {{ product_cats.category_name }}">
+              <a class="fa fa-fw fa-times"> </a>
+          </button>
+      </div>
+    </td>
+  </tr>
+{% endfor %}

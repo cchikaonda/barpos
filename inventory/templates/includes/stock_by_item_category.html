@@ -1,0 +1,14 @@
+<nav class="flex-sm-00-auto" aria-label="breadcrumb" id = "category_list">
+    <ol class="breadcrumb breadcrumb-alt">
+        <li class="breadcrumb-item" aria-current="page"></li>
+            <a class="link-fx text-success" href="{% url 'stock_list' %}"> All Items</a>
+        </li>
+        <li class="breadcrumb-item"></li>
+        {% for item_cat in item_cats %}
+        <li class="breadcrumb-item" aria-current="page">
+            <a class="link-fx" href="?category={{item_cat.id}}">{{item_cat.category_name|title}}</a>
+        </li>
+        {% endfor %}
+    </ol>
+    
+</nav>

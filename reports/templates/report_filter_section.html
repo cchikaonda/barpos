@@ -1,0 +1,65 @@
+{% load crispy_forms_tags %}
+<div class="card">
+    <div class="card-header">
+      <h3 class="card-title">Sales Report <strong>For {{report_period}}</strong> For {{item_cat}} </h3>
+      <button id="download-button" class="btn btn-light" style="float: right;"> <i class="fa fa-download"></i> Download Report</button>
+      <button id="download-excel-button" class="btn btn-light exportToExcel" style="float: right;"> <i class="fa fa-download"></i> Export Report to Excel</button>
+    </div>
+    
+    <div class="row ml-3">
+        <form action="{% url 'sales_report' %}" method="POST" class="row form-select ml-2 mr-2 mt-2 mb-2">
+          {% csrf_token %}
+              <div class="mt-2 ml-4">
+                <label for="measure">Select Period</label>
+                <div class="input-group">
+                
+                  <div class="input-group-prepend">
+                    <span class="input-group-text"><i class="far fa-calendar-alt"></i></span>
+
+                  </div>
+                    <select class="form-control" id="example-select" name="report_period">
+                      <i class="far fa-calendar-alt"> 
+                        <option value="777"> All Days </option>
+                      </i>
+                        <option value="1" id="today_option" >Today</option>
+                        <option value="2">Yesterday</option>
+                        <option value="3">Last 7 Days</option>
+                        <option value="4">Last 30 Days</option>
+                        <option value="5">This Month</option>
+                        <option value="6">Last Month</option>
+                    </select>
+                </div>
+                <script type="text/javascript">
+                    document.getElementById('report_period').value = "<?php echo $_GET['report_period'];?>";
+                </script>
+      
+              </div>
+              
+              <div class="ml-4 mt-2 mb-4">
+                <label for="date-rage">Category</label>
+                  <div class="input-group-prepend " >
+                    <select class="form-control" name="item_categories_option" >
+                      <option value = "All Categories">All Categories</option>
+                      {% for item_cat in item_categories %}
+                        <option value="{{item_cat.category_name}}"> {{item_cat.category_name}}</option>
+                      {%endfor%}
+                    </select>
+                    <button type="submit" name="button" class=" btn btn-info ml-2" style="width: 100px;">Select</button>
+                    <a href="{% url 'sales_report' %}"> <button type="button" name="button" class=" btn btn-secondary ml-2" style="width: 100px;">Reset</button> </a>
+                    <!--Custom Date Range-->
+                  </div>
+                  <script type="text/javascript">
+                    document.getElementById('item_categories_option').value = "<?php echo $_GET['item_categories_option'];?>";
+                  </script>
+              </div>   
+        </form>
+          
+        <div class="ml-4 mt-2 mb-4" >
+          <label for="custom-rage text-right" >Custom Dates</label>
+          <div>
+            <a href="{% url 'sales_report_custom_range' %}"> <button type="button" name="button" class=" btn btn-success mt-2 mb-4">Custom Dates</button> </a>
+          </div>   
+        </div> 
+    </div>
+          
+</div>

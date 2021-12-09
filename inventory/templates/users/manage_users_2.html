@@ -1,0 +1,43 @@
+<!-- loading static files to access the avatar image -->
+{% load static %}
+{% for all_users in all_users %}
+<tr>
+<!--  <td class="text-center"><i><img class="img-avatar img-avatar48" src="{% static '/media/avatars/avatar3.jpg' %}" alt=""></i></td> -->
+<td class="text-center"><i><img class="img-avatar img-avatar48" src="{{all_users.imageURL}}" alt=""></i></td>
+
+<td class="font-w600 font-size-sm">
+    {{all_users.user_role}}
+<td class="font-w600 font-size-sm">
+    {{all_users.email}}
+<td class="font-w600 font-size-sm">{{all_users.full_name}}
+</td>
+<td class="font-w600 font-size-sm">{{all_users.phone_number}}
+
+</td>
+<td class="text-center">
+  {% if all_users.active == True %}
+  <span class="nav-main-link-badge badge badge-pill badge-success" data-toggle="tooltip" title="User is Active"><i class="si si-check fa-1x"></i></span>
+  {% elif all_users.active == False %}
+  <span class="nav-main-link-badge badge badge-pill badge-danger" data-toggle="tooltip" title="User is Deactivated"><i class="fa fa-times fa-1x"></i></span>
+  {% endif %}
+</td>
+<td class="text-center">
+  {% if all_users.admin == True %}
+  <span class="nav-main-link-badge badge badge-pill badge-success" data-toggle="tooltip" title="User is Admin"><i class="si si-check fa-1x"></i></span>
+  {% elif all_users.admin == False %}
+  <span class="nav-main-link-badge badge badge-pill badge-danger" data-toggle="tooltip" title="User is not Admin"><i class="fa fa-times fa-1x"></i></span>
+  {% endif %}
+</td>
+<td class="text-center">
+    <div class="btn-group">
+      <button type="button" class="btn btn-sm btn-light show-form-update" data-url="{% url 'user_update' all_users.id %}" data-toggle="tooltip" title="Edit {{ all_users.full_name }}" ">
+          <a class="fa fa-fw fa-pencil-alt"> </a>
+      </button>
+      <button type="button" class="btn btn-sm btn-light show-form-delete" data-url="{% url 'user_delete' all_users.id %}" data-toggle="tooltip" title="Delete {{ all_users.full_name }}" ">
+          <a class="fa fa-fw fa-times"> </a>
+      </button>
+    </div>
+</td>
+
+</tr>
+{% endfor %}

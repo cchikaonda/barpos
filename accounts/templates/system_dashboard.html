@@ -1,0 +1,185 @@
+{% extends 'base_pos.html' %}
+{% load crispy_forms_tags %}
+
+{% block body %}
+  <style>
+    .dashboard_menu_item{
+      height: 175px;
+    }
+    #home_button{
+      visibility: hidden;
+    }
+    #my_orders_button{
+      visibility: hidden;
+    }
+  </style>
+ 
+
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content ml-2 mr-2 mt-2" style="max-height: 500px;">
+        <!-- Small Box (Stat card) -->
+        <div class="row">
+            <!-- {% if request.user.admin == True %}
+            <div class="col-lg-3 col-6">
+              
+              <a href="{% url 'supplier_list_pos' %}">
+                <div class="small-box bg-light dashboard_menu_item">
+                    <div class="inner text-secondary">
+                    <h3>Suppliers</h3>
+
+                    <p class="ml-4">{{suppliers_count}}</p>
+                    </div>
+                    <div class="icon">
+                    <i class="fas fa-truck"></i>
+                    </div>
+                </div>
+              </a>
+            </div>
+            {% endif %} -->
+
+            <div class="col-lg-3 col-6">
+              <a href="{% url 'customer_list_pos' %}">
+              <!-- small card -->
+                  <div class="small-box bg-light dashboard_menu_item">
+                  
+                      <div class="inner text-secondary">
+                      <h3>Customers</h3>
+
+                      <p class="ml-4">{{customers_count}}</p>
+                      </div>
+                      <div class="icon">
+                      <i class="fas fa-users"></i>
+                      </div>
+                  </div>
+              </a>
+            </div>
+
+            <div class="col-lg-3 col-6">
+              <!-- small card -->
+              <a href="{% url 'view_my_orders' %}">
+                <div class="small-box bg-light dashboard_menu_item">
+                  
+                  <div class="inner text-secondary">
+                    <h3>My Customers</h3>
+    
+                    <p class="ml-4">{{count_my_customers}}</p> 
+                  </div>
+                  <div class="icon">
+                    <i class="fas fa-shopping-basket"></i>
+                  </div>
+                </div>
+              </a>
+            </div>
+            <!-- ./col -->
+            <div class="col-lg-3 col-6">
+                <!-- small card -->
+                {% if config.QUICK_SALE == 'yes' %}
+                <a href="{% url 'add_customer_to_order' %}">
+                {% else %}
+                <a href="{% url 'pos_dashboard' %}">
+                {% endif %}
+                  
+                <div class="small-box bg-light dashboard_menu_item">
+                <div class="inner text-secondary">
+                    <h3>Register Sale<sup style="font-size: 20px"></sup></h3>
+ 
+                </div>
+                <div class="icon">
+                    <i class="fa fa-cash-register"></i>
+                </div>
+                </div>
+            </a>
+            </div>
+
+            <!-- ./col -->
+            <div class="col-lg-3 col-6">
+            <!-- small card -->
+            <a href="{% url 'reports_dashboard' %}">
+              <div class="small-box bg-light dashboard_menu_item">
+                <div class="inner text-secondary">
+                  
+                  <p><h3>Reports<sup style="font-size: 20px"></sup></h3></p> 
+                </div>
+                <div class="icon">
+                  <i class="fa fa-chart-bar"></i>
+                </div>
+              </div>
+            </a>
+            </div>
+            <!-- ./col -->
+        </div>
+        <!-- ./col -->
+        
+        <div class="row">
+          <!-- <div class="col-lg-3 col-6">
+            
+            <a href="#">
+            <div class="small-box bg-light dashboard_menu_item">
+                <div class="inner text-secondary">
+                <h3>Manage Users</h3>
+                </div>
+                <div class="icon">
+                <i class="fas fa-user-plus"></i>
+                </div>
+            </div>
+            </a>
+        </div> -->
+        <!-- ./col -->
+<!-- 
+        <div class="col-lg-3 col-6">
+           
+            <a href="{% url 'inventory_dashboard' %}">
+            <div class="small-box bg-light dashboard_menu_item">
+                <div class="inner text-secondary">
+                <h3>Inventory</h3>
+
+                
+                </div>
+                <div class="icon">
+                <i class="fa fa-warehouse"></i>
+                </div>
+            </div>
+            </a>
+        </div> -->
+
+         
+
+        {% if request.user.is_admin == True %}
+            <div class="col-lg-3 col-6">
+              <!-- small card -->
+              <a href="{% url 'inventory_dashboard' %}">
+                <div class="small-box bg-light dashboard_menu_item">
+                  <div class="inner text-secondary">
+                    <p> <h3>Back Office<sup style="font-size: 20px"></sup></h3> </p>
+                  </div>
+                  <div class="icon">
+                    <i class="fa fa-cogs"></i>
+                  </div>
+                </div>
+              </a>
+            </div>
+            <!-- ./col -->
+            <!-- ./col -->
+            {%endif%}
+        
+      </div>
+
+    <!-- /.row -->
+    <!-- Small Box (Stat card) -->
+
+<script type="text/javascript">
+  $(window).on('load',function(){
+      setTimeout(function(){
+          if(!Cookies.get('modalShown')) {
+              $('#welcome_message').modal('show');
+            Cookies.set('modalShown', true);
+          } else {
+
+          }
+
+  },0.10);
+  });
+</script>
+
+
+{% endblock %}

@@ -1,0 +1,59 @@
+{% load crispy_forms_tags %}
+
+<script>
+	var input = document.querySelector("#phone_number");
+	window.intlTelInput(input, {
+	  // any initialisation options go here
+	  separateDialCode: true,
+        customPlaceholder: function (
+            selectedCountryPlaceholder,
+            selectedCountryData
+        ) {
+            return "e.g. " + selectedCountryPlaceholder;
+        },
+	  initialCountry: "auto",
+		geoIpLookup: function(callback) {
+			$.get('https://ipinfo.io', function() {}, "jsonp").always(function(resp) {
+			var countryCode = (resp && resp.country) ? resp.country : "mw";
+			callback(countryCode);
+			});
+  },
+	});
+  </script>
+
+<form method="post" data-url="{% url 'user_update' form.instance.id %}" class="update-form " >
+	{% csrf_token %}
+	<div class="modal-header bg-warning">
+        <h4 class="modal-title">UPDATE USER</h4>
+    </div>
+		<div class="modal-body">
+
+		 <div class="form-row">
+ 			 <div class="form-group col-md-6 mb-0">
+ 						{{form.email|as_crispy_field}}
+ 			 </div>
+ 			 <div class="form-group col-md-6 mb-0">
+				 		{{form.full_name|as_crispy_field}}
+ 			 </div>
+ 			 <div class="form-group col-md-6 mb-0">
+ 			 			{{form.phone_number|as_crispy_field}}
+ 			 </div>
+			 <div class="form-group col-md-6 mb-0">
+				 	{{form.user_role|as_crispy_field}}
+			 </div>
+			 <div class="form-row">
+					<div class="form-group col-md-6 mb-0">
+					 {{form.active|as_crispy_field}}
+					 {{form.admin|as_crispy_field}}
+					 {{form.staff|as_crispy_field}}
+					 {{form.superuser|as_crispy_field}}
+					</div>
+		  </div>
+		</div>
+
+	</div>
+		<div class="modal-footer block-content block-content-full text-right border-top">
+		<button type="button" class="btn btn-sm btn-outline-primary" data-dismiss="modal">Cancel Changes</button>
+		<button type="submit" class="btn btn-sm btn-outline-danger"><i class="fa fa-check mr-1"></i>Save Changes</button>
+		</div>
+</form>

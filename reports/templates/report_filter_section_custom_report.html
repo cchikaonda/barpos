@@ -1,0 +1,49 @@
+{% load crispy_forms_tags %}
+<div class="card">
+    <div class="card-header">
+      <h3 class="card-title">Sales Report</strong> For {{item_cat}} </h3>
+      <button id="download-button" class="btn btn-light" style="float: right;"> <i class="fa fa-download"></i> Download Report</button>
+      <button id="download-excel-button" class="btn btn-light exportToExcel" style="float: right;"> <i class="fa fa-download"></i> Export Report to Excel</button>
+    </div>
+    
+    <div class="row ml-3">
+        <form action="" method="POST" class="row form-select ml-2 mr-2 mt-2 mb-2">
+          {% csrf_token %}
+          <div class="row">
+            <div class="form-group mt-2 ml-4">
+              {{form.start_date_time|as_crispy_field}}
+            </div>
+            <div class="form-group mt-2 ml-1">
+              {{form.end_date_time|as_crispy_field}}
+            </div>
+            <div class="mt-2 ml-2 ">
+              <div class="ml-2 mt-1">
+                <label for="date-rage">Category</label>
+                  <div class="input-group-prepend " >
+                    <select class="form-control" name="item_categories_option" >
+                      <option value = "All Categories">All Categories</option>
+                      {% for item_cat in item_categories %}
+                        <option value="{{item_cat.category_name}}"> {{item_cat.category_name}}</option>
+                      {%endfor%}
+                    </select>
+                  </div>
+                  <script type="text/javascript">
+                    document.getElementById('item_categories_option').value = "<?php echo $_GET['item_categories_option'];?>";
+                </script>
+                
+              </div>
+              
+            </div>
+          </div>
+        
+          
+        <div class="ml-4 mt-2 mb-4" >
+          <label for="custom-rage text-right" >****</label>
+          <div>
+           <button  type="submit" name="button" class=" btn btn-success mt-2 mb-4">Submit</button>
+          </div>   
+        </div> 
+      </form>
+    </div>
+          
+</div>

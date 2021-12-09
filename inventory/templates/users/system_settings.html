@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% load cart_template_tags %}
+{% load static %}
+{% block body %}
+
+
+<style>
+   .cfooter{
+     visibility: hidden;
+   }
+   #sidebar{
+    visibility: hidden;
+   }
+   .cheader{
+      visibility: hidden;
+    }
+
+</style>   
+
+
+
+              <!-- Page Content -->
+              <div class="content">
+                  <!-- Basic -->
+                  <div class="block">
+                      <div class="block-header">
+                          <h3 class="block-title">Basic</h3>
+                      </div>
+                      <div class="block-content block-content-full">
+                          <form method="POST" >
+                            {% csrf_token %}
+                              <div class="row push">
+                                  <div class="col-lg-6">
+                                      <p class="font-size-sm text-muted">
+                                        {{form}}
+                                       
+                                      </p>
+                                  </div>
+                                </form>      
+                      </div>
+                 </div>
+                <!-- END Custom Controls -->
+             </div>
+             </div>
+             </div>
+          <!-- END Page Content -->
+
+          
+{% endblock %}

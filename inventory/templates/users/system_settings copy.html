@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% load cart_template_tags %}
+{% load static %}
+{% block body %}
+
+
+<style>
+   .cfooter{
+     visibility: hidden;
+   }
+   #sidebar{
+    visibility: hidden;
+   }
+   .cheader{
+      visibility: hidden;
+    }
+
+</style>   
+
+
+
+              <!-- Page Content -->
+              <div class="content">
+                  <!-- Basic -->
+                  <div class="block">
+                      <div class="block-header">
+                          <h3 class="block-title">Basic</h3>
+                      </div>
+                      <div class="block-content block-content-full">
+                          <form method="POST" >
+                            {% csrf_token %}
+                              <div class="row push">
+                                  <div class="col-lg-6">
+                                      <p class="font-size-sm text-muted">
+                                        {{form}}
+                                        <!-- {{form|crispy}} -->
+                                          <!-- {{form.SHOP_NAME|as_crispy_field}}
+                                      </p>
+                                  </div>
+
+                                  <div class="col-lg-6">
+                                    <p class="font-size-sm text-muted">
+                                        {{form.LOGO_IMAGE|as_crispy_field}}
+                                    </p>
+                                  </div>
+                                  <div class="col-lg-6">
+                                    <p class="font-size-sm text-muted">
+                                        {{form.ADDRESS|as_crispy_field}}
+                                    </p>
+                                  </div>
+                                  <div class="col-lg-6">
+                                    <p class="font-size-sm text-muted">
+                                        {{form.LOCATION|as_crispy_field}}
+                                    </p>
+                                  </div>
+                                  <div class="col-lg-6">
+                                    <p class="font-size-sm text-muted">
+                                        {{form.PHONES|as_crispy_field}}
+                                    </p>
+                                  </div>
+                                  <div class="col-lg-6">
+                                    <p class="font-size-sm text-muted">
+                                        {{form.EMAIL|as_crispy_field}} -->
+                                    </p>
+                                  </div>
+                              </div>
+                              
+                              <!-- <div class="row push">
+                                <div class="col-lg-6">
+                                    <p class="font-size-sm text-muted">
+                                        {{form.TAX_NAME|as_crispy_field}}
+                                    </p>
+                                </div> -->
+                                
+                            </div>
+
+                              <div>
+                                <a href=""><button class="btn btn-primary" type="submit">Save</button></a>
+                              </div>
+                          </form>
+                      </div>
+                 </div>
+                <!-- END Custom Controls -->
+             </div>
+             </div>
+          <!-- END Page Content -->
+
+          
+{% endblock %}

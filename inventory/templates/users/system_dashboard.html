@@ -1,0 +1,175 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block body %}
+{% get_media_prefix as MEDIA_URL %}
+<style>
+    .back-button,.item_buttun{
+        visibility: hidden;
+        
+    }
+    .cfooter{
+     visibility: hidden;
+   }
+   
+    
+</style>
+
+  <!-- Page Content -->
+    <div class="row mt-4">
+        <a href="{% url 'pos_dashboard' %}">
+        <div class="col-sm-4">
+            <div class="block js-appear-enabled animated bounceIn" data-toggle="appear">
+                <div class="block-content block-content-full">
+                    <div class="py-5 text-center">
+                        <div class="item item-2x item-rounded bg-dark text-white mx-auto">
+                            <i class="fa fa-cash-register fa-2x"></i>
+                        </div>
+                        <div class="font-size-h4 font-w600 pt-3 mb-0 text-secondary">Sales Register</div>
+                    </div>
+                </div>
+            </div>
+        </a>
+        </div>
+        
+        
+        <div class="col-sm-4">
+            <a href="{% url 'inventory_dashboard' %}">
+            <div class="block js-appear-enabled animated bounceIn" data-toggle="appear">
+                <div class="block-content block-content-full">
+                    <div class="py-5 text-center">
+                        <div class="item item-2x item-rounded bg-dark text-white mx-auto">
+                            <i class="fa fa-archive fa-2x"></i>
+                        </div>
+                        <div class="font-size-h4 font-w600 pt-3 mb-0 text-secondary">Inventory</div>
+                    </div>
+                </div>
+            
+            </div>
+            </a>
+        </div>
+        <div class="col-sm-4">
+            <a href="#">
+            <div class="block js-appear-enabled animated bounceIn" data-toggle="appear">
+                <div class="block-content block-content-full">
+                    <div class="py-5 text-center">
+                        <div class="item item-2x item-rounded bg-dark text-white mx-auto">
+                            <i class="fab fa-2x fa-chrome"></i>
+                        </div>
+                        <div class="font-size-h4 font-w600 pt-3 mb-0 text-secondary">Browser</div>
+                    </div>
+                </div>
+            </div>
+            </a>
+        </div>
+    </div>
+    <!-- END Appear -->
+
+    <!-- Animation Classes -->
+    <div class="row">
+        <a href="{% url 'reports_dashboard' %}">
+        <div class="col-sm-4">
+            <div class="block js-appear-enabled animated bounceIn" data-toggle="appear" data-class="animated bounceIn">
+                <div class="block-content block-content-full">
+                    <div class="py-5 text-center">
+                        <div class="item item-2x item-rounded bg-dark text-white mx-auto">
+                            <i class="fa fa-chart-bar fa-2x"></i>
+                        </div>
+                        <div class="font-size-h4 font-w600 pt-3 mb-0 text-secondary">Reports</div>
+                    </div>
+                </div>
+            </div>
+        </a>
+        </div>
+        <div class="col-sm-4">
+            <a href="{% url 'system_settings' %}">
+            <div class="block js-appear-enabled animated flipInX" data-toggle="appear" data-class="animated flipInX">
+                <div class="block-content block-content-full">
+                    <div class="py-5 text-center">
+                        <div class="item item-2x item-rounded bg-dark text-white mx-auto">
+                            <i class="si fa-2x si-settings"></i>
+                        </div>
+                        <div class="font-size-h4 font-w600 pt-3 mb-0 text-secondary">Settings</div>
+                    </div>
+                </div>
+            </div>
+        </a>
+        </div>
+        <div class="col-sm-4">
+            <a href="#">
+            <div class="block js-appear-enabled animated flash" data-toggle="appear" data-class="animated flash">
+                <div class="block-content block-content-full">
+                    <div class="py-5 text-center">
+                        <div class="item item-2x item-rounded bg-dark text-white mx-auto">
+                            <i class="si fa-2x fa-2x si-rocket"></i>
+                        </div>
+                        <div class="font-size-h4 font-w600 pt-3 mb-0 text-secondary">Customers</div>
+                    </div>
+                </div>
+            </div>
+        </a>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <a href="#">
+        <div class="col-sm-4">
+            <div class="block js-appear-enabled animated bounceIn" data-toggle="appear" data-class="animated bounceIn">
+                <div class="block-content block-content-full">
+                    <div class="py-5 text-center">
+                        <div class="item item-2x item-rounded bg-dark text-white mx-auto">
+                            <i class="si fa-2x si-user"></i>
+                        </div>
+                        <div class="font-size-h4 font-w600 pt-3 mb-0 text-secondary">Manage Users</div>
+                    </div>
+                </div>
+            
+            </div>
+        </a>
+        </div>
+        <div class="col-sm-4">
+            <a href="#">
+            <div class="block js-appear-enabled animated flipInX" data-toggle="appear" data-class="animated flipInX">
+                <div class="block-content block-content-full">
+                    <div class="py-5 text-center">
+                        <div class="item item-2x item-rounded bg-dark text-white mx-auto">
+                            <i class="si fa-2x si-settings"></i>
+                        </div>
+                        <div class="font-size-h4 font-w600 pt-3 mb-0 text-secondary">Settings</div>
+                    </div>
+                </div>
+            </div>
+        </a>
+        </div>
+        <div class="col-sm-4">
+            
+            <a href="{% url 'logout_request' %}" class="" id="logout">
+            <div class="block js-appear-enabled animated flash" data-toggle="appear" data-class="animated flash">
+                <div class="block-content block-content-full">
+                    <div class="py-5 text-center">
+                        <div class="item item-2x item-rounded bg-dark text-white mx-auto">
+                            <i class="fa fa-sign-out-alt fa-2x"></i>
+                        </div>
+                        <div class="font-size-h4 font-w600 pt-3 mb-0 text-secondary">Logout</div>
+                    </div>
+                </div>
+            </div>
+        </a>
+        </div>
+        </a>
+    </div>
+    <!-- END Animation Classes -->
+
+<script type="text/javascript">
+  $(window).on('load',function(){
+      setTimeout(function(){
+          if(!Cookies.get('modalShown')) {
+              $('#welcome_message').modal('show');
+            Cookies.set('modalShown', true);
+          } else {
+
+          }
+
+  },0.10);
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,22 @@
+{% load crispy_forms_tags %}
+<form method="post" data-url="{% url 'customer_update' form.instance.id %}" class="update-form " >
+	{% csrf_token %}
+	<div class="block block-themed block-transparent mb-0">
+			<div class="block-header bg-primary-dark">
+				<h5 class="modal-title block-title ">Update Customer</h5>
+					<div class="block-options">
+						<button type="button" class="btn-block-option" data-dismiss="modal" aria-label="Close">
+						<i class="fa fa-fw fa-times"></i>
+						</button>
+						<span aria-hidden="true"></span>
+					</div>
+		</div>
+	</div>
+		<div class="modal-body">
+		{{form|crispy}}
+		</div>
+		<div class="modal-footer block-content block-content-full text-right border-top">
+		<button type="button" class="btn btn-sm btn-outline-primary" data-dismiss="modal">Cancel Changes</button>
+		<button type="submit" class="btn btn-sm btn-outline-danger"><i class="fa fa-check mr-1"></i>Save Changes</button>
+		</div>
+</form>

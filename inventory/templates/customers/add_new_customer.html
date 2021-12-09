@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block body %}
+<div id="page-container">
+          <!-- Main Container -->
+
+
+          <main id="main-container">
+            <div class="bg-body-light">
+                <div class="content content-full">
+                    <div class="d-flex flex-column flex-sm-row justify-content-sm-between align-items-sm-center">
+
+                        <h1 class="flex-sm-fill h2 my-2">
+                            <small class="d-block d-sm-inline-block mt-2 mt-sm-0 font-size-base font-w400 text-muted">Add New customer Panel</small>
+                        </h1>
+                        <nav class="flex-sm-00-auto ml-sm-3" aria-label="breadcrumb">
+                            <ol class="breadcrumb breadcrumb-alt">
+                              <i class="nav-main-link-icon fa fa-tachometer-alt si si-speedometer"></i>
+                                <li class="breadcrumb-item"></li>
+                                <li class="breadcrumb-item" aria-current="page">
+                                    <a class="link-fx" href="">  Manage Customers</a>
+                                </li>
+                            </ol>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+              <div class="block-content block-content-full">
+                <div class="row items-push">
+                  <div class="col-lg-8"  style="align-items: center;">
+                    {% if messages %}
+                      <ul class="messages">
+                        {% for message in messages %}
+                          <li>
+                            <div class="alert alert-success">{{message}}</div>
+                          </li>
+                        {% endfor %}
+                      </ul>
+                    {% endif %}
+
+                    <form  method="POST">
+                     {% csrf_token %}
+                     {{form|crispy}}
+
+                     {% csrf_token %}
+                     <button type="submit" class="btn btn-md btn-secondary" href="{% url 'customers_page'%} name="button">Save</button>
+                     <button type="submit" class="btn btn-md btn-success" href="{% url 'add_new_customer'%}" name="button">Save and add another</button>
+
+
+                   </form>
+                </div>
+            </div>
+
+          <div >
+  </div>
+
+
+                          <!-- END Page Content -->
+{% endblock %}

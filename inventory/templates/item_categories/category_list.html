@@ -1,0 +1,49 @@
+{% extends 'base_inventory.html' %}
+{% block content %}
+
+<!-- Main content -->
+<section class="content">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-12">
+
+        <div class="card-body">
+            <div class="card">
+              <div class="card-header">
+                <div class="block-header row">
+                  <div class="col-md-6 mb-0">
+                    <button class="btn btn-primary show-form mb-2" data-url="{% url 'category_create' %}"> <span class="fa fa-plus fa-1x"></span> Add New Item Category</button>
+                  </div>
+              </div>
+              <table class="table table-bordered table-striped" id="category-table">
+                <thead >
+                  <tr>
+                      <th class="text-center" style="width: 5%;">ID</th>
+                      <th class="d-none d-sm-table-cell" style="width: 30%;">Item Category</th>
+                      <th class="d-none d-sm-table-cell" style="width: 30%;">Description</th>
+                      <th class="d-none d-sm-table-cell" style="width: 20%;">Colour</th>
+                      <th style="width: 20%;">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% include "includes/category_list_2.html" %}
+                </tbody>
+            </table>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+
+
+  <div class="modal fade" id="modal-category">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content"></div>
+    </div>
+  </div>
+
+{% endblock %}

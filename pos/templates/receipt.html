@@ -1,0 +1,284 @@
+{% load static %}
+{% get_media_prefix as MEDIA_URL %}
+<html>
+    <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Receipt Print</title>
+    <!-- Tell the browser to be responsive to screen width -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Bootstrap 4 -->
+  
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="{% static '/plugins/fontawesome-free/css/all.min.css' %}" type="text/css">
+
+    <!-- Theme style -->
+    <link rel="stylesheet" href="{% static '/dist/css/adminlte.min.css' %}" type="text/css">
+
+    <link rel="stylesheet" href="{% static '/pages/receipt/css/receipt.css' %}" type="text/css">
+     <!-- jQuery -->
+  <script src="{% static '/plugins/jquery/jquery.min.js' %}"></script>
+  <!-- Bootstrap 4 -->
+  <script src="{% static '/plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+
+  </head>
+
+<style>
+    #invoice-POS {
+    box-shadow: 0 0 1in -0.25in rgba(0, 0, 0, 0.5);
+    padding: 1mm;
+    margin: 0 auto;
+    width: 44mm;
+    background: #fff;
+  }
+  #invoice-POS ::selection {
+    background: #f31544;
+    color: #fff;
+  }
+  #invoice-POS ::moz-selection {
+    background: #f31544;
+    color: #fff;
+  }
+  #invoice-POS h1 {
+    font-size: 1em;
+    color: #222;
+  }
+  #invoice-POS h2 {
+    font-size: 0.9em;
+  }
+  #invoice-POS h3 {
+    font-size: 1em;
+    font-weight: 200;
+    line-height: 1em;
+  }
+  #invoice-POS p {
+    font-size: 0.7em;
+    color: #666;
+    line-height: 1em;
+  }
+  /* #invoice-POS #top,
+  #invoice-POS #mid, */
+  /* #invoice-POS #bot { */
+    /* Targets all id with 'col-' */
+    /* border-bottom: 1px solid #eee; */
+  /* } */
+  /* #invoice-POS #top {
+    min-height: 40px;
+  } */
+  /* #invoice-POS #mid {
+    min-height: 80px;
+  } */
+  /* #invoice-POS #bot {
+    min-height: 50px;
+  } */
+  /* #invoice-POS #top .logo {
+    height: 60px;
+    width: 60px;
+    background: url({{config.LOGO_IMAGE}}) no-repeat;
+    background-size: 60px 60px;
+  } */
+  /* #invoice-POS .clientlogo {
+    float: left;
+    height: 60px;
+    width: 60px;
+    background: url(http://michaeltruong.ca/images/client.jpg) no-repeat;
+    background-size: 60px 60px;
+    border-radius: 50px;
+  } */
+  #invoice-POS .info {
+    display: block;
+    margin-left: 0;
+  }
+  #invoice-POS .title {
+    float: right;
+  }
+  #invoice-POS .title p {
+    text-align: right;
+  }
+  #invoice-POS table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  #invoice-POS .tabletitle {
+    font-size: 0.5em;
+    background: #eee;
+  }
+  #invoice-POS .service {
+    border-bottom: 1px dotted #eee;
+  }
+  #invoice-POS .item {
+    width: 24mm;
+  }
+  #invoice-POS .itemtext {
+    font-size: 0.4em;
+  }
+  #invoice-POS #legalcopy {
+    /* margin-top: 5mm; */
+    font-size: small;
+    text-align: center;
+    
+  }
+  /* tr {
+   line-height: 5px;
+   min-height: 5px;
+   height: 5px;
+} */
+</style>
+
+<script>
+  var today = new Date();
+  $(document).ready(function(){
+    $("#receiptModal").modal('show');
+  });
+</script>
+  <body onload="realtimeClock()" style="font-family: monospace;">
+    
+  <div class="wrapper">
+    
+    <!--INVOICE-->
+    <div id="invoice-POS">
+    
+      <div id="top" class="text-center">
+        {% if config.LOGO_IMAGE %}  
+        <span class="smini-hide">   
+            <img style="width: 30px; height: 30px;" src="{{MEDIA_URL}}{{config.LOGO_IMAGE}}" alt="">
+        </span>
+        {% else %}
+        <span style="font-size: larger; font-family: Georgia, 'Times New Roman', Times, serif;">   
+            {{config.SHOP_NAME|title}}
+        </span>
+        {% endif %}
+        <!-- <div class="info"> 
+          <h2>{{config.SHOP_NAME}}</h2>
+        </div> -->
+        <!--End Info-->
+      </div>
+      <!--End InvoiceTop-->
+      <div style="font-size: xx-small;" class="text-center info border-bottom" >
+          <p > 
+              Address : {{config.ADDRESS}}</br>
+              Email   : {{config.EMAIL}}</br>
+              Phone   : {{config.CEL}}</br>
+              <a>{{ now|date:'d-m-Y H:i' }}</a>
+          </p>
+          <!--current time-->
+          <!-- <p id="real_time"></p> -->
+          <!-- <p>{% now "jS F Y H:i" %}</p> -->
+          
+          <!--end current time--> 
+      </div>
+      <!--End Invoice Mid-->
+      <div id="bot" >
+        <p class="text-center border-bottom ">SALES RECEIPT</p>
+          <div id="table">
+              <table style="font-size: xx-small;">
+                <tr class="tabletitle">
+                  <th >ITEM</th>
+                  <th class="text-center">QTY</th>
+                  <th class="text-center">PRICE</th>
+                  <th class="text-right" >SUB TOTAL</th>
+                </tr>
+                {% for ordered_item in order.items.all %}
+                <tr class="service">
+                  <td class="itemtext">{{ordered_item.item}}</td>
+                  <td  class="itemtext text-center">{{ordered_item.quantity}}</td>
+                  <td  class="itemtext text-center">{{ordered_item.price.amount}}</td>
+                  <td class="itemtext text-right">{{ordered_item.get_total_amount.amount}}</td>
+                </tr>
+                {% endfor %}
+                <tr class="service">
+                  <td></td>
+                  <td></td>
+                  <td class="itemtext">VAT({{config.TAX_NAME}}%)</td>
+                  <td class="itemtext text-right"><strong>{{order.get_vat_value}}</strong></td>
+                </tr>
+                <tr class="service">
+                  <td></td>
+                  <td></td>
+                  <td class="itemtext">Total</td>
+                  <td class="itemtext text-right"><strong> {{order.order_total_due}}</strong></td>
+                </tr>
+                <tr class="service">
+                  <td></td>
+                  <td></td>
+                  <td class="itemtext"> <strong > Paid: </strong></td>
+                  <td class="itemtext text-right"> <strong> {{order.paid_amount.paid_amount}} </strong></td>
+                </tr>
+                {% if order.paid_amount.paid_amount > order.order_total_due %}
+                <tr class="service">
+                  <td></td>
+                  <td></td>
+                  <td class="itemtext"> <strong > Change: </strong> </td>
+                  <td class="itemtext text-right"> <strong> {{order.get_change}}</strong> </td>
+                </tr>
+                {% else %}
+                <tr class="service" style="background-color: darkgrey;">
+                  <td></td>
+                  <td></td>
+                  <td class="itemtext"> <strong > Balance: </strong> </td>
+                  <td class="itemtext text-right"> <strong> {{order.get_balance}}</strong> </td>
+                </tr>
+                {% endif %}
+              </table>
+            <!--End Table-->
+          </div>
+
+          <div id="legalcopy">
+            <div style="margin: auto">
+              {{ svg|safe }}
+            </div>
+            <p class="border-bottom"><strong>User: {{user.full_name|title}} </br>
+              OrderID: {{order.get_code}}</strong>  
+            </p>
+            <p class="legal"><strong>THANK YOU!</strong>  
+            </p>
+          </div>
+      </div>
+      <!--End InvoiceBot-->
+    </div>
+    <!--End Invoice-->
+  
+  </div>
+  <!-- ./wrapper -->
+
+
+<!--View Bill Modal-->
+<div class="modal fade" id="receiptModal">
+  <div class="modal-dialog modal-dialog-centered modal-sm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Order: {{order.get_code}}</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        
+        <form action="{% url 'add_payment' %}" method="post" >
+          {% csrf_token %}
+          
+          <div class="form-group" >
+              <input id="topay" class="form-control text-right payment_form" name="" value="{{order.order_mpamba_total_due}}" style="background-color: rgb(62, 74, 89); font-size: 200%; font-family: monospace; color: chartreuse;" disabled/>
+          </div>
+          <br>
+
+      </div>
+      <div class="modal-footer justify-content-between">
+       <a href="#"><button type="button" class="btn btn-default" data-dismiss="modal" onclick="window.location.reload();" >REPRINT</button> </a>
+       <a href="{% url 'view_my_orders' %}"> <button type="button" class="btn btn-primary" >OK</button> </a>
+      </div>
+    </div>
+  </form>
+    <!-- /.modal-content -->
+  </div>
+</div>
+<!--End View Bill Modal-->
+
+  
+  <script type="text/javascript"> 
+    window.addEventListener("load", window.print());
+  </script>
+  <script src="{% static '/custom_js/current_date_time.js' %}"></script>
+  
+  <div class="col-6"><a href="{% url 'pos_dashboard' %}"> <button class="btn btn-success posoption_button">OK</button></a></div>
+  </body></html>

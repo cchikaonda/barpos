@@ -1,0 +1,61 @@
+{% extends 'base_pos.html' %}
+{% load static %}
+{% load widget_tweaks %}
+{% load crispy_forms_tags %}
+
+{% block body %}
+<div class="content ml-4 mr-4 mb-4">
+    <div class="form-group">
+        <form action="" method="POST" class="mb-4">
+            {% csrf_token %}
+            <!-- {{form|crispy}} -->
+           <div class="row">
+                <div class="form-group col-md-3 mb-0">
+                    {{form.SHOP_NAME|as_crispy_field}}
+                </div>
+                <div class="form-group col-md-3 mb-0">
+                    {{form.TAG_LINE|as_crispy_field}}
+                </div>
+                <div class="form-group col-md-3 mb-0">
+                    {{form.ADDRESS|as_crispy_field}}
+                </div>
+                <div class="form-group col-md-3 mb-0">
+                    {{form.LOCATION|as_crispy_field}}
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-md-3 mb-0">
+                    {{form.COUNTRY|as_crispy_field}}
+                </div>
+                <div class="form-group col-md-3 mb-0">
+                    {{form.TEL|as_crispy_field}}
+                </div>
+                <div class="form-group col-md-3 mb-0">
+                    {{form.FAX|as_crispy_field}}
+                </div>
+                <div class="form-group col-md-3 mb-0">
+                    {{form.CEL|as_crispy_field}}
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-md-3 mb-0">
+                    {{form.EMAIL|as_crispy_field}}
+                </div>
+                <div class="form-group col-md-3 mb-0">
+                    {{form.TAX_NAME|as_crispy_field}}
+                </div>
+                <div class="form-group col-md-3 mb-0">
+                    {{form.LOGO_IMAGE|as_crispy_field}}
+                </div>
+                <div class="form-group col-md-3 mb-0">
+                    {{form.QUICK_SALE|as_crispy_field}}
+                </div>
+            </div>
+            <div class="modal-footer block-content block-content-full text-right border-top">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+            </div> 
+        </form>
+    </div>
+</div>
+{% endblock %}

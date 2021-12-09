@@ -1,0 +1,51 @@
+{% extends 'base_inventory.html' %}
+{% block content %}
+
+<!-- Main content -->
+<section class="content">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-12">
+
+        <div class="card-body">
+            <div class="card">
+              <div class="card-header">
+                <div class="block-header row">
+                  <div class="col-md-6 mb-0">
+                    <button class="btn btn-primary show-form mb-2" data-url="{% url 'unit_create' %}"> <span class="fa fa-plus fa-1x"></span> Add New Unit</button>
+                  </div>   
+              </div>
+  
+              <table class="table table-bordered table-striped" id="unit-table">
+                <thead >
+                  <tr>
+                      <th class="text-center" style="width: 5%;">ID</th>
+                      <th class="d-none d-sm-table-cell" style="width: 15%;">Unit Description</th>
+                      <th class="d-none d-sm-table-cell" style="width: 10%;">Unit Short Name</th>
+                      <th style="width: 10%;" class="text-center">Actions</th>
+
+                  </tr>
+                </thead>
+                <tbody>
+                  {% include "units/unit_list_2.html" %}
+                </tbody>
+            </table>
+                
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<div class="modal fade" id="modal-unit">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content"></div>
+  </div>
+</div>
+
+
+{% endblock %}
+

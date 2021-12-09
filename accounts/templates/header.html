@@ -1,0 +1,70 @@
+{% load static %}
+<nav class="navbar navbar-light navbar-expand-md bg-light justify-content-md-center justify-content-start border-bottom mb-2" style="font-size: x-large;">
+  <a class="nav-item" href="{% url 'system_dashboard' %}">{{config.SHOP_NAME}}</a> 
+   
+  <div class="navbar-collapse collapse justify-content-between align-items-center">
+
+    <ul class="navbar-nav mx-left text-md-left text-left" id="home_button"> 
+      <li class="nav-item">
+        <a class="nav-link" role="button" href="{% url 'system_dashboard' %}">
+          <button class="btn btn-lg btn-light"><i class="fas fa-home"></i> Home </button>
+        </a>
+      </li>
+    </ul>
+  
+    <ul class="navbar-nav mx-left text-md-left text-left" id="my_orders_button"> 
+      <li class="nav-item">
+        <a class="nav-link" role="button" href="{% url 'reports_dashboard' %}">
+          <button class="btn btn-lg btn-light"><i class="fa fa-chart-bar"></i> Reports</button>
+        </a>
+      </li>
+    </ul>
+
+
+      <ul class="navbar-nav mx-auto text-md-center text-left"> 
+        <!--current time-->
+        <li class="nav-item">
+          <a class="nav-link" id="real_time"></a>
+        </li>
+        <!--end current time-->
+      </ul>
+      
+
+      <ul class="navbar-nav mx-left text-md-left text-left" id="my_orders_button"> 
+        <li class="nav-item">
+          <a class="nav-link" role="button" href="{% url 'view_my_orders' %}">
+            <button class="btn btn-lg btn-light"><i class="fas fa-shopping-basket"></i> My Customers </button>
+          </a>
+        </li>
+      </ul>
+      <ul class="navbar-nav mx-left text-md-left text-left" id="my_orders_button"> 
+        <li class="nav-item">
+          <a class="nav-link" role="button" href="{% url 'pos_dashboard' %}">
+            <button class="btn btn-lg btn-light"><i class="fas fa-cash-register"></i> Register Sale</button>
+          </a>
+        </li>
+      </ul>
+
+      <ul class="nav navbar-nav flex-row justify-content-md-center justify-content-start flex-nowrap"> 
+          <li class="nav-item">
+            <div class="user-panel mt-2 pb-2 d-flex">
+              <div class="image">
+                <img src="{{user.image.url}}" class="img-circle elevation-2" alt="">
+              </div>
+              <div class="info">
+                <a class="d-block">{{user.full_name|title}}
+                  <!-- <i class="fa fa-fw fa-angle-down d-none d-sm-inline-block"></i> -->
+                </a>
+                
+              </div>
+            </div>
+          </li>
+          
+          <li class="nav-item">
+            <a class="nav-link" data-toggle="modal" data-target="#logout_confirm" role="button">
+              <button class="btn btn-lg btn-light "><i class="fas fa-sign-in-alt"></i> Logout </button>
+            </a>
+          </li>
+        </ul>     
+  </div>
+</nav>

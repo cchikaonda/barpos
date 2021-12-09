@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block body %}
+  <div id="page-container">
+            <!-- Main Container -->
+            <main id="main-container">
+              <div class="bg-body-light">
+                  <div class="content content-full">
+                      <div class="d-flex flex-column flex-sm-row justify-content-sm-between align-items-sm-center">
+                          <h1 class="flex-sm-fill h2 my-2">
+                              <small class="d-block d-sm-inline-block mt-2 mt-sm-0 font-size-base font-w400 text-muted">Account Settings</small>
+                          </h1>
+                          <nav class="flex-sm-00-auto ml-sm-3" aria-label="breadcrumb">
+                              <ol class="breadcrumb breadcrumb-alt">
+                                <i class="nav-main-link-icon fa fa-tachometer-alt si si-speedometer"></i>
+                                  <li class="breadcrumb-item"></li>
+                                  <li class="breadcrumb-item" aria-current="page">
+                                      <a class="link-fx" href="">  Account Settings</a>
+                                  </li>
+                              </ol>
+                          </nav>
+                      </div>
+                  </div>
+              </div>
+  <!-- Page Content -->
+                <div class="content">
+                    <div class="row">
+                        <div class="col-xl-7">
+                            <div class="block">
+                                <div class="block-content">
+                                  <form class="form-horizontal" method="post" enctype="multipart/form-data">
+                                    {% csrf_token %}
+
+                                    {{form|crispy}}
+
+                                    <div class="">
+                                      <button type="submit" name="button" class="btn btn-primary" >Save </button>
+                                      <button type="button" name="button" class="btn btn-success">Clear</button>
+                                      <button type="button" name="button" class="btn btn-warning">Cancel</button>
+                                    </div>
+                                  </form>
+                                  <br> </br>
+                                </div>
+                            </div>
+
+                    </div>
+                </div>
+
+                <!-- END Page Content -->
+
+
+
+{% endblock %}

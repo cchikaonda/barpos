@@ -1,0 +1,333 @@
+{% extends 'base_pos.html' %}
+
+
+{% block body %}
+<style>
+  #customer_name_label{
+    display: inline;
+  }
+</style>
+
+<nav class="navbar navbar-light navbar-expand-md bg-light justify-content-md-center justify-content-start border-bottom mb-2" style="font-size: x-large;">
+  <a class="nav-item" href="{% url 'system_dashboard' %}"><b>{{order.get_code}}</b></a>  
+  <div class="navbar-collapse collapse justify-content-between align-items-center">
+      
+
+      <ul class="navbar-nav mx-auto text-md-center text-left"> 
+          <a class="nav-link ml-4">Customer: <b>{{order.customer|title}}</b></a>
+      </ul>
+    
+      <ul class="nav navbar-nav flex-row justify-content-md-center justify-content-start flex-nowrap"> 
+          <li class="nav-item">
+            <form class="q" action="../personal_order_list/{{order.id}}" method="GET">
+                <div class="input-group searchform" name ="q">
+                    {{item_search_form.barcode}}
+                    <div class="input-group-append">
+                        <button type="submit" class="btn btn-info show-form" style="width: 90px;"><i class="fa fa-search"></i></button>
+                    </div>
+                </div>
+                
+            </form>
+        </li>
+     </ul>     
+  </div>
+</nav>
+
+<!--ROW-->
+<div class="row">
+  {% if items_in_order %}
+  
+  
+    
+  {%else%}
+<style>
+  #cart_section{
+    display: none;
+  }
+  #other_payments{
+    display: none;
+  }
+</style>
+  {% endif %}
+
+{% if items_in_order %}
+  <!--CART ITEMS-->
+  <div class="col-md-6" >
+      <div class="card" id="cart_section">
+          <div class="card-header">
+              <h3 class="card-title">Cart</h3>
+              <div class="card-tools">
+                  <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i>
+                  </button>
+                  <button type="button" class="btn btn-tool" data-card-widget="remove"><i class="fas fa-times"></i>
+                  </button>
+              </div>
+          </div>
+          <!-- /.card-header -->
+          <div class="card-body">
+              <div class="table-responsive">
+                  <table class="table m-0">
+                    <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Item</th>
+                      <th></th>
+                      <th class="text-center">Quantity</th>
+                      <th></th>
+                      <th>Cost</th>
+                      <th class="text-right">Total</th>
+                      <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                  {% for ordered_item in items_in_order %}
+                    <tr>
+                      <td>{{forloop.counter}}</td>
+                      <td>{{ordered_item.item}}</td>
+                      <td class="text-right"><a href="{%url 'remove_single_item_from_cart' ordered_item.item.slug %}"><button class="btn btn-outline-info"><i class="fas fa-minus"></i></button></td>
+                      <td class="text-center"></a>{{ordered_item.quantity}}</td>
+                      
+                      <td>
+                        {% if ordered_item.item.quantity_at_hand > 0 %}
+                        <a href="{%url 'add_to_cart' ordered_item.item.slug %}"><button class="btn btn-outline-info" id="add-to-cat-button"><i class="fas fa-plus"></i></button></a>
+                        {% endif %}
+                      </td>
+                      
+                      <td>{{ordered_item.price}}</td>
+                      <td class="text-right">{{ordered_item.get_total_amount}}</td>
+                      <td class="text-center"> <a href="{{ordered_item.item.get_remove_from_cart_url }}"> <button class="btn btn-outline-info"><i class="fas fa-times"></i></button></td>
+                      </tr>
+                    
+                    {% endfor %}
+                    {% if order.order_total %}
+                    <tr>
+                      <td colspan="6" class="text-right">SUB TOTAL</td>
+                      <td colspan="2" class="text-right">{{order.order_total}}</td> 
+                    </tr>
+                    <tr>
+                      <td colspan="6" class="text-right">TAXABLE @({{config.TAX_NAME}}%)</td>
+                      <td colspan="2" class="text-right">{{order.get_taxable_value}}</td>
+                      
+                    </tr>
+                    <tr>
+                      <td colspan="6" class="text-right">VAT @({{config.TAX_NAME}}%)</td>
+                      <td colspan="2" class="text-right">{{order.get_vat_value}}</td>
+                      
+                    </tr>
+                    <tr>
+                      <td colspan="5"></td>
+                      
+                      <td colspan="1" class="text-right" style="background-color:#343a40; font-size: 100%; font-family: monospace; color: chartreuse;" class="col-md-6">TOTAL</td>
+                      <td colspan="2" class="text-right" style="background-color:#343a40; font-size: 100%; font-family: monospace; color: chartreuse;" class="col-md-6">{{order.order_total_due}}</td>
+                    </tr>
+                    {% if order.paid_amount.paid_amount >= order.order_total_cost %}
+                      <tr style="outline: none; border: none;">
+                          <td colspan="3"  style="text-align: right; outline: none; background-color: rgba(171, 213, 238, 0.6);" class="text-info font-size-h4 font-w600" >AMOUNT TENDERED</td>
+                          <td colspan="2" style="background-color: rgba(171, 213, 238, 0.6); font-weight: bold;">{{order.paid_amount.paid_amount}}</td>
+                          <td colspan="1" class="text-info font-size-h4 font-w600 text-right" style="background-color: rgba(171, 227, 125, 0.6); font-weight: bold;">CHANGE</td>
+                          <td colspan="2" class="text-right" style="background-color: rgba(171, 227, 125, 0.6); font-weight: bold;">{{order.get_change}}</td>
+                      </tr>
+                    {% else %}
+                      <tr style="outline: none; border: none;">
+                        {% if order.paid_amount.paid_amount == order.default_amount_paid %}
+        
+                        {% else %}
+                        <td colspan="2"  style="text-align: right; outline: none;background-color: rgba(171, 213, 238, 0.6);" class="text-info font-size-h4 font-w600" >Amount Tendered is less than the Total Bill</td>
+                        
+                        <td colspan="2" style="background-color: rgba(171, 213, 238, 0.6); font-weight: bold;">{{order.paid_amount.paid_amount}}</td>
+                        <td></td>
+                        <td colspan="1" style="text-align: right; outline: none; background-color: rgba(214, 14, 7, 0.6); " class="font-size-h4 font-w600">BALANCE</td>
+                        <td colspan="2" class="text-right" style="background-color: rgba(214, 14, 7, 0.6); font-weight: bold;">{{order.get_balance}}</td>
+                        {% endif %}
+                      </tr>
+                    {% endif %}
+
+                  {% endif %}
+                    </tbody>
+                  </table>
+                </div>
+                <div class="mt-2">
+      
+              <table class="mb-4">
+  
+                <tr>
+                  <td>
+                  <!-- /.table-responsive -->
+      
+                  <a href="{% url 'print_receipt_only' %}"><button class="btn btn-secondary mr-2 ml-2 posoption_button" style="float: left;"><i class="fas fa-print"></i> Print Bill</button> </a>
+                  {% if order.paid_amount.paid_amount %}
+                  
+                  {% if order.paid_amount.paid_amount > order.order_total_due or order.paid_amount.paid_amount == order.order_total_due %}
+                  <a data-toggle="modal" data-target="#produceReceiptModal"><button class="btn btn-success mr-2 ml-2 posoption_button" style="float: right;"><i class="fas fa-arrow-right"></i> Checkout</button> </a> 
+                  {% endif %}
+                  {% endif %}
+
+  
+                  {% if order.items and order.order_total_due > order.paid_amount.paid_amount %}
+                  <!-- <a href="{% url 'save_bill' %}"><button class="btn btn-secondary mr-2 ml-2 posoption_button" style="float: right;"><i class="fas fa-save"></i> Save Bill</button> </a> -->
+                  <a data-toggle="modal" data-target="#produceReceiptSavedBillModal"><button class="btn btn-info mr-2 ml-2 posoption_button" style="float: left;"><i class="fas fa-save"></i> Save Bill</button> </a>
+                  {% if order.paid_amount.payment_mode == 'Lay By' %}
+                  <a data-toggle="modal" data-target="#laybyModal"><button class="btn btn-secondary mr-2 ml-2 posoption_button" style="float: center;"><i class="fas fa-money-bill-alt"></i> Add Another Payment</button> </a>
+                  {% else %}
+                  <a data-toggle="modal" data-target="#cashModal"><button class="btn btn-success mr-2 ml-2 posoption_button" style="float: right;"><i class="fas fa-money-bill-alt"></i> Pay Cash</button> </a>
+                  {% endif %}
+                  {% endif %}
+                  
+                  
+                  </td>
+                </tr>
+              </table>
+              <div id="modal-div"></div>
+              </div>
+            
+          </div>
+                  
+      </div>
+
+
+{% if order.items and order.order_total_due > order.paid_amount.paid_amount %}
+
+{% if order.paid_amount.payment_mode == 'Lay By' %}
+{% else %}
+  <!--OTHER PAYMENTS-->
+  <div >
+      <div class="card collapsed-card" id="other_payments">
+          <div class="card-header">
+            
+              <h3 class="card-title">OTHER PAYMENTS</a></h3>
+
+              <div class="card-tools">
+          
+                  <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-plus"></i>
+                  </button>
+                  <button type="button" class="btn btn-tool" data-card-widget="remove"><i class="fas fa-times"></i>
+                  </button>
+              </div>
+          </div>
+          <!-- /.card-header -->
+          <div class="card-body">
+              <div class="table-responsive">
+                  
+                </div>
+                <div class="mt-2">
+                <!-- <a data-toggle="modal" data-target="#airtelMoneyModal"><button class="btn btn-danger mr-2 ml-2 posoption_button" style="float: left;"><i class="fas fa-money-bill-alt"></i> Airtel Money</button> </a> -->
+                <a data-toggle="modal" data-target="#laybyModal"><button class="btn btn-secondary mr-2 ml-2 posoption_button" style="float: center;"><i class="fas fa-money-bill-alt"></i> Lay By </button> </a>
+                <!-- <a data-toggle="modal" data-target="#mpambaModal"><button class="btn btn-success mr-2 ml-2 posoption_button" style="float: right;"><i class="fas fa-money-bill-alt"></i> Mpamba </button> </a> -->
+              </div>
+          </div>    
+      </div>
+  </div>
+  <!--END OTHER PAYMENTS-->
+{% endif %}
+{% endif %}
+    
+  </div>
+  <!--END CART ITEMS-->
+{% else %}
+  <!--CART ITEMS-->
+  <div class="col-md-6" >
+    <div class="card ml-2" >
+        <div class="card-body text-center">
+
+          <a class="btn btn-default disabled" style="width: 100px; height: 100px; border-style: dotted; border-radius: 2ex; border-width: 3px;" ></a> <br>
+
+           <strong> Order is Empty!</strong> <br>
+            Add Items from Catalog 
+        </div>
+              
+    </div>
+
+  </div>
+  <!--END CART ITEMS-->
+{% endif %}
+    
+    <!--ITEMS TABLE-->
+    <div class="col-6">
+      <div class="card card-info card-outline card-outline-tabs">
+        <div class="card-header p-0 border-bottom-0">
+          <ul class="nav nav-tabs mt-2" id="custom-tabs-four-tab" role="tablist">
+            <li class="nav-item ml-4">
+              <a id="custom-tabs-four-settings-tab" class="nav-link info-box show active bg-secondary" data-toggle="pill" href="#custom-tabs-four-settings" role="tab" aria-controls="custom-tabs-four-settings" aria-selected="true" style="height: 50px !important; width: 210px !important;">
+               ITEMS
+              </a>
+              <!-- <a class="nav-link text-info show active" id="custom-tabs-four-settings-tab" data-toggle="pill" href="#custom-tabs-four-settings" role="tab" aria-controls="custom-tabs-four-settings" aria-selected="true" > <button class="btn btn-lg">ITEMS</button> </a> -->
+            </li>
+            <li class="nav-item ml-3">
+              <a class="nav-link  info-box bg-secondary" id="custom-tabs-four-home-tab" data-toggle="pill" href="#custom-tabs-four-home" role="tab" aria-controls="custom-tabs-four-home" aria-selected="false"  style="height: 50px !important; width: 200px !important;">SEARCH ITEM</a>
+            </li>
+            <li class="nav-item ml-3 ">
+              <a class="nav-link info-box bg-secondary" id="custom-tabs-four-messages-tab" data-toggle="pill" href="#custom-tabs-four-messages" role="tab" aria-controls="custom-tabs-four-messages" aria-selected="false"  style="height: 50px !important; width: 200px !important;">MY UNSETTLED BILLS</a>
+            </li>
+          </ul>
+        </div>
+        <div class="card-body">
+          <div class="tab-content" id="custom-tabs-four-tabContent">
+            <div class="tab-pane fade" id="custom-tabs-four-home" role="tabpanel" aria-labelledby="custom-tabs-four-home-tab">
+                  <!--ALL ITEMS-->
+                  {% include 'includes/all_items_table.html' %}
+                  <!--END ALL ITEMS-->
+            </div>
+            <div class="tab-pane fade" id="custom-tabs-four-messages" role="tabpanel" aria-labelledby="custom-tabs-four-messages-tab">
+                <div class="card-body">
+                  <div id="example1_wrapper" class="dataTables_wrapper dt-bootstrap4">
+                    <div class="row">
+                      <div class="col-sm-12 col-md-6">
+                      <div class="dataTables_length" id="example1_length">
+                        </div>
+                      </div>
+                      <div class="col-sm-12 col-md-6">
+                        <div id="example1_filter" class="dataTables_filter"></div>
+                      </div>
+                    </div><div class="row">
+                      <div class="col-sm-12"><table id="unsettled_orders_table" class="table table-bordered table-striped dataTable dtr-inline" role="grid" aria-describedby="example1_info">
+                    <thead>
+                    <tr role="row"> <th>Order ID</th>
+                      <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Customer</th>
+                      <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Total Bill</th>
+                      <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Date</th>
+                      <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Cashier</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for order in unsettled_orders %}
+                    <tr role="row" class="odd">
+                      <td><a href="{% url 'personal_order_list' order.id %}" class="text-info">{{order.get_code}}</a></td>
+                      <td tabindex="0" class="sorting_1">{{order.customer}}</td>
+    
+                      <td>{{order.order_total_cost}}</td>
+                      <td>{{order.order_date}}</td>
+                      <td>{{order.user.full_name}}</td>
+                      </tr>
+                    {% endfor %}
+                </tbody>
+                    <tfoot>
+                    </tfoot>
+                  </table>
+                </div>
+                
+                <div><br></div>
+              </div>
+            </div>
+        <!-- /.card-body -->
+                </div>
+            </div>
+            <div class="tab-pane fade show active" id="custom-tabs-four-settings" role="tabpanel" aria-labelledby="custom-tabs-four-settings-tab">
+              <!--CATEGORIES-->
+              {% include 'includes/item_categories_buttons.html' %}
+              <!--END CATEGORIES-->
+            </div>
+        </div>
+        <!-- /.card -->
+      </div>
+    </div>
+
+    </div>
+    <!--END ITEMS TABLE-->
+<!--END ROW-->
+</div>
+
+
+
+
+
+{% endblock %}

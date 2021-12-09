@@ -1,0 +1,321 @@
+{% extends 'base_reports.html' %}
+{% block body %}
+{% load crispy_forms_tags %}
+<style>
+  .report-type-button{
+    width: 120;
+    height: 100;
+  }
+</style>
+<div id="page-content" class="page-content ml-2 mr-2">
+    <div class="row mt-2">
+      <div class="col-12 col-sm-6 col-md-3">
+        <div class="info-box">
+          <span class="info-box-icon bg-secondary elevation-1"><i class="fas fa-money-bill"></i></span>
+
+          <div class="info-box-content">
+            <span class="info-box-text">TODAY'S SALES</span>
+            <span class="info-box-number">
+              {{todays_total_sales}}
+            </span>
+          </div>
+          <!-- /.info-box-content -->
+        </div>
+        <!-- /.info-box -->
+      </div>
+      <!-- /.col -->
+      <div class="col-12 col-sm-6 col-md-3">
+        <div class="info-box mb-3">
+          <span class="info-box-icon bg-secondary elevation-1"><i class="fas fa-thumbs-up"></i></span>
+
+          <div class="info-box-content">
+            <span class="info-box-text">YESTERDAY'S SALES</span>
+            <span class="info-box-number">{{yesterday_total_sales}}</span>
+          </div>
+          <!-- /.info-box-content -->
+        </div>
+        <!-- /.info-box -->
+      </div>
+      <!-- /.col -->
+      <!-- fix for small devices only -->
+      <div class="clearfix hidden-md-up"></div>
+
+      <div class="col-12 col-sm-6 col-md-3">
+        <div class="info-box mb-3">
+          <span class="info-box-icon bg-secondary elevation-1"><i class="fas fa-shopping-cart"></i></span>
+
+          <div class="info-box-content" >
+            <span class="info-box-text">GROSS SALES</span>
+            <span class="info-box-number">{{sales_overtime}}</span>
+          </div>
+          <!-- /.info-box-content -->
+        </div>
+        <!-- /.info-box -->
+      </div>
+      <!-- /.col -->
+      <div class="col-12 col-sm-6 col-md-3">
+        <div class="info-box mb-3">
+          <span class="info-box-icon bg-secondary elevation-1"><i class="fas fa-users"></i></span>
+
+          <div class="info-box-content">
+            <span class="info-box-text">GROSS SALES TAX</span>
+            <span class="info-box-number">{{sales_tax}}</span>
+          </div>
+          <!-- /.info-box-content -->
+        </div>
+        <!-- /.info-box -->
+      </div>
+      <!-- /.col -->
+    </div>
+    <div class="row">
+    
+        <div class="col-4">
+          <!-- small card -->
+          <a href="{% url 'sales_report' %}"> 
+          <div class="small-box bg-light dashboard_menu_item">
+              <div class="inner text-info">
+              <h3><i class="fas fa-money-bill"></i> Sales Reports</h3>
+              </div>
+          </div>
+          </a>
+        </div>
+        <!-- ./col -->
+        <div class="col-4">
+            <!-- small card -->
+            <a href="{% url 'summery_of_sales' %}">
+            <div class="small-box bg-light dashboard_menu_item">
+                <div class="inner text-info">
+                <h3><i class="fas fa-chart-bar"></i> Sales Summary Report</h3>
+                </div>
+            </div>
+            </a>
+        </div>
+        <!-- ./col -->
+        <div class="col-4">
+            <!-- small card -->
+            <a href="#">
+            <div class="small-box bg-light dashboard_menu_item">
+                <div class="inner text-info">
+                <h3><i class="fas fa-warehouse"></i> Stock/Inventory Report</h3>
+                </div>
+            </div>
+            </a>
+        </div>
+    
+        <div class="col-4">
+          <!-- solid sales graph -->
+          <div class="card bg-gradient-light">
+            <div class="card-header border-0">
+              <h3 class="card-title">
+                <i class="fas fa-th mr-1"></i>
+                Sales Graph
+              </h3>
+
+              <div class="card-tools">
+                <button type="button" class="btn bg-info btn-sm" data-card-widget="collapse">
+                  <i class="fas fa-minus"></i>
+                </button>
+                <button type="button" class="btn bg-info btn-sm" data-card-widget="remove">
+                  <i class="fas fa-times"></i>
+                </button>
+              </div>
+            </div>
+            <div class="card-body">
+              <canvas class="chart" id="sales-report-chart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+            </div>
+            <div class="d-flex flex-row justify-content-end">
+              <span class="mr-4 mb-2">
+                <i class="fas fa-square text-success"></i> This week
+              </span>
+  
+              <span class="mr-4 mb-2">
+                <i class="fas fa-square text-gray"></i> Last week
+              </span>
+            </div>
+            <!-- /.card-body -->
+            </div>
+        </div>
+          <!-- /.card -->
+        <div class="col-4">
+          <!-- solid sales graph -->
+          <div class="card bg-gradient-light">
+            <div class="card-header border-0">
+              <h3 class="card-title">
+                <i class="fas fa-th mr-1"></i>
+                Items in Stock
+              </h3>
+
+              <div class="card-tools">
+                <button type="button" class="btn bg-info btn-sm" data-card-widget="collapse">
+                  <i class="fas fa-minus"></i>
+                </button>
+                <button type="button" class="btn bg-info btn-sm" data-card-widget="remove">
+                  <i class="fas fa-times"></i>
+                </button>
+              </div>
+            </div>
+            <div class="card-body">
+              <canvas class="chart" id="items-chart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+            </div>
+            <div class="d-flex flex-row justify-content-end">
+              <span class="mr-4 mb-2">
+                <i class="fas fa-square text-success"></i> Quantity at Hand
+              </span>
+            </div>
+            <!-- /.card-body -->
+          </div>
+          <!-- /.card -->
+          
+        </div>
+<!-- 
+        <div class="col-4">
+          
+          <div class="card bg-gradient-light">
+            <div class="card-header border-0">
+              <h3 class="card-title">
+                <i class="fas fa-th mr-1"></i>
+                Sales Graph
+              </h3>
+
+              <div class="card-tools">
+                <button type="button" class="btn bg-info btn-sm" data-card-widget="collapse">
+                  <i class="fas fa-minus"></i>
+                </button>
+                <button type="button" class="btn bg-info btn-sm" data-card-widget="remove">
+                  <i class="fas fa-times"></i>
+                </button>
+              </div>
+            </div>
+            <div class="card-body">
+              <canvas class="chart" id="jjdjd" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+            </div>
+            <div class="d-flex flex-row justify-content-end">
+              <span class="mr-4 mb-2">
+                <i class="fas fa-square text-success"></i> This week
+              </span>
+  
+              <span class="mr-4 mb-2">
+                <i class="fas fa-square text-gray"></i> Last week
+              </span>
+            </div>
+           
+          </div>
+         
+          
+        </div> -->
+
+        <div class="col-4">
+          <!-- solid sales graph -->
+          <div class="card bg-gradient-light">
+            <div class="card-header border-0">
+              <h3 class="card-title">
+                <i class="fas fa-th mr-1"></i>
+                Sales Graph
+              </h3>
+
+              <div class="card-tools">
+                <button type="button" class="btn bg-info btn-sm" data-card-widget="collapse">
+                  <i class="fas fa-minus"></i>
+                </button>
+                <button type="button" class="btn bg-info btn-sm" data-card-widget="remove">
+                  <i class="fas fa-times"></i>
+                </button>
+              </div>
+            </div>
+            <div class="card-body">
+              <canvas class="chart" id="sales-line-chart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+            </div>
+            <div class="d-flex flex-row justify-content-end">
+              <span class="mr-4 mb-2">
+                <i class="fas fa-square text-success"></i> This week
+              </span>
+  
+              <span class="mr-4 mb-2">
+                <i class="fas fa-square text-gray"></i> Last week
+              </span>
+            </div>
+            <!-- /.card-body -->
+          </div>
+
+          <!-- /.card --> 
+        </div>
+<!-- 
+        <div class="col-4">
+        
+          <div class="card bg-gradient-light">
+            <div class="card-header border-0">
+              <h3 class="card-title">
+                <i class="fas fa-th mr-1"></i>
+                Sales Graph
+              </h3>
+
+              <div class="card-tools">
+                <button type="button" class="btn bg-info btn-sm" data-card-widget="collapse">
+                  <i class="fas fa-minus"></i>
+                </button>
+                <button type="button" class="btn bg-info btn-sm" data-card-widget="remove">
+                  <i class="fas fa-times"></i>
+                </button>
+              </div>
+            </div>
+            <div class="card-body">
+              <canvas class="chart" id="abc" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+            </div>
+            <div class="d-flex flex-row justify-content-end">
+              <span class="mr-4 mb-2">
+                <i class="fas fa-square text-success"></i> This week
+              </span>
+  
+              <span class="mr-4 mb-2">
+                <i class="fas fa-square text-gray"></i> Last week
+              </span>
+            </div>
+            
+            </div>
+        </div> -->
+          <!-- /.card -->
+        
+          <!-- <div class="col-4">
+         
+          <div class="card bg-gradient-light">
+            <div class="card-header border-0">
+              <h3 class="card-title">
+                <i class="fas fa-th mr-1"></i>
+                Sales Graph
+              </h3>
+
+              <div class="card-tools">
+                <button type="button" class="btn bg-info btn-sm" data-card-widget="collapse">
+                  <i class="fas fa-minus"></i>
+                </button>
+                <button type="button" class="btn bg-info btn-sm" data-card-widget="remove">
+                  <i class="fas fa-times"></i>
+                </button>
+              </div>
+            </div>
+            <div class="card-body">
+              <canvas class="chart" id="cc" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+            </div>
+            <div class="d-flex flex-row justify-content-end">
+              <span class="mr-4 mb-2">
+                <i class="fas fa-square text-success"></i> This week
+              </span>
+  
+              <span class="mr-4 mb-2">
+                <i class="fas fa-square text-gray"></i> Last week
+              </span>
+            </div>
+            
+          </div>
+         
+          
+          </div> -->
+    </div>
+    </div>
+{% endblock %}
+
+
+
+
+
+

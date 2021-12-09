@@ -1,0 +1,55 @@
+{% extends 'base_inventory.html' %}
+{% block content %}
+
+<!-- Main content -->
+<section class="content">
+    <div class="container-fluid">
+      <div class="row">
+          <div class="col-12">
+            <div class="card-body">
+              <div class="card">
+                <div class="card-header">
+                  <div class="col-md-6 mb-0">
+                    <button class="btn btn-primary show-form mb-2" data-url="{% url 'user_create' %}"> <span class="fa fa-plus fa-1x"></span> Add New User</button>
+                  </div>
+                  <div class="col-md-6 mb-0 text-right">
+                    <span class="badge-pill badge-success mr-2 ml-2"></i></span>Yes
+                    <span class="badge-pill badge-danger mr-2 ml-2"></i></span>No
+                  </div>
+                  
+                <table class="table table-bordered table-striped" id="user-table">  
+                  <thead >
+                    <tr>
+                        <th class="text-center" >
+                            <i class="far fa-user"></i>
+                        </th>
+                        <th style="width: 10%;">Role</th>
+                        <th style="width: 20%;">Email</th>
+
+                        <th style="width: 15%;">Name</th>
+                        <th style="width: 10%;">Phone</th>
+                        <th style="width: 10%;">Active</th>
+                        <th style="width: 10%;">Admin</th>
+                        <th style="width: 10%;">Staff</th>
+                        <th style="width: 10%;">Super User</th>
+                        <th class="text-center" style="width: 100px;">Actions</th>
+
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% include "users/user_list_2.html" %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+      </div>
+    </div>
+</section>
+
+<div class="modal fade" id="modal-user">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content"></div>
+  </div>
+</div>
+{% endblock %}

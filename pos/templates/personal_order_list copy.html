@@ -1,0 +1,197 @@
+{% extends 'base_pos.html' %}
+
+{% block body %}
+
+<style>
+  #customer_name_label{
+    display: inline;
+  }
+</style>
+
+
+<!--ROW-->
+<div class="row">
+  {% if items_in_order %}
+    
+  {%else%}
+  <style>
+    #cart_section{
+      display: none;
+    }
+    #other_payments{
+      display: none;
+    }
+  </style>
+  {% endif %}
+    <!--CART ITEMS-->
+    <div class="col-md-6 col-xl-5" >
+        <div class="card" id="cart_section">
+            <div class="card-header">
+                <h3 class="card-title">Cart</h3>
+
+                <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i>
+                    </button>
+                    <button type="button" class="btn btn-tool" data-card-widget="remove"><i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+            <!-- /.card-header -->
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table m-0">
+                      <thead>
+                      <tr>
+                        <th>ID</th>
+                        <th>Item</th>
+                        <th></th>
+                        <th class="text-center">Quantity</th>
+                        <th></th>
+                        <th>Cost</th>
+                        <th class="text-right">Total</th>
+                        <th></th>
+                      </tr>
+                      </thead>
+                      <tbody>
+                    {% for ordered_item in items_in_order %}
+                      <tr>
+                        <td>{{forloop.counter}}</td>
+                        <td>{{ordered_item.item}}</td>
+                        <td class="text-right"><a href="{%url 'remove_single_item_from_cart' ordered_item.item.slug %}"><button class="btn btn-outline-info"><i class="fas fa-minus"></i></button></td>
+                        <td class="text-center"></a>{{ordered_item.quantity}}</td>
+                        <td><a href="{%url 'add_to_cart' ordered_item.item.slug %}"><button class="btn btn-outline-info"><i class="fas fa-plus"></i></button></a></td>
+                        <td>{{ordered_item.price}}</td>
+                        <td class="text-right">{{ordered_item.get_total_amount}}</td>
+                        <td class="text-center"> <a href="{{ordered_item.item.get_remove_from_cart_url }}"> <button class="btn btn-outline-info"><i class="fas fa-times"></i></button></td>
+                        </tr>
+                      
+                      {% endfor %}
+                      {% if order.order_total %}
+                      <tr>
+                        <td colspan="6" class="text-right">SUB TOTAL</td>
+                        <td colspan="2" class="text-right">{{order.order_total}}</td> 
+                      </tr>
+                      <tr>
+                        <td colspan="6" class="text-right">VAT({{config.TAX_NAME}}%)</td>
+                        <td colspan="2" class="text-right">{{order.get_vat_value}}</td>
+                        
+                      </tr>
+                      <tr style="background-color:#343a40; font-size: 100%; font-family: monospace; color: chartreuse;" class="col-md-6">
+                        <td colspan="6" class="text-right">TOTAL</td>
+                        <td colspan="2" class="text-right" >{{order.order_total_due}}</td>
+                      </tr>
+                      {% if order.paid_amount.paid_amount >= order.order_total_cost %}
+                        <tr style="outline: none; border: none;">
+                            <td colspan="2"  style="text-align: right; outline: none;" class="text-info font-size-h4 font-w600" >Amount Paid</td>
+                            <td colspan="2" style="background-color: rgba(171, 213, 238, 0.6); font-weight: bold;">{{order.paid_amount.paid_amount}}</td>
+                            <td colspan="2" style="text-align: right; outline: none;" class="text-info font-size-h4 font-w600">Change</td>
+                            <td colspan="2" class="text-right" style="background-color: rgba(171, 227, 125, 0.6); font-weight: bold;">{{order.get_change}}</td>
+                        </tr>
+                      {% else %}
+                        <tr style="outline: none; border: none;">
+                          <td colspan="2"  style="text-align: right; outline: none;" class="text-info font-size-h4 font-w600" >Amount Paid is less than the Total Bill</td>
+                          <td colspan="2" style="background-color: rgba(171, 213, 238, 0.6); font-weight: bold;">{{order.paid_amount.paid_amount}}</td>
+                          <td colspan="2" style="text-align: right; outline: none;" class="text-info font-size-h4 font-w600">Balance</td>
+                          <td colspan="2" class="text-right" style="background-color: rgba(214, 14, 7, 0.6); font-weight: bold;">{{order.get_change}}</td>
+                        </tr>
+                      {% endif %}
+
+                    {% endif %}
+                      </tbody>
+                    </table>
+                  </div>
+                 <div class="mt-2">
+        
+                <table>
+    
+                  <tr>
+                  <td>
+                  <!-- /.table-responsive -->
+                  
+                   
+                  <a href="{% url 'receipt' %}"><button class="btn btn-dark mr-2 ml-2" style="float: left;"><i class="fas fa-print"></i> Print Bill</button> </a>
+                  {% if order.paid_amount.paid_amount %}
+                  
+                  {% if order.paid_amount.paid_amount > order.order_total %}
+                  <a href="{% url 'complete_order' %}"><button class="btn btn-info mr-2 ml-2" style="float: right;"><i class="fas fa-save"></i> Finish</button> </a>
+                  {% endif %}
+                  {% endif %}
+
+   
+                  {% if order.items %}
+                  <a data-toggle="modal" data-target="#cashModal"><button class="btn btn-success mr-2 ml-2" style="float: left;"><i class="fas fa-money-bill-alt"></i> Pay Cash</button> </a>
+                  <a href="{% url 'save_bill' %}"><button class="btn btn-info mr-2 ml-2" style="float: right;"><i class="fas fa-save"></i> Save Bill</button> </a>
+                  {% endif %}
+                  
+                  
+                  </td>
+                  </tr>
+                </table>
+                </div>
+              
+            </div>
+                   
+        </div>
+
+
+  {% if order.items %}
+        <!--OTHER PAYMENTS-->
+    <div >
+      <div class="card" id="other_payments">
+          <div class="card-header">
+              <h3 class="card-title">Other Payments</h3>
+
+              <div class="card-tools">
+                  <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i>
+                  </button>
+                  <button type="button" class="btn btn-tool" data-card-widget="remove"><i class="fas fa-times"></i>
+                  </button>
+              </div>
+          </div>
+          <!-- /.card-header -->
+          <div class="card-body">
+              <div class="table-responsive">
+                  
+                </div>
+               <div class="mt-2">
+                  
+                
+                <a data-toggle="modal" data-target="#airtelMoneyModal"><button class="btn btn-danger mr-2 ml-2" style="float: left;"><i class="fas fa-money-bill-alt"></i> Airtel Money</button> </a>
+                <a data-toggle="modal" data-target="#mpambaModal"><button class="btn btn-success mr-2 ml-2" style="float: right;"><i class="fas fa-money-bill-alt"></i> Mpamba </button> </a>
+                
+                
+              
+              </div>
+            
+          </div>
+          
+                 
+      </div>
+      
+  
+    
+  </div>
+  <!--END OTHER PAYMENTS-->
+  {% endif %}
+      
+    </div>
+    <!--END CART ITEMS-->
+    
+
+<!--ALL ITEMS-->
+{% include 'includes/all_items_table.html' %}
+<!--END ALL ITEMS-->
+
+
+
+
+<!--CATEGORIES-->
+{% include 'includes/item_categories_buttons.html' %}
+<!--END CATEGORIES-->
+</div>
+<!--END ROW-->
+
+
+
+
+{% endblock %}
