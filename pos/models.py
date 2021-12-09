@@ -223,12 +223,10 @@ def save_layby_orders(sender, instance, **kwargs):
         if order.paid_amount.paid_amount > new_layby_order.get_order_balance and order.ordered == True:
             paid = Payment()
             paid.paid_amount = new_layby_order.get_order_balance
-            paid.payment_mode = order.paid_amount.payment_mode
             paid.save()
         else:
             paid = Payment()
             paid.paid_amount = order.paid_amount.paid_amount
-            paid.payment_mode = order.paid_amount.payment_mode
             paid.save()
 
         new_layby_order.payments.add(paid)
@@ -238,11 +236,10 @@ def save_layby_orders(sender, instance, **kwargs):
             total += payment.paid_amount
         LayByOrders.objects.filter(id = layby_order.id).update(sum_paid = total)
         
-        order_payment = Payment()
-        order_payment.paid_amount = total
-        order_payment.payment_mode = order.paid_amount.payment_mode
-        order_payment.save()
-        Order.objects.filter(id=instance.id).update(paid_amount=order_payment)
+        order_payment2 = Payment()
+        order_payment2.paid_amount = total
+        order_payment2.save()
+        Order.objects.filter(id=instance.id).update(paid_amount=order_payment2)
 
 
         # znew_layby_order.update(sum_paid = total)
