@@ -166,7 +166,7 @@
                   {% if order.items and order.order_total_due > order.sum_paid_amount %}
                   <!-- <a href="{% url 'save_bill' %}"><button class="btn btn-secondary mr-2 ml-2 posoption_button" style="float: right;"><i class="fas fa-save"></i> Save Bill</button> </a> -->
                   <a data-toggle="modal" data-target="#produceReceiptSavedBillModal"><button class="btn btn-info mr-2 ml-2 posoption_button" style="float: left;"><i class="fas fa-save"></i> Save Bill</button> </a>
-                  {% if order.paid_amount.payment_mode == 'Lay By' %}
+                  {% if order.payment_mode == 'Lay By' %}
                   <a data-toggle="modal" data-target="#laybyModal"><button class="btn btn-secondary mr-2 ml-2 posoption_button" style="float: center;"><i class="fas fa-money-bill-alt"></i> Add Another Payment</button> </a>
                   {% else %}
                   <a data-toggle="modal" data-target="#cashModal"><button class="btn btn-success mr-2 ml-2 posoption_button" style="float: right;"><i class="fas fa-money-bill-alt"></i> Pay Cash</button> </a>

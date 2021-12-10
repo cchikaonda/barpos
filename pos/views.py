@@ -146,6 +146,7 @@ def add_payment(request):
                     payment.reference = reference
                 elif str(payment_mode).lower() == str('Lay By').lower():
                     reference = 'Lay By'
+                    order.payment_mode = reference
                     payment.payment_mode = reference
                     payment.reference = reference
                 else:
@@ -153,7 +154,6 @@ def add_payment(request):
                     payment.reference = reference
                 
                 payment.save()
-                print(payment.payment_mode)
                 order.paid_amount.add(payment)
                 order.save()
                 request.session['opened_order'] = order.id
@@ -185,6 +185,7 @@ def complete_order_only(order, request):
     payment = Payment()
     payment.paid_amount = order.order_total_cost
     payment.save()
+    order.paid_amount.clear()
     order.paid_amount.add(payment)
     order.save()
     request.session['opened_order'] = order.id
@@ -209,6 +210,7 @@ def complete_order(request):
     payment = Payment()
     payment.paid_amount = order.order_total_cost
     payment.save()
+    order.paid_amount.clear()
     order.paid_amount.add(payment)
     order.save()
     return redirect("pos_dashboard")

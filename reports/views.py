@@ -249,25 +249,50 @@ def is_valid_queryparam(param):
 
 def get_todays_total_sales():
     today_date = timezone.now().date()
-    total_sales = Order.objects.filter(paid_amount__created_at__gte=today_date)
-    sum_total_cost = 0
+    total_sales = Order.objects.filter(ordered = True, created_at__gte=today_date)
+
+    sales_from_layby_orderes_ordered = Payment.objects.filter(order__ordered = True, created_at__gte=today_date)
+    sum_layby_orders_ordered = Money(0.0, 'MWK')
+    for sales_layby_ordered in sales_from_layby_orderes_ordered:
+        sum_layby_orders_ordered += sales_layby_ordered.paid_amount
+   
+    sum_layby_orders = get_todays_layby_payments()
+
+    sum_total_cost = Money(0.0, 'MWK')
     for total_sales in total_sales:
         sum_total_cost += total_sales.sum_paid_amount
-    return sum_total_cost
+    return sum_total_cost + sum_layby_orders + sum_layby_orders_ordered
+
+def get_todays_layby_payments():
+    today_date = timezone.now().date()
+    sales_from_layby_orderes = Payment.objects.filter(order__ordered = False, created_at__gte=today_date)
+    sum_layby_orders = Money(0.0, 'MWK')
+    for sales_from_layby_orderes in sales_from_layby_orderes:
+        sum_layby_orders += sales_from_layby_orderes.paid_amount
+    return sum_layby_orders
+
 
 def get_yesterday_total_sales():
     today_date = timezone.now().date()
     yesterday_date = today_date - timedelta(days=1)
-    print(today_date)
-    print(yesterday_date)
-    total_sales = Order.objects.filter(paid_amount__created_at__range = [yesterday_date, today_date])
+    total_sales = Order.objects.filter(ordered = True, created_at__range = [yesterday_date, today_date])
 
+    sum_layby_orders = get_yesterday_layby_payments()
 
-    print(total_sales)
     sum_total_cost = 0
     for total_sales in total_sales:
         sum_total_cost += total_sales.sum_paid_amount
-    return sum_total_cost
+    return sum_total_cost + sum_layby_orders
+
+def get_yesterday_layby_payments():
+    today_date = timezone.now().date()
+    yesterday_date = today_date - timedelta(days=1)
+    sales_from_layby_orderes = Payment.objects.filter(payment_mode = 'Lay By', created_at__range = [yesterday_date, today_date])
+    sum_layby_orders = Money(0.0, 'MWK')
+    for sales_from_layby_orderes in sales_from_layby_orderes:
+        sum_layby_orders += sales_from_layby_orderes.paid_amount
+    return sum_layby_orders
+
 
 
 def get_all_item_categories():
@@ -323,48 +348,34 @@ def sales_report(request):
             ordered_items = todays_ordered_items(item_cat)
             report_period = "Today"
             # lay_by_orders = LayByOrders.objects.filter(payments__created_at__gte = today)
-            lay_by_orders = Payment.objects.filter(created_at__gte = today, payment_mode = 'Lay By')
-            print(lay_by_orders)
+            sum_layby_paid_amount = get_todays_layby_payments()
         elif report_period == 2:
             ordered_items = yesterday_ordered_items(item_cat)
-            lay_by_orders = Order.objects.filter(created_at__gte = yesterday, created_at__lt = today)
+            sum_layby_paid_amount = get_todays_layby_payments()
             report_period = "Yesterday"
         elif report_period == 3:
             ordered_items = last_7_days_ordered_items(item_cat)
             report_period = "Last 7 Days"
-
-            date_today = datetime.now().date()
-            seven_days_b4 = date_today-timedelta(days=7)
-            lay_by_orders = Order.objects.filter(created_at__range = [seven_days_b4, date_today])
+            sum_layby_paid_amount = get_todays_layby_payments()
             
         elif report_period == 4:
             ordered_items= last_30_days_ordered_items(item_cat)
             report_period = "Last 30 Days"
 
-            date_today = datetime.now().date()
-            thirty_days_b4 = date_today-timedelta(days=30)
-            lay_by_orders = Order.objects.filter(payments__created_at__range = [thirty_days_b4, date_today])
+            sum_layby_paid_amount = get_todays_layby_payments()
         elif report_period == 5:
             ordered_items = this_month_ordered_items(item_cat)
             report_period = "This Month"
             
-            today = datetime.now()
-            this_month_firstday = datetime.now().date().replace(day=1)
-            lay_by_orders = Order.objects.filter(created_at__range = [this_month_firstday, today])
+            sum_layby_paid_amount = get_todays_layby_payments()
         elif report_period == 6:
             ordered_items = last_month_ordered_items(item_cat)
             report_period = "Last Month"
 
-            today = datetime.now().date()
-            this_month_firstday = today.replace(day=1)
-            last_monthlastday = this_month_firstday - timedelta(days=1)
-            last_monthlastday2 = last_monthlastday
-            last_monthfirstday = last_monthlastday2.replace(day=1)
-            lay_by_orders = Order.objects.filter(ordered = False, created_at__range = [last_monthfirstday, last_monthlastday])
+            sum_layby_paid_amount = get_todays_layby_payments()
             
     else:
-        # lay_by_orders = LayByOrders.objects.all()
-        lay_by_orders = Order.objects.filter(ordered = False)
+        sum_layby_paid_amount = get_todays_layby_payments()
         
     sum_total_vat = Money(0.0, 'MWK')
     # orders_with_ordered_items = Order.objects.all()
@@ -380,13 +391,7 @@ def sales_report(request):
 
     net_total_sales = total_cost_items_ordered -sum_total_vat
 
-    sum_layby_paid_amount = Money(0.0, 'MWK')
-    print(lay_by_orders)
-    print(sum_layby_paid_amount)
-   
-    for lay_by_orders in lay_by_orders:
-        sum_layby_paid_amount += lay_by_orders.sum_paid_amount
-
+    
     total_cash_in_hand = sum_layby_paid_amount + total_cost_items_ordered
 
     context = {

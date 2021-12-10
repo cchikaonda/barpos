@@ -204,7 +204,7 @@ class Order(models.Model):
     
     
 
-    
+    @property
     def get_balance(self):
         default_amount = Money(0.0, 'MWK')
         if self.sum_paid_amount < self.order_total_due():
@@ -225,6 +225,30 @@ class Order(models.Model):
 @receiver(post_save, sender=Payment)
 def update_ordered_date_if_payment_is_done(sender, instance, **kwargs):
     instance.paid_amount
+
+# @receiver(post_save, sender=Order)
+# def save_payments_in_order(sender, instance, **kwargs):
+    
+#         if instance.sum_paid_amount > instance.get_balance and instance.ordered == True:
+#             paid = Payment()
+#             paid.paid_amount = instance.get_balance
+#             paid.save()
+#         else:
+#             paid = Payment()
+#             paid.paid_amount = instance.sum_paid_amount
+#             paid.save()
+
+#         instance.paid_amount.add(paid)
+
+        # total = 0
+        # for payment in new_layby_order.payments.all():
+        #     total += payment.paid_amount
+        # LayByOrders.objects.filter(id = layby_order.id).update(sum_paid = total)
+        
+        # order_payment2 = Payment()
+        # order_payment2.paid_amount = total
+        # order_payment2.save()
+        # Order.objects.filter(id=instance.id).update(paid_amount=order_payment2)
 
 
 

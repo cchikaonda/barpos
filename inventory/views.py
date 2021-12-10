@@ -43,7 +43,7 @@ def inventory_dashboard(request):
     total_tax = 0
     sales_overtime = 0
     for sales_all_time in sales_all_time:
-        sales_overtime += sales_all_time.paid_amount.paid_amount
+        sales_overtime += sales_all_time.sum_paid_amount
         total_tax += sales_all_time.vat_cost
     
     profit = sales_overtime -(total_tax + total_cog_sold) 
@@ -110,8 +110,8 @@ def get_total_sales_this_week(this_day):
     week_start -= timedelta(days=week_start.weekday())
     week_end = week_start + timedelta(days=6)
 
-    total_sales = Order.objects.filter(paid_amount__created_at__gte=week_start, paid_amount__created_at__lt=week_end).filter(
-        paid_amount__created_at__week_day=this_day)
+    total_sales = Order.objects.filter(created_at__gte=week_start, created_at__lt=week_end).filter(
+        created_at__week_day=this_day)
     sum_total_cost = 0
     for total_sales in total_sales:
         sum_total_cost += total_sales.sum_paid_amount
@@ -121,12 +121,10 @@ def get_total_lastwk_sale(this_day_lw):
     some_day_last_week = date.today() - timedelta(days=7)
     monday_of_last_week = some_day_last_week - timedelta(days=(some_day_last_week.isocalendar()[2] - 1))
     monday_of_this_week = monday_of_last_week + timedelta(days=7)
-    total_sales = Order.objects.filter(paid_amount__created_at__gte=monday_of_last_week,
-                                                    paid_amount__created_at__lt=monday_of_this_week).filter(
-    paid_amount__created_at__week_day = this_day_lw)
+    total_sales = Order.objects.filter(created_at__gte=monday_of_last_week, created_at__lt=monday_of_this_week).filter(created_at__week_day = this_day_lw)
     sum_total_cost = 0
     for total_sales in total_sales:
-        sum_total_cost += total_sales.paid_amount.paid_amount
+        sum_total_cost += total_sales.sum_paid_amount
     return sum_total_cost
 
 #items running out of stock
