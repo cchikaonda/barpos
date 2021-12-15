@@ -110,7 +110,7 @@ class Order(models.Model):
     vat_p = models.FloatField(default=config.TAX_NAME)
     vat_cost = MoneyField(max_digits=14, decimal_places=2, default_currency='MWK', default= 0.0)
     created_at = models.DateTimeField(auto_now_add=True)
-    # updated_at = models.DateTimeField(auto_now=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __init__(self, *args, **kwargs):
         super(Order, self).__init__(*args, **kwargs)

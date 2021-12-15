@@ -107,7 +107,7 @@ def add_new_customer_from_pos_dash(request):
         try:
             if form.is_valid():
                 form.save()
-            messages.info(request, "New Customer is Added!")
+                messages.info(request, "New Customer is Added!")
             return redirect("pos_dashboard")
         except ObjectDoesNotExist:
             messages.info(request, "You do not have an active order")

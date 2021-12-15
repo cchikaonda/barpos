@@ -110,23 +110,41 @@ def get_total_sales_this_week(this_day):
     week_start -= timedelta(days=week_start.weekday())
     week_end = week_start + timedelta(days=6)
 
-    total_sales = Order.objects.filter(paid_amount__created_at__gte=week_start, paid_amount__created_at__lt=week_end).filter(
+    total_sales = Order.objects.filter(ordered = True, paid_amount__created_at__gte=week_start, paid_amount__created_at__lt=week_end).filter(
         paid_amount__created_at__week_day=this_day)
     sum_total_cost = 0
     for total_sales in total_sales:
         sum_total_cost += total_sales.paid_amount.paid_amount
-    return sum_total_cost
+
+    orders_r = Order.objects.filter(ordered = False)
+    lay_by_orders = LayByOrders.objects.filter(order_id__in = orders_r)
+    lay_b_payments = Payment.objects.filter(laybyorders__in = lay_by_orders, created_at__gte=week_start, created_at__lt=week_end, created_at__week_day=this_day)
+    sum_layby_paid_amount = Money(0.0, 'MWK')
+    for lay_b_payments in lay_b_payments:
+        if str(lay_b_payments.paid_amount) != "None":
+            sum_layby_paid_amount += lay_b_payments.paid_amount
+
+    return sum_total_cost + sum_layby_paid_amount
     
 def get_total_lastwk_sale(this_day_lw):
     some_day_last_week = date.today() - timedelta(days=7)
     monday_of_last_week = some_day_last_week - timedelta(days=(some_day_last_week.isocalendar()[2] - 1))
     monday_of_this_week = monday_of_last_week + timedelta(days=7)
-    total_sales = Order.objects.filter(paid_amount__created_at__gte=monday_of_last_week,
+    total_sales = Order.objects.filter(ordered = True, paid_amount__created_at__gte=monday_of_last_week,
                                                     paid_amount__created_at__lt=monday_of_this_week).filter(
     paid_amount__created_at__week_day = this_day_lw)
     sum_total_cost = 0
     for total_sales in total_sales:
         sum_total_cost += total_sales.paid_amount.paid_amount
+    
+    orders_r = Order.objects.filter(ordered = False)
+    lay_by_orders = LayByOrders.objects.filter(order_id__in = orders_r)
+    lay_b_payments = Payment.objects.filter(laybyorders__in = lay_by_orders, created_at__gte=monday_of_last_week, created_at__lt=monday_of_this_week, created_at__week_day=this_day_lw)
+    sum_layby_paid_amount = Money(0.0, 'MWK')
+    for lay_b_payments in lay_b_payments:
+        if str(lay_b_payments.paid_amount) != "None":
+            sum_layby_paid_amount += lay_b_payments.paid_amount
+
     return sum_total_cost
 
 #items running out of stock

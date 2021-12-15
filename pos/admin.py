@@ -30,7 +30,7 @@ class OrderItemAdmin(admin.ModelAdmin):
 admin.site.register(OrderItem, OrderItemAdmin)
 
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ('customer','get_code','user','vat_p','vat_cost','order_date','ordered','order_total_cost','paid_amount','get_balance','get_payment_mode','reference','created_at','vat_rate_minus_100')
+    list_display = ('customer','get_code','user','vat_p','vat_cost','order_date','ordered','order_total_cost','paid_amount','get_balance','get_payment_mode','reference','created_at','updated_at','vat_rate_minus_100')
     search_fields = ['order_date','customer']
     class Meta:
         model = CustomUser
