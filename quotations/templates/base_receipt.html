@@ -1,0 +1,407 @@
+{% load static %}
+{% load sweetify %}
+{% sweetify %}
+{% get_media_prefix as MEDIA_URL %}
+
+
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>{% block title %} {{ header|title }} {% endblock %}</title>
+
+    {% block jsncss %}
+    <link rel="stylesheet" href="{% static '/js/plugins/flatpickr/plugins/monthSelect/style.css' %}" type="text/css">
+    <link rel="stylesheet" id="css-main" href="{% static '/css/oneui.min.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static '/css/oneui.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static '/js/plugins/datatables/dataTables.bootstrap4.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static '/css/flatpickr.min.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static '/css/dropzone.min.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static '/css/ion.rangeSlider.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'js/plugins/select2/css/select2.min.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static '/css/bootstrap-colorpicker.min.css' %}" type="text/css">
+
+    <link rel="stylesheet" href="{% static '/css/bootstrap-datepicker3.min.css' %}" type="text/css">
+
+    <!-- Page JS Plugins CSS -->
+    <link rel="stylesheet" href="{% static '/js/plugins/magnific-popup/magnific-popup.css' %}" type="text/css">
+    <!-- Page JS Plugins -->
+    <script src="{% static '/js/jquery-3.1.1.min.js' %}" ></script>
+
+    <script src="{% static '/js/bootstrap-datepicker.min.js' %}" ></script>
+    <script src="{% static '/js/bootstrap-colorpicker.min.js' %}" ></script>
+    <script src="{% static '/js/bootstrap-maxlength.min.js' %}" ></script>
+    <script src="{% static '/js/bootstrap-maxlength.js' %}" ></script>
+    <script src="{% static '/js/jquery.maskedinput.min.js' %}" ></script>
+    <script src="{% static '/js/dropzone.min.js' %}" ></script>
+    <script src="{% static '/js/flatpickr.min.js' %}" ></script>
+    <script src="{% static '/js/oneui.core.min.js' %}" ></script>
+    <script src="{% static '/js/oneui.app.min.js' %}"></script>
+    <script src="{% static '/js/plugins/datatables/jquery.dataTables.min.js' %}"> </script>
+    <script src="{% static '/js/plugins/datatables/dataTables.bootstrap4.min.js' %}"> </script>
+    <script src="{% static '/js/plugins/datatables/buttons/dataTables.buttons.min.js' %}" ></script>
+    <script src="{% static '/js/plugins/datatables/buttons/buttons.print.min.js' %}" ></script>
+    <script src="{% static '/js/plugins/datatables/buttons/buttons.html5.min.js' %}" ></script>
+    <script src="{% static '/js/plugins/datatables/buttons/buttons.flash.min.js' %}" ></script>
+    <script src="{% static '/js/plugins/datatables/buttons/buttons.colVis.min.js' %}"></script>
+    <script src="{% static '/js/pages/be_tables_datatables.min.js' %}"></script>
+    <script src="{% static '/js/plugins/chart.js/Chart.bundle.min.js' %}"></script>
+    <script src="{% static '/js/plugins/es6-promise/es6-promise.auto.min.js' %}"></script>
+    <script src="{% static '/js/plugins/sweetalert2/sweetalert2.js' %}"> </script>
+    <script src="{% static '/js/pages/be_comp_dialogs.js' %}"></script>
+
+    <script src="{% static '/js/bootstrap.js' %}"></script>
+    <script src="{% static 'js/jquery.bootstrap.modal.forms.js' %}"></script>
+    <script src="{% static 'js/plugins/ckeditor/ckeditor.js' %}"></script>
+    <script src="{% static '/js/jquery.js' %}"></script>
+    <script src="{% static '/js/cart.js' %}"></script>
+    <script src="{% static '/js/jquery.bootstrap.modal.forms.js' %}"></script>
+    <script src="{% static '/js/suppliers.js' %}"></script>
+
+    <!-- Page JS Plugins -->
+    <script src="{% static '/js/plugins/select2/js/select2.full.min.js' %}"></script>
+
+    <script src="{% static '/js/current_date_time.js' %}"></script>
+    
+
+
+
+<script>
+    var today = new Date();
+</script>
+
+
+{% endblock %}
+ </head>
+
+  <body class="backgoundc" onload="realtimeClock()">
+
+   
+<!-- Logout Modal-->
+<div id="logout_confirm" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+  
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">×</span>
+          </button>
+        </div>
+        <div class="modal-body text-center"><b><h3>Are you sure you want to logout ?</h3></b></div>
+        <div class="modal-footer">
+          <button class="btn btn-primary" data-dismiss="modal" type="button">NO</button>
+          <a href="{% url 'logout_request' %}" ><button class="btn btn-danger" type="button">YES</button></a>
+        </div>
+      </div>
+  
+    </div>
+</div>
+<!-- Logout Modal -->
+
+    {% block content %}
+      {% block navigation %}
+      <div id="page-container" class="sidebar-o sidebar-dark enable-page-overlay side-scroll page-header-fixed page-header-dark">
+        
+        <!--
+            Sidebar Mini Mode - Display Helper classes
+
+            Adding 'smini-hide' class to an element will make it invisible (opacity: 0) when the sidebar is in mini mode
+            Adding 'smini-show' class to an element will make it visible (opacity: 1) when the sidebar is in mini mode
+                If you would like to disable the transition animation, make sure to also add the 'no-transition' class to your element
+
+            Adding 'smini-hidden' to an element will hide it when the sidebar is in mini mode
+            Adding 'smini-visible' to an element will show it (display: inline-block) only when the sidebar is in mini mode
+            Adding 'smini-visible-block' to an element will show it (display: block) only when the sidebar is in mini mode
+        -->
+        <nav id="sidebar" aria-label="Main Navigation" class="toggled">
+            <!-- Side Header -->
+            <div class="content-header bg-white-5">
+                <!-- Logo -->
+                <a class="font-w600 text-dual" href="{% url 'system_dashboard' %}">
+                    <span class="smini-hide">
+                        <button type="button" class="btn btn-dual mr-2 mt-5 ml-4 btn-primary" >
+                            <img style="width: 90px; height: 70px;" src="{{MEDIA_URL}}{{config.LOGO_IMAGE}}" alt="">
+                        </button>
+                    </span>
+                </a>
+                <!-- END Logo --> 
+            </div>
+            <!-- END Side Header -->
+
+            <!-- Side Navigation -->
+            <div class="content-side content-side-full mt-4">
+                <ul class="nav-main">
+
+
+                    <a class="nav-main-link active" href="{% url 'system_dashboard' %}">
+                        <i class="nav-main-link-icon si si-speedometer"></i>
+                        <span class="nav-main-link-name">Dashboard</span>
+                    </a>
+                
+
+                    <li class="nav-main-heading">MAIN MENU</li>
+                    <a class="nav-main-link" href="{% url 'customer_list' %}">
+                        <i class="nav-main-link-icon si si-energy"></i>
+                        <span class="nav-main-link-name">View Customers</span>
+                    </a>
+                    <li class="nav-main-item">
+                        <a class="nav-main-link nav-main-link-submenu" data-toggle="submenu" aria-haspopup="true" aria-expanded="false" href="#">
+                            <i class="nav-main-link-icon si si-badge"></i>
+                            <span class="nav-main-link-name">Quotations</span>
+                        </a>
+                        <ul class="nav-main-submenu">
+                            <li class="nav-main-item">
+                                <a class="nav-main-link" href="{% url 'quotation_list' %}">
+                                    <span class="nav-main-link-name">View Quotations</span>
+                                </a>
+                            </li>
+                            <li class="nav-main-item">
+                                <a class="nav-main-link" href="{% url 'quotation_dashboard' %}">
+                                    <span class="nav-main-link-name">Create Quotation</span>
+                                </a>
+                            </li>
+       
+                        </ul>
+                    </li>
+                    
+                    <li class="nav-main-heading">SERVICES</li>
+                    <li class="nav-main-item">
+                        <a class="nav-main-link" href="{% url 'category_list' %}">
+                            <i class="nav-main-link-icon si si-magic-wand"></i>
+                            <span class="nav-main-link-name">Item Categories</span>
+                        </a>
+                    </li>
+                    <li class="nav-main-item">
+                        <a class="nav-main-link" href="{% url 'item_list' %}">
+                            <i class="nav-main-link-icon si si-magic-wand"></i>
+                            <span class="nav-main-link-name">Items</span>
+                        </a>
+                    </li>
+                    <li class="nav-main-item">
+                        <a class="nav-main-link" href="{% url 'unit_list' %}">
+                            <i class="nav-main-link-icon si si-magic-wand"></i>
+                            <span class="nav-main-link-name">Item Units</span>
+                        </a>
+                    </li>
+                    {% if user.admin == True or user.superuser == True %}
+                    <li class="nav-main-heading">Users</li>
+                        <li class="nav-main-item">
+                            <a class="nav-main-link" href="{% url 'user_list' %}">
+                                <i class="nav-main-link-icon si si-magic-wand"></i>
+                                <span class="nav-main-link-name">Manage Users</span>
+                            </a>
+                        </li>
+                    <li class="nav-main-item">
+                        <a class="nav-main-link nav-main-link-submenu" data-toggle="submenu" aria-haspopup="true" aria-expanded="false" href="#">
+                            <i class="nav-main-link-icon si si-layers"></i>
+                            <span class="nav-main-link-name"><span class="sidebar-mini-hide">Customise System</span></span>
+                        </a>
+                        <ul class="nav-main-submenu">
+                                <a class="nav-main-link nav-main-link-submenu" data-toggle="submenu" aria-haspopup="true" aria-expanded="false" href="#">
+                                    <i class="nav-main-link-icon si si-bubbles"></i>
+                                    <span class="nav-main-link-name">Shop Options</span>
+                                </a>
+                                <a class="nav-main-link nav-main-link-submenu" data-toggle="submenu" aria-haspopup="true" aria-expanded="false" href="#">
+                                    <i class="nav-main-link-icon si si-bubbles"></i>
+                                    <span class="nav-main-link-name">Quotation Options</span>
+                                </a>
+                        </ul>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+            <!-- END Side Navigation -->
+        </nav>
+        <!-- END Sidebar -->
+
+        <!-- Header -->
+        <header id="page-header">
+            <!-- Header Content -->
+            <div class="content-header">
+                <!-- Left Section -->
+                <div class="d-flex align-items-center">
+                    <!-- Toggle Sidebar -->
+                    <!-- Layout API, functionality initialized in Template._uiApiLayout()-->
+                    <button type="button" class="btn btn-sm btn-dual mr-2 d-lg-none" data-toggle="layout" data-action="sidebar_toggle" id="side-bar-toggle-button">
+                        <i class="fa fa-fw fa-bars"></i>
+                    </button>
+                    <!-- END Toggle Sidebar -->
+
+                    <!-- Toggle Mini Sidebar -->
+                    <!-- Layout API, functionality initialized in Template._uiApiLayout()-->
+                    <button type="button" class="btn btn-sm btn-dual mr-2 d-none d-lg-inline-block" data-toggle="layout" data-action="sidebar_mini_toggle">
+                        <i class="fa fa-fw fa-ellipsis-v"></i>
+                    </button>
+                    <!-- END Toggle Mini Sidebar -->
+
+                    <a class="btn mr-2 text-success" style="font-size: larger; font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif; font-weight: 900;"> 
+
+                        {{ config.SHOP_NAME|upper }}
+                        <!-- <div class="font-size-sm text-dual"> {{config.TAG_LINE|title}}</div> -->
+                    </a>
+
+                </div>
+                <!-- END Left Section -->
+
+                
+
+                <!-- Right Section -->
+                <div class="d-flex align-items-center">
+
+                    <!--Time-->
+                    <a class="btn mr-2 text-primary"> 
+                        <!--current time-->
+                        <div id="real_time"> </div>
+                        <!--end current time--> 
+                    </a>
+                    <!--End Time-->
+
+
+                    <!-- User Dropdown -->
+                    <div class="dropdown d-inline-block ml-2">
+                        <button type="button" class="btn btn-sm btn-dual" id="page-header-user-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            {% if user.imageURL %}
+                            <img class="rounded" src="{{user.imageURL}}" style="width: 18px;" id="rounded">
+                            {% else %}
+                            <img class="rounded" src="{%static 'images/avatar0.jpg' %}" style="width:18px;" id="rounded2">
+                            {% endif %}
+                            <span class="d-none d-sm-inline-block ml-1">{{user.full_name}}</span>
+                            <i class="fa fa-fw fa-angle-down d-none d-sm-inline-block"></i>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-right p-0 border-0 font-size-sm" aria-labelledby="page-header-user-dropdown">
+
+                            {% if user.imageURL %}
+                            <div class="p-3 text-center bg-primary">
+                                <img class="img-avatar img-avatar48 img-avatar-thumb" src="{{user.imageURL}}" alt="">
+                            </div>
+                            {%else%}
+                            <div class="p-3 text-center bg-primary">
+                                <img class="img-avatar img-avatar48 img-avatar-thumb" src="{%static 'images/avatar0.jpg' %}" alt="">
+                            </div>
+                            {%endif%}
+
+                            <div class="p-2">
+                                <h5 class="dropdown-header text-uppercase">User Options</h5>
+                                <a class="dropdown-item d-flex align-items-center justify-content-between" href="{% url 'user_profile' %}">
+                                    <span>Settings</span>
+                                    <i class="si si-settings"></i>
+                                </a>
+                                <div role="separator" class="dropdown-divider"></div>
+                                <h5 class="dropdown-header text-uppercase">Actions</h5>
+                                <a class="dropdown-item d-flex align-items-center justify-content-between" href="op_auth_lock.html">
+                                    <span>Lock Account</span>
+                                    <i class="si si-lock ml-1"></i>
+                                </a>
+                                <a href="#" class="dropdown-item d-flex align-ittems-center justify-content-between"  data-toggle="modal" data-target="#logout_confirm">
+                                    <span>Log Out</span>
+                                    <i class="si si-logout ml-1"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- END User Dropdown -->
+                    {% include "quote_items_count.html" %}
+
+                    
+                    <!--Logged in Users-->
+                    {% include "logged_in_users.html" %}
+                  
+                    
+
+                </div>
+                <!-- END Right Section -->
+            </div>
+            <!-- END Header Content -->
+
+            
+
+            <!-- Header Loader -->
+            <!-- Please check out the Loaders page under Components category to see examples of showing/hiding it -->
+            <div id="page-header-loader" class="overlay-header bg-white">
+                <div class="content-header">
+                    <div class="w-100 text-center">
+                        <i class="fa fa-fw fa-circle-notch fa-spin"></i>
+                    </div>
+                </div>
+            </div>
+            <!-- END Header Loader -->
+        </header>
+        <!-- END Header -->
+
+        <!-- Main Container -->
+        <main id="main-container">
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="mt-6 pt-2">
+                <div class="alert alert-{{message.tags}}" alert-dismissible fade show role="alert">{{message}}
+                <button type="button" class="close" data-dismiss = "alert" name="button">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                </div>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+            
+
+        {% block body %}
+
+            
+
+
+        {% endblock %}
+
+
+        </main>
+        <!-- END Main Container -->
+
+        <!-- Footer -->
+        <footer id="page-footer" class="bg-body-light">
+            <div class="content py-3">
+                <div class="row font-size-sm">
+                    <div class="col-sm-6 order-sm-2 py-1 text-center text-sm-right">
+                        Crafted with <i class="fa fa-heart text-danger"></i> by <a class="font-w600" href="#" target="_blank">epsilon compu-tech</a>
+                    </div>
+                    <div class="col-sm-6 order-sm-1 py-1 text-center text-sm-left">
+                        <a class="font-w600" href="#" target="_blank">Quotation MIS 1.0.0</a> &copy; MCA-Tech Solutions <span data-toggle="year-copy"></span>
+                    </div>
+                </div>
+            </div>
+        </footer>
+        <!-- END Footer -->
+    </div>
+    <!-- END Page Container -->
+         
+
+    {% endblock %}
+
+    {% endblock %}
+
+
+    <!-- Page JS Helpers (Flatpickr + BS Datepicker + BS Colorpicker + BS Maxlength + Select2 + Masked Inputs + Ion Range Slider plugins) -->
+    <script>jQuery(function(){ One.helpers(['flatpickr', 'datepicker', 'colorpicker', 'maxlength', 'select2', 'masked-inputs', 'rangeslider','js-datepicker']); });</script>
+
+    <!-- Page JS Helpers (Magnific Popup Plugin) -->
+    <script>jQuery(function(){ One.helpers('magnific-popup'); });</script>
+
+<!-- welcome Modal-->
+<div class="modal fade" id="welcome_message" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header bg-success">
+          <h5 class="modal-title" id="exampleModalLabel">{{ config.SHOP_NAME|upper }}</h5>
+          </button>
+        </div>
+        <div class="modal-body"><b>{{user.full_name}}</b> Successfully Logged in!!</div>
+        <div class="modal-footer">
+          <button class="btn btn-dark btn-lg" type="button" data-dismiss="modal">Continue</button>
+        </div>
+      </div>
+    </div>
+<!-- welcome Modal-->
+
+  </body>
+
+</html>

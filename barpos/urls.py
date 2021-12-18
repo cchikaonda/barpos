@@ -24,6 +24,7 @@ urlpatterns = [
     path('serializers/', include('serializers.urls')),
     path('', include('accounts.urls')),
     path('inventory/', include('inventory.urls')),
+    path('quotations/', include('quotations.urls')),
     path('pos/', include('pos.urls')),
     path('reports/', include('reports.urls')),
 ]

@@ -4,7 +4,7 @@ window.onload = function(){
         var opt = {
             margin:       1,
             filename:     'sales_report.pdf',
-            image:        { type: 'jpeg', quality: 0.98 },
+            image:        { type: 'jpeg', quality: 0.05 },
             html2canvas:  { scale: 2 },
             jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
           };
@@ -16,7 +16,7 @@ window.onload = function(){
         var opt = {
             margin:       1,
             filename:     'items.pdf',
-            image:        { type: 'jpeg', quality: 0.98 },
+            image:        { type: 'jpeg', quality: 0.05},
             html2canvas:  { scale: 2 },
             jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
           };

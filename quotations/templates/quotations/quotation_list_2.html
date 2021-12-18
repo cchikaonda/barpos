@@ -1,0 +1,35 @@
+{% for quotation in quotations %}
+  <tr>
+    <td>{{ forloop.counter }}</td>
+    <td > <a href="{% url 'quotation_summery' quotation.id %}">{{ quotation.code }}</a></td>
+    <td>{{ quotation.customer }}</td>
+    <td>{{ quotation.order_date }}</td>
+    {% if quotation.is_order_expire == True%}
+    <td class="text-danger">{{ quotation.expire_date }}</td>
+    {% else %}
+    <td>{{ quotation.expire_date }}</td>
+    {% endif %}
+    <td>{{ quotation.order_total_cost }}</td>
+    <td>{{ quotation.user.full_name }}</td>
+    {% if quotation.status == 'Pending' %}
+    <td > <a href="" class="badge badge-primary">{{ quotation.status }}</a></td>
+    {% elif quotation.status == 'Cancelled' %}
+    <td> <a href="" class="badge badge-danger">{{ quotation.status }}</a></td>
+    {% else %}
+    <td><a href="" class="badge badge-success">{{quotation.status}}</a></td>
+    {% endif %}
+    <td class="text-center">
+        <div class="btn-group">
+            <button type="button" class="btn btn-sm btn-light show-form-update" data-url="{% url 'quotation_update' quotation.id %}"  data-toggle="tooltip" title="Edit {{ quotation.code }} ">
+                <a class="fa fa-fw fa-pencil-alt"></a>
+            </button>
+           
+            <button type="button"  class="btn btn-sm btn-light show-form-delete" data-url="{% url 'quotation_delete' quotation.id %}" data-toggle="tooltip" title="Delete {{ quotation.code }}">
+                <a class="fa fa-fw fa-times"></a>
+            </button>
+
+
+        </div>
+    </td>
+  </tr>
+{% endfor %}

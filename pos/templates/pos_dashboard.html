@@ -10,10 +10,9 @@
  
 
     <!-- Content Wrapper. Contains page content -->
-    <div class="content ml-2 mr-2 mt-2">
+    <div class="content ml-2 mr-2 mt-2 mb-6">
         <!-- Small Box (Stat card) -->
         <div class="row">
-          
             <div class="col-6">
               {% if unpaid_orders %}
               <div class="card mb-4">
@@ -144,15 +143,11 @@
               </div>
               {% endif %}
             </div>
-          
             <div class="col-6">
               <div class="card">
                   <div class="card-header bg-secondary">
-                      <h3 class="card-title"><i class="fa fa-users"></i> SELECT / ADD NEW CUSTOMER</h3>
+                      <h3 class="card-title"><i class="fa fa-users"></i> SELECT CUSTOMER</h3>
                   </div>
-                  
-                    
-                        
                         <form action="{% url 'add_customer_to_order' %}" method="post"  class="mt-2 mb-2 ml-2 mr-2">
                           {% csrf_token %}
                           <div class="input-group-prepend " >
@@ -163,73 +158,67 @@
                             </select>
                             <button type="submit" name="button" class="main_btn btn btn-secondary ml-2" data-toggle="modal" data-target="#customerModal" style="width: 100px;">Select</button>
                           </div>
-                        </form>
-
-
-                        <div class="ml-2 mb-2 mt-2 mr-2">
+                        </form>   
+                  </div>
+                  <div class="card">
+                    <div class="card-header bg-secondary">
+                       ADD NEW CUSTOMER
+                    </div>
+                    <div class="ml-2 mb-2 mt-2 mr-2">
                           
                               
-                              <form action="{% url 'add_new_customer_from_pos_dash' %}" method="post" >
-                                {% csrf_token %}
-                                
-                                <!-- {{form}} -->
-                              <div class="row">
-                                <div class="form-group col-6 mb-0 " >
-                                    {{form.name|as_crispy_field}}
-                                </div>
-                                <div class="form-group col-6 mb-0" >
-                                    {{form.phone_number|as_crispy_field}}
-                                </div>
-                                <div class="form-group col-12 mb-0" >
-                                  {{form.address|as_crispy_field}}
-                              </div>
-                              </div>
-                              <div class="mt-2 mb-2">
-                                <button type="submit" class="btn btn-secondary main_btn" style="float: right;"> Submit</button>
-                              </div>
-                              </form>
-                         
+                      <form action="{% url 'add_new_customer_from_pos_dash' %}" method="post" >
+                        {% csrf_token %}
+                        
+                        <!-- {{form}} -->
+                      <div class="row">
+                        <div class="form-group col-6 mb-0 " >
+                            {{form.name|as_crispy_field}}
                         </div>
-                      
-                   
-                 
-              </div>
-              {% if unpaid_orders %}
-              <div class="card">
-                  <div class="card-header bg-secondary">
-                      <h3 class="card-title"><i class="fa fa-users"></i> MY CUSTOMERS</h3> <h5 class="text-right">TOTAL: {{count_my_customers}}</h5>
-                  </div>
-                  <div class="row ml-1 mr-1">
-                  {% for unpaid_order in unpaid_orders %}
-                      <div class="col-3 mb-4">
-                        
-                          <a class="block block-rounded block-link-pop" href="{% url 'personal_order_list' unpaid_order.id %}" >
-                              <div class="small-box bg-light dashboard_menu_item block-content block-content-full text-center bg-city">
-                                  <div class="item item-2x item-circle bg-white-10 py-3 my-3 mx-auto js-appear-enabled animated fadeIn" data-toggle="appear" data-offset="50" data-class="animated fadeIn">
-                                      <i class="icon fa fa-users fa-3x"></i>
-                                  </div>
-                                  <div class="text-dark" id="customer">
-                                      {{unpaid_order.customer}}
-                                  </div>
-                              </div>
-                          </a>
-                        
+                        <div class="form-group col-6 mb-0" >
+                            {{form.phone_number|as_crispy_field}}
+                        </div>
+                        <div class="form-group col-12 mb-0" >
+                          {{form.address|as_crispy_field}}
                       </div>
-                  
-                  {% endfor %}
-                  </div> 
-              </div>
-              {% endif %}
+                      </div>
+                      <div class="mt-2 mb-2">
+                        <button type="submit" class="btn btn-secondary main_btn" style="float: right;"> Submit</button>
+                      </div>
+                      </form>
+                 
+                    </div> 
+                </div>
+                  {% if unpaid_orders %}
+                  <div class="card">
+                      <div class="card-header bg-secondary">
+                          <h3 class="card-title"><i class="fa fa-users"></i> MY CUSTOMERS</h3> <h5 class="text-right">TOTAL: {{count_my_customers}}</h5>
+                      </div>
+                      <div class="row ml-1 mr-1">
+                      {% for unpaid_order in unpaid_orders %}
+                          <div class="col-3 mb-4">
+                            
+                              <a class="block block-rounded block-link-pop" href="{% url 'personal_order_list' unpaid_order.id %}" >
+                                  <div class="small-box bg-light dashboard_menu_item block-content block-content-full text-center bg-city">
+                                      <div class="item item-2x item-circle bg-white-10 py-3 my-3 mx-auto js-appear-enabled animated fadeIn" data-toggle="appear" data-offset="50" data-class="animated fadeIn">
+                                          <i class="icon fa fa-users fa-3x"></i>
+                                      </div>
+                                      <div class="text-dark" id="customer">
+                                          {{unpaid_order.customer}}
+                                      </div>
+                                  </div>
+                              </a>
+                            
+                          </div>
+                      
+                      {% endfor %}
+                      </div> 
+                  </div>
+                  {% endif %}
             </div>
-            
         </div>
+       
         <!-- ./col -->
-        
     </div>
-
-    <!-- /.row -->
-    <!-- Small Box (Stat card) -->
-</script>
-
 
 {% endblock %}

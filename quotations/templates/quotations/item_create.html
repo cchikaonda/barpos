@@ -1,0 +1,66 @@
+{% load crispy_forms_tags %}
+<form method="post" data-url="{% url 'item_create' %}" class="create-form">
+	{% csrf_token %}
+	<div class="block block-themed block-transparent mb-0">
+			<div class="block-header bg-primary-dark">
+				<h5 class="modal-title block-title ">Add Item</h5>
+					<div class="block-options">
+						<button type="button" class="btn-block-option" data-dismiss="modal" aria-label="Close">
+						<i class="fa fa-fw fa-times"></i>
+						</button>
+						<span aria-hidden="true"></span>
+					</div>
+		</div>
+	</div>
+		<div class="modal-body">
+			<div class="form-row">
+				 <div class="form-group col-md-6 mb-0">
+							{{form.item_name|as_crispy_field}}
+				 </div>
+				 <div class="form-group col-md-6 mb-0">
+							{{form.item_description|as_crispy_field}}
+				 </div>
+				 <div class="form-group col-md-6 mb-0">
+						{{form.unit|as_crispy_field}}
+				 </div>
+				 <div class="form-group col-md-6 mb-0">
+						{{form.barcode|as_crispy_field}}
+				 </div>
+				 <div class="form-group col-md-6 mb-0">
+							{{form.image|as_crispy_field}}
+				 </div>
+				 <div class="form-group col-md-6 mb-0">
+						{{form.supplier_name|as_crispy_field}}
+				 </div>
+				 <div class="form-group col-md-6 mb-0">
+							{{form.cost|as_crispy_field}}
+				 </div>
+				 <div class="form-group col-md-6 mb-0">
+						{{form.price|as_crispy_field}}
+				 </div>
+			 	 <div class="form-group col-md-6 mb-0">
+			 		{{form.discount_price|as_crispy_field}}
+				 </div>
+				 <div class="form-group col-md-6 mb-0">
+			 		{{form.category|as_crispy_field}}
+				   </div >
+				   <div class="form-group col-md-6 mb-0">
+					{{form.active|as_crispy_field}}
+				  </div >
+					 
+				<div class="form-group col-md-6 mb-0" > 
+					{{form.quantity_at_hand|as_crispy_field}}
+				</div>
+				<div class="form-group col-md-6 mb-0" > 
+					{{form.reorder_level|as_crispy_field}}
+				</div>
+				<div class="form-group col-md-6 mb-0" >
+					{{form.slug|as_crispy_field}}
+				</div>
+		</div>
+		</div>
+		<div class="modal-footer block-content block-content-full text-right border-top">
+		<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+		<button type="submit" class="btn btn-primary">add product</button>
+		</div>
+</form>

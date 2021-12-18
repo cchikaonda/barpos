@@ -130,7 +130,7 @@ def get_total_lastwk_sale(this_day_lw):
     some_day_last_week = date.today() - timedelta(days=7)
     monday_of_last_week = some_day_last_week - timedelta(days=(some_day_last_week.isocalendar()[2] - 1))
     monday_of_this_week = monday_of_last_week + timedelta(days=7)
-    total_sales = Order.objects.filter(ordered = True, paid_amount__created_at__gte=monday_of_last_week,
+    total_sales = Order.objects.filter(paid_amount__created_at__gte=monday_of_last_week,
                                                     paid_amount__created_at__lt=monday_of_this_week).filter(
     paid_amount__created_at__week_day = this_day_lw)
     sum_total_cost = 0

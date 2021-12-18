@@ -1,0 +1,137 @@
+{% extends 'base_receipt.html' %}
+{% block content %}
+<!-- Quotation -->
+<div class="block">
+    <div class="block-header">
+        <h3 class="block-title">QUOTE#: {{current_quotation.gen_code}}</h3>
+        <div class="block-options " style="font-size: larger;">
+            {% if current_quotation.ordered == False %}
+           <a href="#" onclick="javascript:history.go(-1)" class="ml-4"> <i class="fa fa-backward mr-1 text-warning"></i> Back </a>
+           <a href="{% url 'complete_quotation' %}" class="ml-4"> <i class="fa fa-forward mr-1 text-danger"></i> Finish </a>
+            {% endif %}
+
+            <!-- Print Page functionality is initialized in Helpers.print() -->
+            <a href="#" onclick="One.helpers('print');" class="ml-4">
+                <i class="si si-printer mr-1 text-success"></i> Print Quotation
+            </button>
+            </a>
+        </div>
+    </div>
+
+    <!--LOGO SECTION-->
+    <p  style="margin: auto; text-align: center;">
+        {% if config.LOGO_IMAGE %}  
+        <span class="smini-hide">   
+            <img style="width: 100px; height: 100px;" src="{{MEDIA_URL}}{{config.LOGO_IMAGE}}" alt=""> </br>
+        </span>
+        {% else %}
+        <span style="font-size: larger; font-family: Georgia, 'Times New Roman', Times, serif;">   
+            {{config.SHOP_NAME|title}}
+        </span>
+        {% endif %}
+        <span style="font-size: medium; font-style: normal;" class="text-primary">
+            {{config.TAG_LINE|title}}
+        </span>
+    </p>
+    <!--END LOGO SECTION-->
+    <div class="block-content">
+        <div class="p-sm-4 p-xl-7">
+            <!-- Quotation Info -->
+            <div class="row mb-1">
+                <!-- Company Info -->
+                <div class="col-6 font-size-sm">
+                    <p class="h3">{{ config.SHOP_NAME|title }}</p>
+                    <address>
+                        {{ config.ADDRESS|title }}<br>
+                        {{ config.LOCATION|title }},  {{ config.COUNTRY|title }}<br>
+                        Tel:  {{ config.TEL}}<br>
+                        Fax:  {{ config.FAX}}<br>
+                        Email:  {{ config.EMAIL|lower}}<br>
+                    </address>
+                </div>
+                <!-- END Company Info -->
+
+                <!-- Client Info -->
+                <div class="col-6 text-right font-size-sm">
+                    <p class="h3">Customer: {{current_quotation.customer.name}}</p>
+                    <address>
+                        {{current_quotation.customer.address}}<br>
+                        {{current_quotation.customer.country}}<br>
+                        Tel: {{current_quotation.customer.phone_number}}<br>
+                        {%if current_quotation.customer.email%}
+                        Email: {{current_quotation.customer.email}} <br>
+                        {% endif %}
+                        Date: {{current_quotation.order_date}}
+                    </address>
+                </div>
+                <!-- END Client Info -->
+            </div>
+            <!-- END Quotation Info -->
+
+            <!-- Table -->
+            <div class="table-responsive push">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th class="text-center" style="width: 60px;"></th>
+                            <th>Item</th>
+                            <th class="text-center" style="width: 90px;">Qty</th>
+                            <th class="text-right" style="width: 120px;">Unit Price</th>
+                            <th class="text-right" style="width: 120px;">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for ordered_item in current_quotation.items.all %}
+                        <tr>
+                            <td class="text-center">{{forloop.counter}}</td>
+                            <td>
+                                <p class="font-w600 mb-1">{{ordered_item.item.item_name}}</p>
+                                <!-- <div class="text-muted">{{ordered_item.item.item_description}}</div> -->
+                            </td>
+                            <td class="text-center">
+                                <span class="text-center">{{ordered_item.quantity}}</span>
+                            </td>
+                            <td class="text-right">{{ordered_item.price}}</td>
+                            <td class="text-right">{{ordered_item.amount}}</td>
+                        </tr>
+                        {% endfor %}
+                        <tr>
+                            <td colspan="4" class="font-w600 text-right">TAXABLE @({{config.TAX_NAME}}%)</td>
+                            <td class="text-right bg-body-dark">{{current_quotation.get_taxable_value}}</td>
+                        </tr>
+                        <tr>
+                            <td colspan="4" class="font-w600 text-right">VAT @({{config.TAX_NAME}}%)</td>
+                            <td class="text-right bg-body-dark">{{current_quotation.get_vat_value}}</td>
+                        </tr>
+                        <tr>
+                            <td colspan="4" class="font-w700 text-uppercase text-right bg-body-light">Total Due</td>
+                            <td class="font-w700 text-right bg-body-dark" >{{current_quotation.order_total_due}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <!-- END Table -->
+           
+               
+            <!-- Footer -->
+            <p class="font-size-sm text-muted border-top text-center">
+                Our Quote is subject to current ruling and availability of stock. We reserve the right to requote at the time of supply in the right of any circumstances affecting this quote. </br> </br>
+            </p>
+            <!-- END Footer -->
+        </div>
+    </div>
+    <div class="p-sm-4 p-xl-7">
+        <div class="row mb-1">
+            <div class="col-6 font-size-sm">
+                <b class="text-left">{{user.full_name|title}}</b> </br>
+                <b class="text-left">{{config.SHOP_NAME}} REPRESENTATIVE
+            </div>
+            <div class="col-12 text-left font-size-sm">
+                <b>Customer:  &nbsp;&nbsp;{{current_quotation.customer}}</b> </br>
+                <b>Date: &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;{% now "jS F Y" %}</b>
+            </div>    
+        </div>
+    </div>
+</div>
+<!-- END quotation -->
+{% endblock %}

@@ -1,0 +1,398 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<style>
+    .payment_form{
+        font-size: 200%;
+    }
+    #back_button{
+        visibility: hidden;
+    }
+    .dt-buttons{
+        display: none;
+    }
+    .mono_space_font{
+        font-family: monospace;
+    }
+</style>
+
+<script>
+    jQuery(document).ready(function($){
+        $(".clickable-row").click(function(){
+            window.location = $(this).data("href");
+        });
+
+        $(".sidebar_toggle").parent().button('toggle');
+    });
+</script>
+<div class="card-body mb-4">
+    <div class="row">
+        <div class="col-sm-12 mt-3">
+            <div class="btn-group btn-group-toggle mr-4" style="float: right;">
+                {% for item_cat in item_cat %}
+               <a href="/quotations/?category={{item_cat.id}}"> <button type="button" class="btn btn-outline-{{item_cat.category_link_colour}} mt-2 mb-2 ml-2 item_buttun category_button" id="button{{item_cat.id}}" >{{item_cat.category_name}}</button></a>
+                {% endfor %}
+                <a href="{% url 'quotation_dashboard' %}"><button type="button" class="btn btn-outline-info ml-2 mt-2 mb-2 item_buttun" id="button">All Items</button> </a>
+            </div> 
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                {% if order %}
+                {% if order.customer %}
+                {% if order.expire_date %}
+                <button type="button" name="button" class="btn btn-light btn-dual" data-toggle="modal" style="float: right;">Expire Date:</b> {{order.expire_date}}</button>
+                <button type="button" name="button" class="btn btn-light ml-3" data-toggle="modal" style="float: left;">{{order.gen_code}}</button>
+                {% else %}
+                <button type="button" name="button" class="btn btn-light ml-4" data-toggle="modal" style="float: left;">{{order.gen_code}}</button>
+                
+                {% endif %}
+                {% endif %}
+                {% endif %}
+            </div>
+            <div class="col-4">
+                {% if order %}
+                {% if order.customer %}
+                <a type="button" name="button" class="btn btn-light btn-dual" data-toggle="modal">Customer:</b> {{order.customer}}</a>
+                {% endif %}
+                {% endif %}
+            </div>
+        </div>
+        {% if order and items_in_order > 0 %}
+        <div class="row card-body">  
+            <div class="col-8">
+                <div class="row">
+                    {% if order and items_in_order > 0 %}
+                    <div style="background-color:#343a40; font-size: 200%; font-family: monospace; color: chartreuse;" class="col-4 text-right">
+                        <span>{{order.order_total_due}}</span>
+                    </div>
+                {% if order %}
+                    {% if order.customer %}
+                        <div class="col-6 mr-2">
+                            <a data-toggle="modal" data-target="#cashModal"><button type="button" name="button" class="btn btn-outline-warning item_buttun mr-3" data-toggle="modal" style="float: left;" >Change Customer</button></a>
+                    {% else %}
+                            <a data-toggle="modal" data-target="#cashModal"><button type="button" name="button" class="btn btn-outline-info item_buttun mr-3 ml-2" data-toggle="modal" style="float: left;" >Add Customer</button></a>
+                    {% endif %}
+                    {% endif %}
+                    {% if order.expire_date == null %}
+                            <a data-toggle="modal" data-target="#expireDateModal"><button type="button" name="button" class="btn btn-outline-info item_buttun ml-3" data-toggle="modal" style="float: right;" >Add Expire Date</button></a>
+                    {% else %}
+                            <a data-toggle="modal" data-target="#expireDateModal"><button type="button" name="button" class="btn btn-outline-warning item_buttun ml-3" data-toggle="modal" style="float: right;" >Change Expire Date</button></a>
+                    {% endif %}
+                    {% if order.customer %}
+                            <a href="{% url 'quotation' %}"><button type="button" name="button" class="btn btn-outline-success item_buttun ml-3" >Generate Quotation</button></a>
+                    {% endif %}
+                    </div>
+                
+                {% else %}
+                <button class="btn btn-warning active" disabled>No Active Quotation</button>
+                {% endif %}
+                </div>
+            </div>
+        </div>         
+        <div class="row card-body">
+            <div class="col-8">
+                <!-- DataTables init on table by adding .js-dataTable-simple class, functionality is initialized in js/pages/be_tables_datatables.min.js which was auto compiled from _es6/pages/be_tables_datatables.js -->
+                <table data-page-length="5" class="table  js-dataTable-simple table table-striped table-vcenter table-bordered table-hover" style="font-family: monospace;">    
+                    <thead class="thead-dark ">
+                        {% if order and items_in_order > 0%}
+                        <tr class="tr">
+                            <th class="text-center" style="width: 5%;">ID</th>
+                            <th style="width: 35%;">Item</th>
+                            <th style="width: 5%;"></th>
+                            <th style="width: 10%;">Qty</th>
+                            <th style="width: 5%;"></th>
+                            <th style="width: 15%;">Cost</th>
+                            <th style="width: 15%;">Total</th>
+                            <th style="width: 10%;"></th>  
+                        </tr>
+                        {% endif %}
+                    </thead>
+                    <tbody>
+                        {% include "quotations/cart.html" %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-4">
+                <table class="table table-striped table-bordered" style="border: none;">
+                    {% if order.order_total %}
+                    <tbody >
+                        <tr>
+                            <td style="text-align: right; outline: none;" class="text-secondary font-size-h4 font-w600" >TAXABLE @({{config.TAX_NAME}}%)</td>
+                            <td class="text-right mono_space_font" style="background-color:rgba(220,220,220,0.6); font-weight: bold;">{{order.get_taxable_value}}</td>
+                        </tr>
+                        <tr style="outline: none; border: none;">
+                            <td style="text-align: right; outline: none;" class="text-secondary font-size-h4 font-w600">VAT @({{config.TAX_NAME}}%)</td>
+                            <td class="text-right mono_space_font" style="background-color:rgba(220,220,220,0.6); font-weight: bold;">{{order.get_vat_value}}</td>
+                        </tr>
+                        <tr style="outline: none; border: none;">
+                            <td style="text-align: right; outline: none;" class="text-secondary font-size-h4 font-w600">TOTAL</td>
+                            <td class="text-right mono_space_font" style="background-color:rgba(77, 73, 73, 0.6); font-weight: bold;">{{order.order_total}}</td>
+                        </tr>
+        
+                    </tbody>
+                    {% endif %}
+                </table>
+            </div>
+        </div>          
+        
+                    
+       
+           
+       
+        {% endif %}
+        <div class="row">
+            <div class="card-body" >
+                <div class="block-content" > 
+                        <!-- Items -->
+                            <div class="block-content block-content-full">
+                                {% if order and items_in_order > 0 %}
+                                <!-- DataTables init on table by adding .js-dataTable-buttons class, functionality is initialized in js/pages/be_tables_datatables.min.js which was auto compiled from _es6/pages/be_tables_datatables.js -->
+                                <table data-page-length="3" class="table table-bordered table-striped table-vcenter js-dataTable-buttons dataTable no-footer" id="DataTables_Table_3" role="grid" aria-describedby="DataTables_Table_3_info">
+                                {% else %}
+                                <table data-page-length="12" class="table table-bordered table-striped table-vcenter js-dataTable-buttons dataTable no-footer" id="DataTables_Table_3" role="grid" aria-describedby="DataTables_Table_3_info">
+                                {% endif %}    
+                                <thead>
+                                        <tr role="row">
+                                            <th class="text-center sorting_asc" style="width: 7px;" tabindex="0" aria-controls="DataTables_Table_3" rowspan="1" colspan="1" aria-sort="ascending" aria-label="ID: activate to sort column descending">ID</th>
+                                            <th class="sorting" tabindex="0" style="width: 50%;" aria-controls="DataTables_Table_3" rowspan="1" colspan="1" aria-label="Name: activate to sort column ascending">Item Name</th>
+                                            <th class="d-none d-sm-table-cell sorting" style="width: 10%;" tabindex="0" aria-controls="DataTables_Table_3" rowspan="1" colspan="1" aria-label="Email: activate to sort column ascending">Unit</th>
+                                            <th class="d-none d-sm-table-cell sorting" style="width: 15%;" tabindex="0" aria-controls="DataTables_Table_3" rowspan="1" colspan="1" aria-label="Access: activate to sort column ascending">Category</th>
+                                            <th style="width: 15%;" class="sorting" tabindex="0" aria-controls="DataTables_Table_3" rowspan="1" colspan="1" aria-label="Registered: activate to sort column ascending">Unit Cost</th></tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for item in items %}
+                                        <tr role="row" class="even">
+                                            <td class="text-center font-size-sm sorting_1">{{forloop.counter}}</td>
+                                            <td class="font-w600 font-size-sm">
+                                                <a href="{{item.get_add_to_cart_quotation_url}}" class="text-center">{{item.item_name}}</a>
+                                            </td>
+                                            <td class="d-none d-sm-table-cell font-size-sm">
+                                                {{item.unit}}
+                                            </td>
+                                            <td>
+                                                {{item.category|title}}
+                                            </td>
+                                            {% if item.discount_price %}
+                                            <td class="d-none d-sm-table-cell">
+                                                {{item.selling_price}} <i class="text-danger"><del>{{item.price}}</del></i>
+                                            </td>
+                                            {%else%}
+                                            <td class="d-none d-sm-table-cell">
+                                                {{item.selling_price}}
+                                            </td>
+                                            {%endif%}
+                                        </tr>
+                                    {%endfor%}
+                                        
+                                    </tbody>
+                                </table>
+                        </div>
+                        <!--End Items-->    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<!-- Add Customer to Order modal -->
+<div class="modal" id="cashModal" tabindex="-1" role="dialog" aria-labelledby="modal-block-large" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+          <div class="block block-themed block-transparent ">
+              <div class="block-header bg-primary-dark mb-0">
+                <h3 style="color: white;">Customer Details</h3>
+                  <div class="block-options">
+                    <button type="button" class="btn-block-option" data-dismiss="modal" aria-label="Close">
+                    <i class="fa fa-fw fa-times fa-3x"></i>
+                    </button>
+                    <span aria-hidden="true"></span>
+                  </div>
+              </div>
+          </div>
+
+            <div class="modal-body">
+                    <form action="{% url 'add_customer_to_quotation' %}" method="post" >
+                        <label>Customer Name</label>
+                           <div class="input-group-prepend " >
+                                <select class="form-control payment_form" name="customer_name" >
+                                    {% for customers in customers %}
+                                    <option value="{{customers.name}}"> {{customers.name}} ({{customers.phone_number}}), {{customers.address}}</option>
+                                    {%endfor%}
+                                </select>
+                                <button type="button" name="button" class=" btn btn-info  fa fa-plus ml-2 payment_form" data-toggle="modal" data-target="#customerModal" style="width: 100px;"></button>
+                            </div>
+                        
+                                {% csrf_token %} 
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-outline-success item_buttun">Submit</button>
+                        </div>
+                   </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End Add Customer to Order modal -->
+
+<!-- Add Markup modal -->
+<div class="modal" id="markupModal" tabindex="-1" role="dialog" aria-labelledby="modal-block-large" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+          <div class="block block-themed block-transparent ">
+              <div class="block-header bg-primary-dark mb-0">
+                <h3 style="color: white;">Select Markup Type</h3>
+                  <div class="block-options">
+                    <button type="button" class="btn-block-option" data-dismiss="modal" aria-label="Close">
+                    <i class="fa fa-fw fa-times fa-3x"></i>
+                    </button>
+                    <span aria-hidden="true">
+                    </span>
+                  </div>
+              </div>
+          </div>
+
+            <div class="modal-body">
+                <div class="text-center">
+                    Markup A: {{config.MARKUP_A}}%,  Markup B: {{config.MARKUP_B}}% ,  Markup C: {{config.MARKUP_C}}%
+                </div>
+                    <form action="{% url 'change_markup' %}" method="post" >
+                       
+                               <div class="form-group col-md-12 mb-0" name="markup" >
+                                 {{markup_form.markup}}
+                               </div>
+                       
+
+                                {% csrf_token %} 
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-outline-success item_buttun">Submit</button>
+                        </div>
+                   </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End Add Markup modal -->
+
+<!--Add Expire Date to Order modal-->
+<div class="modal" id="expireDateModal" tabindex="-1" role="dialog" aria-labelledby="modal-block-large" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+          <div class="block block-themed block-transparent ">
+              <div class="block-header bg-primary-dark mb-0">
+                <h3 style="color: white;">Add New Expire Date of the Quotation</h3>
+                  <div class="block-options">
+                    <button type="button" class="btn-block-option" data-dismiss="modal" aria-label="Close">
+                    <i class="fa fa-fw fa-times fa-3x"></i>
+                    </button>
+                    <span aria-hidden="true"></span>
+                  </div>
+              </div>
+          </div>
+
+            <div class="modal-body">
+                    <form action="{% url 'add_expire_date_to_quotation' %}" method="post" >
+                        <label>Expire Date</label>
+                           <div class="input-group-prepend " >
+                                
+                            <input type="date" class="js-datepicker form-control js-datepicker-enabled" id="expire_date" name="expire_date" data-week-start="1" data-autoclose="true" data-today-highlight="true" data-date-format="mm/dd/yy" placeholder="mm/dd/yy">
+                            </div>
+                        
+                                {% csrf_token %} 
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-outline-success item_buttun">Submit</button>
+                        </div>
+                   </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!--End Add Expire Date to Order modal-->
+
+<div class="modal" id="customerModal" tabindex="-1" role="dialog" aria-labelledby="modal-block-large" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content">
+              <div class="block block-themed block-transparent ">
+                  <div class="block-header bg-primary-dark mb-0">
+                    <h5 class="modal-title block-title ">Add New Customer</h5>
+                      <div class="block-options">
+                        <button type="button" class="btn-block-option" data-dismiss="modal" aria-label="Close">
+                        <i class="fa fa-fw fa-times"></i>
+                        </button>
+                        <span aria-hidden="true"></span>
+                      </div>
+                </div>
+              </div>
+                <div class="modal-body">
+                    <form action="{% url 'add_customer' %}" method="post" >
+                      {% csrf_token %}
+
+                    <div class="form-group col-md-12 mb-0">
+                        {{customer_form.name}}
+                    </div>
+                    <div class="form-group col-md-12 mb-0">
+                                {{customer_form.address}}
+                    </div>
+                    <div class="form-group col-md-12 mb-0">
+                        {{customer_form.country}}
+                    </div>
+                    <div class="form-group col-md-12 mb-0">
+                            {{customer_form.phone_number}}
+                    </div>
+                    <div class="form-group col-md-12 mb-0">
+                        {{customer_form.email}}
+                    </div>
+                    <div class="form-group col-md-12 mb-0">
+                            {{customer_form.total_quotations}}
+                    </div>
+
+                    <div class="modal-footer">
+                         <button type="submit" class="btn btn-outline-success item_buttun">Submit</button>
+                    </div>
+                    </form>
+                
+                </div>
+    
+            </div>
+        </div>
+</div>
+<!--End-->
+
+<!-- Confirm Suspend  OrderModal  -->
+<div class="modal" id="confirmDeleteItemModal" tabindex="-1" role="dialog" aria-labelledby="modal-block-large" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+          <div class="block block-themed block-transparent ">
+              <div class="block-header bg-primary-dark mb-0">
+                <h3 style="color: white;"></h3>
+                  <div class="block-options">
+                  <button type="button" class="btn-block-option" data-dismiss="modal" aria-label="Close">
+                    <i class="fa fa-fw fa-times fa-3x"></i>
+                    </button>
+                    <span aria-hidden="true"></span>
+                  </div>
+            </div>
+          </div>
+            <p class="payment_form text-center"> Suspend Order {{order.order_number}}?</p>
+            <div class="modal-body" >
+                <div class="block-content block-content-full text-right border-top">
+                <button type="button" class="btn btn-success payment_form " data-dismiss="modal" style="width: 200px; height: 90px; float: right;">NO</button>
+                <a href="{% url 'suspend_order' %}"><button type="button" class="btn btn-danger payment_form " style="width: 200px; height: 90px; float: left;"><i class="fa fa-check mr-1"></i>YES</button></a>
+               </div>
+           </div>
+
+    </div>
+    </div>
+</div>
+
+<script src="{% static '/js/quotation/searchitems.js' %}"></script>
+
+{% endblock %}
+
+
+
+
+

@@ -1,3 +1,51 @@
+//customer
+$(document).ready(function(){
+	var ShowForm = function(){
+		var btn = $(this);
+		$.ajax({
+			url: btn.attr("data-url"),
+			type: 'get',
+			dataType:'json',
+			beforeSend: function(){
+				$('#modal-customer').modal('show');
+			},
+			success: function(data){
+				$('#modal-customer .modal-content').html(data.html_form);
+			}
+		});
+	};
+
+	var SaveForm =  function(){
+		var form = $(this);
+		$.ajax({
+			url: form.attr('data-url'),
+			data: form.serialize(),
+			type: form.attr('method'),
+			dataType: 'json',
+			success: function(data){
+				if(data.form_is_valid){
+					$('#customer-table tbody').html(data.customer_list);
+					$('#modal-customer').modal('hide');
+				} else {
+					$('#modal-customer .modal-content').html(data.html_form)
+				}
+			}
+		})
+		return false;
+	}
+
+// create
+$(".show-form").click(ShowForm);
+$("#modal-customer").on("submit",".create-form",SaveForm);
+
+//update
+$('#customer-table').on("click",".show-form-update",ShowForm);
+$('#modal-customer').on("submit",".update-form",SaveForm)
+
+//delete
+$('#customer-table').on("click",".show-form-delete",ShowForm);
+$('#modal-customer').on("submit",".delete-form",SaveForm)
+    });
 
 //supplier
 $(document).ready(function(){

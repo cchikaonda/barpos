@@ -103,6 +103,12 @@ class Item(models.Model):
     def get_remove_from_cart_url(self):
         return reverse('remove_from_cart', kwargs={'slug': self.slug})
 
+    def get_add_to_cart_quotation_url(self):
+        return reverse('add_to_cart_quotation', kwargs={'slug': self.slug})
+
+    def get_remove_from_cart_quotation_url(self):
+        return reverse('remove_from_cart_quotation', kwargs={'slug': self.slug})
+
 
 class Stock(models.Model):
     item = models.ForeignKey(Item, on_delete=models.CASCADE)

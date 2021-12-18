@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% block content %}
+
+
+
+<div id="page-container">
+      
+  <div class="content">
+        <!-- Full Table -->
+        <div class="block card-body mb-4">
+            <div class="block-content">
+              <div class="block-header">
+                <a href="{% url 'quotation_dashboard' %}"><button class="btn btn-primary"> <span class="fa fa-plus fa-1x"></span> Add New Quotation</button> </a>
+              </div>
+            <div class="block-content block-content-full">
+                <!-- DataTables init on table by adding .js-dataTable-buttons class, functionality is initialized in js/pages/be_tables_datatables.min.js which was auto compiled from _es6/pages/be_tables_datatables.js -->
+                <table class="table  table-hover table-vcenter js-dataTable-buttons" id="quotation-table">
+                  <thead >
+                    <tr>
+                        <th class="text-center" style="width: 5%;">ID</th>
+                        <th class="d-none d-sm-table-cell" style="width: 10%;">Quotation #</th>
+                        <th class="d-none d-sm-table-cell" style="width: 20%;">Customer</th>
+                        <th class="d-none d-sm-table-cell" style="width: 20%;">Date Issued</th>
+                        <th style="width: 15%;">Expire Date</th>
+                        <th style="width: 15%;">Quotation Total</th>
+                        <th style="width: 20%;">Issued By</th>
+                        <th style="width: 5%;">Status</th>
+                        <th style="width: 10%;">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% include "quotations/quotation_list_2.html" %}
+                  </tbody>
+              </table>
+        </div>
+    </div>
+  </div>
+</div>
+
+
+  <div class="modal fade" id="modal-quotation">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content"></div>
+    </div>
+  </div>
+<script>
+    function deleteItem(id){
+        var thisId = id
+        Swal.fire({
+          title: 'Are you sure?',
+          text: "You won't be able to revert this!",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Yes, delete it!'
+        })
+        .then(function(result){
+          if (result.isConfirmed) {
+            window.location.href = '';
+            Swal.fire(
+              'Deleted!',
+              'Your file has been deleted.',
+              'success'
+            )
+          }
+      })
+    }
+</script>
+
+{% endblock %}
+

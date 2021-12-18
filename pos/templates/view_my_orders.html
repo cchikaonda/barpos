@@ -105,8 +105,8 @@
                                     <th>#</th>
                                     <th>Item</th>
                                     <th>Price</th>
-                                    <th>Quantity</th>
-                                    <th>Total</th>
+                                    <th class="text-center">Quantity</th>
+                                    <th class="text-right">Total</th>
                                   </tr>
                                 </thead>
                                 <tbody>
@@ -115,18 +115,23 @@
                                     <td>{{forloop.counter}}</td>
                                     <td>{{ordered_item.item}}</td>
                                     <td>{{ordered_item.price}}</td>
-                                    <td>{{ordered_item.quantity}}</td>
-                                    <td>{{ordered_item.get_total_amount}}</td>
+                                    <td class="text-center">{{ordered_item.quantity}}</td>
+                                    <td class="text-right">{{ordered_item.get_total_amount}}</td>
                                   </tr>
                                   {% endfor %}
+                                  
                                   <tr>
-                                    <td colspan="4" class="text-right">VAT({{paid_order.vat_rate}}%)</td>
-                                    <td colspan="1">{{paid_order.get_vat_value}}</td>
-                                  </tr>
-                                  <tr>
-                                    <td colspan="4" class="text-right">TOTAL</td>
-                                    <td colspan="1" class="bg-dark" style="font-size: x-large;">{{paid_order.order_total_due}}</td>
-                                  </tr>
+                                    <td colspan="4" class="font-w600 text-right">TAXABLE @({{config.TAX_NAME}}%)</td>
+                                    <td class="text-right bg-body-dark">{{paid_order.get_taxable_value}}</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="4" class="font-w600 text-right">VAT @({{config.TAX_NAME}}%)</td>
+                                    <td class="text-right bg-body-dark">{{paid_order.get_vat_value}}</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="4" class="font-w700 text-uppercase text-right bg-body-light">Total Due</td>
+                                    <td class="font-w700 text-right bg-body-dark" >{{paid_order.order_total_due}}</td>
+                                </tr>
                                   
                                 </tbody>
                                 {% else %}

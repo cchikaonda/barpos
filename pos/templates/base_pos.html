@@ -1,5 +1,6 @@
 {% load static %}
 {% load crispy_forms_tags %}
+{% load inventory_template_tags %}
 {% get_media_prefix as MEDIA_URL %}
 <!DOCTYPE html>
 <html lang="en">
@@ -392,6 +393,7 @@
                   </tr>
                   {% endfor %}
                 {% endif %}
+                
                 <tr class="">
                   <td colspan="2" class="text-right">
                     <h5><b>TOTAL PAID</b></h5>
@@ -408,6 +410,7 @@
                     <h5><b>{{layb_order.get_order_balance}}</b></h5> 
                   </td>
                 </tr>
+               
               </table>
               </div>
             <div class="mt-4 mb-4">

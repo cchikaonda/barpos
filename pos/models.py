@@ -111,6 +111,7 @@ class Order(models.Model):
     vat_cost = MoneyField(max_digits=14, decimal_places=2, default_currency='MWK', default= 0.0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    payment_reference = models.CharField(max_length=50, null=True)
 
     def __init__(self, *args, **kwargs):
         super(Order, self).__init__(*args, **kwargs)
@@ -134,10 +135,7 @@ class Order(models.Model):
     def get_code(self):
         return self.gen_code
     
-    @property
-    def reference(self):
-        return self.paid_amount.reference
-
+   
     @property
     def get_vat_value(self):
         return self.vat_rate / 100.00 * self.order_total()
@@ -211,7 +209,7 @@ class Order(models.Model):
 
 @receiver(post_save, sender=Order)
 def save_layby_orders(sender, instance, **kwargs):
-    if instance.get_payment_mode == "Lay By" and instance.paid_amount != instance.original_paid_amount:
+    if instance.payment_reference == "Lay By" and instance.paid_amount != instance.original_paid_amount:
         order = Order.objects.get(id=instance.id)
         
         layby_order, created = LayByOrders.objects.get_or_create(order_id = order)

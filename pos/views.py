@@ -19,7 +19,7 @@ from django.contrib.auth.decorators import login_required
 from accounts.admin import CustomConfigForm
 from barpos import settings
 import time
-
+from djmoney.money import Money
 
 
 from django.http import HttpResponse
@@ -149,6 +149,7 @@ def add_payment(request):
                 payment.save()
                 print(payment.payment_mode)
                 order.paid_amount = payment
+                order.payment_reference = reference
                 order.save()
                 request.session['opened_order'] = order.id
             return redirect('/pos/personal_order_list/'+ str(order.id))
@@ -260,6 +261,7 @@ def personal_order_list(request, id):
     # all_order_related = Order.objects.prefetch_related('customer','items','user',).all()
     unsettled_orders = Order.objects.filter(user=request.user, ordered = False, order_total_cost__gt = 0.0)
 
+
     save_order(order, request)
     items_in_order = get_items_in_order(order)
 
@@ -300,6 +302,7 @@ def personal_order_list(request, id):
         'config':config,
         'layby_payment_form':layby_payment_form,
         'layb_order':layb_order,
+        
 
     }
     return render(request, 'personal_order_list.html',context )

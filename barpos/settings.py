@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'inventory',
     'pos',
     'reports',
+    'quotations',
 
     'djmoney',
     'crispy_forms',
