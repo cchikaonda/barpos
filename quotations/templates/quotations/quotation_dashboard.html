@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load crispy_forms_tags %}
 {% load static %}
 {% block content %}
 <style>
@@ -25,6 +26,28 @@
         $(".sidebar_toggle").parent().button('toggle');
     });
 </script>
+
+<script>
+	var input = document.querySelector("#phone_number");
+	window.intlTelInput(input, {
+	  // any initialisation options go here
+	  separateDialCode: true,
+        customPlaceholder: function (
+            selectedCountryPlaceholder,
+            selectedCountryData
+        ) {
+            return "e.g. " + selectedCountryPlaceholder;
+        },
+	  initialCountry: "auto",
+		geoIpLookup: function(callback) {
+			$.get('https://ipinfo.io', function() {}, "jsonp").always(function(resp) {
+			var countryCode = (resp && resp.country) ? resp.country : "mw";
+			callback(countryCode);
+			});
+  },
+	});
+</script>
+
 <div class="card-body mb-4">
     <div class="row">
         <div class="col-sm-12 mt-3">
@@ -196,86 +219,43 @@
     </div>
 </div>
 
-
-
-
-<!-- Add Customer to Order modal -->
-<div class="modal" id="cashModal" tabindex="-1" role="dialog" aria-labelledby="modal-block-large" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-        <div class="modal-content">
-          <div class="block block-themed block-transparent ">
-              <div class="block-header bg-primary-dark mb-0">
-                <h3 style="color: white;">Customer Details</h3>
-                  <div class="block-options">
-                    <button type="button" class="btn-block-option" data-dismiss="modal" aria-label="Close">
-                    <i class="fa fa-fw fa-times fa-3x"></i>
-                    </button>
-                    <span aria-hidden="true"></span>
-                  </div>
-              </div>
-          </div>
-
+<div class="modal fade" id="cashModal">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Customer Details</h4>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          
             <div class="modal-body">
-                    <form action="{% url 'add_customer_to_quotation' %}" method="post" >
-                        <label>Customer Name</label>
-                           <div class="input-group-prepend " >
-                                <select class="form-control payment_form" name="customer_name" >
-                                    {% for customers in customers %}
-                                    <option value="{{customers.name}}"> {{customers.name}} ({{customers.phone_number}}), {{customers.address}}</option>
-                                    {%endfor%}
-                                </select>
-                                <button type="button" name="button" class=" btn btn-info  fa fa-plus ml-2 payment_form" data-toggle="modal" data-target="#customerModal" style="width: 100px;"></button>
-                            </div>
+                <form action="{% url 'add_customer_to_quotation' %}" method="post" >
+                    <label>Customer Name</label>
+                       <div class="input-group-prepend" >
+                            <select class="form-control" name="customer_name" >
+                                {% for customers in customers %}
+                                <option value="{{customers.name}}"> {{customers.name}} ({{customers.phone_number}}), {{customers.address}}</option>
+                                {%endfor%}
+                            </select>
+                        </div>
+                    
+                            {% csrf_token %} 
+                    <div class="modal-footer">
+                        <button style="float: left;" type="button" name="button" class=" btn btn-info " data-toggle="modal" data-target="#customerModal">New Customer</button>
+                        <button type="submit" class="btn btn-outline-success item_buttun">Submit</button>
                         
-                                {% csrf_token %} 
-                        <div class="modal-footer">
-                            <button type="submit" class="btn btn-outline-success item_buttun">Submit</button>
-                        </div>
-                   </form>
-            </div>
+                    </div>
+               </form>
         </div>
+      <!-- /.modal-content -->
+    </div>
+      </div>
     </div>
 </div>
-<!-- End Add Customer to Order modal -->
 
-<!-- Add Markup modal -->
-<div class="modal" id="markupModal" tabindex="-1" role="dialog" aria-labelledby="modal-block-large" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-        <div class="modal-content">
-          <div class="block block-themed block-transparent ">
-              <div class="block-header bg-primary-dark mb-0">
-                <h3 style="color: white;">Select Markup Type</h3>
-                  <div class="block-options">
-                    <button type="button" class="btn-block-option" data-dismiss="modal" aria-label="Close">
-                    <i class="fa fa-fw fa-times fa-3x"></i>
-                    </button>
-                    <span aria-hidden="true">
-                    </span>
-                  </div>
-              </div>
-          </div>
 
-            <div class="modal-body">
-                <div class="text-center">
-                    Markup A: {{config.MARKUP_A}}%,  Markup B: {{config.MARKUP_B}}% ,  Markup C: {{config.MARKUP_C}}%
-                </div>
-                    <form action="{% url 'change_markup' %}" method="post" >
-                       
-                               <div class="form-group col-md-12 mb-0" name="markup" >
-                                 {{markup_form.markup}}
-                               </div>
-                       
-
-                                {% csrf_token %} 
-                        <div class="modal-footer">
-                            <button type="submit" class="btn btn-outline-success item_buttun">Submit</button>
-                        </div>
-                   </form>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- End Add Markup modal -->
 
 <!--Add Expire Date to Order modal-->
 <div class="modal" id="expireDateModal" tabindex="-1" role="dialog" aria-labelledby="modal-block-large" aria-hidden="true">
@@ -312,54 +292,36 @@
 </div>
 <!--End Add Expire Date to Order modal-->
 
+
+
 <div class="modal" id="customerModal" tabindex="-1" role="dialog" aria-labelledby="modal-block-large" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-            <div class="modal-content">
-              <div class="block block-themed block-transparent ">
-                  <div class="block-header bg-primary-dark mb-0">
-                    <h5 class="modal-title block-title ">Add New Customer</h5>
-                      <div class="block-options">
-                        <button type="button" class="btn-block-option" data-dismiss="modal" aria-label="Close">
-                        <i class="fa fa-fw fa-times"></i>
-                        </button>
-                        <span aria-hidden="true"></span>
-                      </div>
-                </div>
-              </div>
-                <div class="modal-body">
-                    <form action="{% url 'add_customer' %}" method="post" >
-                      {% csrf_token %}
-
-                    <div class="form-group col-md-12 mb-0">
-                        {{customer_form.name}}
-                    </div>
-                    <div class="form-group col-md-12 mb-0">
-                                {{customer_form.address}}
-                    </div>
-                    <div class="form-group col-md-12 mb-0">
-                        {{customer_form.country}}
-                    </div>
-                    <div class="form-group col-md-12 mb-0">
-                            {{customer_form.phone_number}}
-                    </div>
-                    <div class="form-group col-md-12 mb-0">
-                        {{customer_form.email}}
-                    </div>
-                    <div class="form-group col-md-12 mb-0">
-                            {{customer_form.total_quotations}}
-                    </div>
-
-                    <div class="modal-footer">
-                         <button type="submit" class="btn btn-outline-success item_buttun">Submit</button>
-                    </div>
-                    </form>
-                
-                </div>
-    
-            </div>
+    {% load crispy_forms_tags %}
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Add New Customer</h4>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
         </div>
+        <div class="modal-body">
+          
+            <div class="modal-body">
+                <form action="{% url 'add_customer' %}" method="post" >
+                    {% csrf_token %}
+
+                  {{customer_form|crispy}}
+
+                  <div class="modal-footer">
+                       <button type="submit" class="btn btn-outline-success item_buttun">Submit</button>
+                  </div>
+                  </form>  
+            </div>
+      <!-- /.modal-content -->
+    </div>
+      </div>
+    </div>
 </div>
-<!--End-->
 
 <!-- Confirm Suspend  OrderModal  -->
 <div class="modal" id="confirmDeleteItemModal" tabindex="-1" role="dialog" aria-labelledby="modal-block-large" aria-hidden="true">

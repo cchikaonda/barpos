@@ -20,8 +20,8 @@ from django.dispatch import receiver
 
 class Customer(models.Model):
     name = models.CharField(unique=True, max_length=120)
-    phone_number = PhoneNumberField(null = True, blank = True, max_length = 16)
-    address = models.TextField()
+    phone_number = PhoneNumberField(null = True, blank = True)
+    address = models.TextField(null=True)
     total_orders = models.IntegerField(default=0)
 
     def __str__(self):

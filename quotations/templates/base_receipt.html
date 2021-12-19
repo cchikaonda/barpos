@@ -60,8 +60,16 @@
 
     <!-- Page JS Plugins -->
     <script src="{% static '/js/plugins/select2/js/select2.full.min.js' %}"></script>
+    <script src="{% static '/plugins/intl-tel-input-master/build/js/intlTelInput.js' %}"></script>
 
     <script src="{% static '/js/current_date_time.js' %}"></script>
+
+    <script>
+        var input = document.querySelector("#phone_number");
+        window.intlTelInput(input, {
+          // any initialisation options go here
+        });
+    </script>
     
 
 
