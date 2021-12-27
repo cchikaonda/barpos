@@ -50,7 +50,7 @@ admin.site.register(Unit, UnitAdmin)
 
 class ItemAdmin(admin.ModelAdmin):
     list_display = (
-        'barcode','item_name','ordered_price', 'price', 'selling_price', 'discount_price',
+        'barcode','item_name', 'price', 'selling_price', 'discount_price',
         'category',
         'item_description', 'slug','quantity_at_hand', 'active', 'unit','image'
         )
@@ -64,8 +64,8 @@ admin.site.register(Item, ItemAdmin)
 class StockAdmin(admin.ModelAdmin):
     list_display = (
         'batch','item', 'supplier_name', 'ordered_price', 'previous_quantity',
-        'stock_in','new_quantity','get_total_cost_of_items','created_at','updated_at')
-    search_fields = ['item', ]
+        'stock_in','new_quantity','total_cost_of_items','created_at','updated_at')
+    search_fields = ['item__item_name', ]
     class Meta:
         model = Stock
 admin.site.register(Stock, StockAdmin)

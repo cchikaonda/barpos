@@ -249,7 +249,7 @@ def is_valid_queryparam(param):
 
 def get_todays_total_sales():
     today_date = timezone.now().date()
-    total_sales = Order.objects.filter(ordered = True, paid_amount__created_at__gte=today_date)
+    total_sales = Order.objects.filter(ordered = True, paid_amount__updated_at__gte=today_date)
     sum_total_cost = 0
     for total_sales in total_sales:
         sum_total_cost += total_sales.paid_amount.paid_amount
@@ -333,6 +333,13 @@ def sales_report(request):
         if report_period == 777:
             ordered_items = all_days_sales(item_cat)
             report_period = "All Days"
+            orders_r = Order.objects.filter(ordered = False)
+            lay_by_orders = LayByOrders.objects.filter(order_id__in = orders_r)
+            lay_b_payments = Payment.objects.filter(laybyorders__in = lay_by_orders)
+            sum_layby_paid_amount = Money(0.0, 'MWK')
+            for lay_b_payments in lay_b_payments:
+                if str(lay_b_payments.paid_amount) != "None":
+                    sum_layby_paid_amount += lay_b_payments.paid_amount
         elif report_period == 1:
             ordered_items = todays_ordered_items(item_cat)
             report_period = "Today"

@@ -23,7 +23,7 @@ admin.site.register(Customer, CustomerAdmin)
 
 class OrderItemAdmin(admin.ModelAdmin):
     list_display = ('order_id','user','customer','item','get_ordered_item_category','quantity','ordered_item_price','ordered_items_total','ordered','ordered_time')
-    search_fields = ['user',]
+    search_fields = ['item__item_name',]
     class Meta:
         model = OrderItem
 

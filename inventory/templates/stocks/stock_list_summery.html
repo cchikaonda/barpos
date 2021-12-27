@@ -1,0 +1,10 @@
+{% for stock_summery in stock_summery %}
+<tr>
+    <td>{{ forloop.counter }}</td>
+    <td> {{stock_summery.item_name}}</td>
+    <td class="text-center">{{stock_summery.sum_stock_in}}</td>
+    <td class="text-center">{{ stock_summery.quantity_at_hand }}</td>
+    <td class="text-center">{{ stock_summery.sum_sold }}</td>
+    <td class="text-center">{{ stock_summery.total_ordered_price }}</td>
+</tr>
+{% endfor %}

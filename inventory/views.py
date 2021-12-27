@@ -19,6 +19,8 @@ from djmoney.money import Money
 from django.db.models.functions import TruncDay
 from django.utils import timezone
 from datetime import date, timedelta, datetime
+from django.db.models.functions import Lower
+from djmoney.models.fields import MoneyField
 
 
 
@@ -37,8 +39,13 @@ def inventory_dashboard(request):
 
     total_cog_sold = 0
     ordered_items = OrderItem.objects.filter(ordered = True)
+
     for ordered_item in ordered_items:
-       total_cog_sold += ordered_item.item.ordered_price * ordered_item.quantity
+        stock_o = Stock.objects.filter(item = ordered_item.item).order_by('-created_at')[0].ordered_price 
+        print(stock_o)
+
+    for ordered_item in ordered_items:
+       total_cog_sold += Stock.objects.filter(item = ordered_item.item).order_by('-created_at')[0].ordered_price * ordered_item.quantity
     
     total_tax = 0
     sales_overtime = 0
@@ -55,7 +62,7 @@ def inventory_dashboard(request):
     friday_total_sales = get_total_sales_this_week(6)
     saturday_total_sales = get_total_sales_this_week(7)
     sunday_total_sales = get_total_sales_this_week(1)
-    print(saturday_total_sales)
+  
 
     lw_monday_total_sales = get_total_lastwk_sale(2)
     lw_tuesday_total_sales = get_total_lastwk_sale(3)
@@ -545,16 +552,31 @@ def customer_delete(request, id):
 
 @login_required
 def stock_list(request):
-    stocks = Stock.objects.all().order_by('item__item_name')
+    ordered_items = OrderItem.objects.filter(ordered = True)
+
+    for ordered_item in ordered_items:
+        stock_o = Stock.objects.filter(item = ordered_item.item).order_by('-created_at')[0].ordered_price 
+
+    stocks = Stock.objects.order_by('-created_at')
+    stock_summery = Item.objects.prefetch_related('item_name').values('item_name','quantity_at_hand').annotate(sum_stock_in = Sum(F('stock__stock_in'))).annotate(total_ordered_price = Sum('stock__total_cost_of_items')).annotate(sum_sold = F('sum_stock_in')-F('quantity_at_hand'))    
+    queryset = Item.objects.prefetch_related('item_name').values('item_name','quantity_at_hand').annotate(stock_in_sum = Sum(F('stock__stock_in'))).annotate(sum_sold = F('stock_in_sum')-F('quantity_at_hand'))
+    print(queryset)
+
+    # sold_items_total = Item.objects.filter(orderitem__ordered = True).values('item_name').annotate(total_quantity=Sum('orderitem__quantity'))
+    # .annotate(sales_total = Sum('orderitem__ordered_items_total', output_field = FloatField() ))
+
+    # print(sold_items_total)
+
     item_cats = ItemCategory.get_all_item_categories()
     item_cat_id = request.GET.get('category')
     if item_cat_id != None:
-        stocks = Stock.objects.all().filter(item__category = item_cat_id).order_by('item__item_name')
+        stocks = Stock.objects.order_by('-created_at').filter(item__category = item_cat_id)
     context = {
         'stocks': stocks,
         'header': 'Manage Stocks',
         'config':config,
         'item_cats':item_cats,
+        'stock_summery':stock_summery
     }
     return render(request, 'stocks/stock_list.html', context)
 
@@ -589,7 +611,7 @@ def stock_delete(request, id):
     stock = get_object_or_404(Stock, id=id)
     if request.method == "POST":
         item = Item.objects.get(id = stock.item.id)
-        current_item_quantity = item.quantity_at_hand - stock.previous_quantity
+        current_item_quantity = item.quantity_at_hand - stock.stock_in
         item.save()
         Item.objects.filter(id=item.id).update(quantity_at_hand = current_item_quantity)
         stock.delete()

@@ -66,8 +66,6 @@ class Item(models.Model):
     unit = models.ForeignKey(Unit, on_delete=models.CASCADE)
     barcode = models.IntegerField(null=False, unique=True)
     image = models.ImageField(default="ecom_product6_b.png", upload_to='items/', null=True, blank=True)
-    # supplier_name = models.ForeignKey(Supplier, on_delete=models.CASCADE, blank=True)
-    ordered_price = MoneyField(max_digits=14, decimal_places=2, default_currency='MWK', default= 0)
     price = MoneyField(max_digits=14, decimal_places=2, default_currency='MWK')
     discount_price = MoneyField(max_digits=14, null=True, blank=True, decimal_places=2, default_currency='MWK')
     category = models.ForeignKey(ItemCategory, on_delete=models.CASCADE)
@@ -121,7 +119,10 @@ class Stock(models.Model):
     unit_quantity = models.IntegerField(default=1)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    # total_cost_of_items = MoneyField(max_digits=14, decimal_places=2, default_currency='MWK', default=0)
+    total_cost_of_items = MoneyField(max_digits=14, decimal_places=2, default_currency='MWK', default=0)
+
+    class Meta:
+        ordering = ['-created_at']
 
     def __init__(self, *args, **kwargs):
         super(Stock, self).__init__(*args, **kwargs)
@@ -135,11 +136,13 @@ class Stock(models.Model):
         return self.item.quantity_at_hand
     
     def get_item_ordered_price(self):
-        return self.item.ordered_price
+        return self.ordered_price
 
     @property
     def get_total_cost_of_items(self):
         return self.stock_in * self.ordered_price
+        
+
     
 
 @receiver(post_save, sender=Stock)
@@ -153,7 +156,7 @@ def update_quantities_in_stock(sender, instance, **kwargs):
     if instance.previous_quantity == 0:
         old_stock = Stock.objects.get(id=instance.id)
         new_quantity = old_stock.previous_quantity + old_stock.stock_in
-        Stock.objects.filter(id=instance.id).update(new_quantity=new_quantity)
+        Stock.objects.filter(id=instance.id).update(new_quantity=new_quantity, total_cost_of_items = instance.get_total_cost_of_items)
         instance.item.quantity_at_hand = new_quantity
         instance.item.ordered_price = instance.ordered_price
         instance.item.save() 
@@ -161,7 +164,7 @@ def update_quantities_in_stock(sender, instance, **kwargs):
         instance.previous_quantity = get_item_quantity_at_hand(instance)
         previous_quantity = get_item_quantity_at_hand(instance)
         new_quantity = previous_quantity + instance.stock_in
-        Stock.objects.filter(id=instance.id).update(new_quantity=new_quantity, previous_quantity = previous_quantity)
+        Stock.objects.filter(id=instance.id).update(new_quantity=new_quantity, previous_quantity = previous_quantity, total_cost_of_items = instance.get_total_cost_of_items)
         instance.item.ordered_price = instance.ordered_price
         instance.item.quantity_at_hand = new_quantity
         instance.item.save()
