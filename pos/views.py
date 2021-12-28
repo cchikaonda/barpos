@@ -20,6 +20,7 @@ from accounts.admin import CustomConfigForm
 from barpos import settings
 import time
 from djmoney.money import Money
+from django.template.loader import render_to_string
 
 
 from django.http import HttpResponse
@@ -608,6 +609,54 @@ def customer_list_pos(request):
         'config':config,
     }
     return render(request, 'customers/customer_list_pos.html', context)
+
+@login_required
+def save_customer_list(request, form, template_name):
+    data = dict()
+    if request.method == 'POST':
+        if form.is_valid():
+            form.save()
+            data['form_is_valid'] = True
+            customers = Customer.objects.all()
+            data['customer_list'] = render_to_string('customers/customer_list_2_pos.html', {'customers': customers})
+        else:
+            data['form_is_valid'] = False
+    context = {
+        'form': form
+    }
+    data['html_form'] = render_to_string(template_name, context, request=request)
+    return JsonResponse(data)
+
+@login_required
+def customer_create_pos(request):
+    if request.method == 'POST':
+        form = AddCustomerForm(request.POST)
+    else:
+        form = AddCustomerForm()
+    return save_customer_list(request, form, 'customers/customer_create_pos.html')
+
+@login_required
+def customer_update_pos(request, id):
+    customer = get_object_or_404(Customer, id=id)
+    if request.method == 'POST':
+        form = AddCustomerForm(request.POST, instance=customer)
+    else:
+        form = AddCustomerForm(instance=customer)
+    return save_customer_list(request, form, 'customers/customer_update_pos.html')
+
+@login_required
+def customer_delete_pos(request, id):
+    data = dict()
+    customer = get_object_or_404(Customer, id=id)
+    if request.method == "POST":
+        customer.delete()
+        data['form_is_valid'] = True
+        customers = Customer.objects.all()
+        data['customer_list'] = render_to_string('customers/customer_list_2_pos.html', {'customers': customers})
+    else:
+        context = {'customer': customer}
+        data['html_form'] = render_to_string('customers/customer_delete_pos.html', context, request=request)
+    return JsonResponse(data)
 
 # def add_layby_payment(request):
 #     form = AddLayByPaymentForm.POST or None)

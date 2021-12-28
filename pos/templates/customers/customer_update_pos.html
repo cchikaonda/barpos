@@ -1,10 +1,9 @@
 {% load crispy_forms_tags %}
-<form method="post" data-url="{% url 'customer_update' form.instance.id %}" class="update-form " >
+<form method="post" data-url="{% url 'customer_update_pos' form.instance.id %}" class="update-form " >
 	{% csrf_token %}
 	<div class="modal-header bg-warning">
         <h4 class="modal-title ">UPDATE CUSTOMER DETAILS</h4>
     </div>
-	</div>
 		<div class="modal-body">
 		{{form|crispy}}
 		</div>

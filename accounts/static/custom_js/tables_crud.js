@@ -47,6 +47,58 @@ $('#customer-table').on("click",".show-form-delete",ShowForm);
 $('#modal-customer').on("submit",".delete-form",SaveForm)
     });
 
+
+
+//customer pos
+$(document).ready(function(){
+	var ShowForm = function(){
+		var btn = $(this);
+		$.ajax({
+			url: btn.attr("data-url"),
+			type: 'get',
+			dataType:'json',
+			beforeSend: function(){
+				$('#modal-customer-pos').modal('show');
+			},
+			success: function(data){
+				$('#modal-customer-pos .modal-content').html(data.html_form);
+			}
+		});
+	};
+
+	var SaveForm =  function(){
+		var form = $(this);
+		$.ajax({
+			url: form.attr('data-url'),
+			data: form.serialize(),
+			type: form.attr('method'),
+			dataType: 'json',
+			success: function(data){
+				if(data.form_is_valid){
+					$('#customer-table-pos tbody').html(data.customer_list);
+					$('#modal-customer-pos').modal('hide');
+				} else {
+					$('#modal-customer-pos .modal-content').html(data.html_form)
+				}
+			}
+		})
+		return false;
+	}
+
+// create
+$(".show-form").click(ShowForm);
+$("#modal-customer-pos").on("submit",".create-form",SaveForm);
+
+//update
+$('#customer-table-pos').on("click",".show-form-update",ShowForm);
+$('#modal-customer-pos').on("submit",".update-form",SaveForm)
+
+//delete
+$('#customer-table-pos').on("click",".show-form-delete",ShowForm);
+$('#modal-customer-pos').on("submit",".delete-form",SaveForm)
+    });
+
+
 //supplier
 $(document).ready(function(){
 	var ShowForm = function(){

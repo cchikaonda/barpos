@@ -1,5 +1,5 @@
 {% load crispy_forms_tags %}
-<form method="post" data-url="{% url 'customer_delete' customer.id %}" class="delete-form">
+<form method="post" data-url="{% url 'customer_delete_pos' customer.id %}" class="delete-form">
 	{% csrf_token %}
 	<div class="modal-header bg-danger">
         <h4 class="modal-title ">DELETE CUSTOMER</h4>

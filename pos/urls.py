@@ -32,6 +32,9 @@ urlpatterns = [
 
     path('supplier_list_pos/', supplier_list_pos, name = 'supplier_list_pos'),  
     path('customers/customer_list_pos/', customer_list_pos, name = 'customer_list_pos'),
+    path('customers/customer_create_pos/', customer_create_pos, name = 'customer_create_pos'),
+    path('customers/customer_update_pos/<int:id>/', customer_update_pos, name = 'customer_update_pos'),
+    path('customers/customer_delete_pos/<int:id>/', customer_delete_pos, name = 'customer_delete_pos'),
     
     
 ]

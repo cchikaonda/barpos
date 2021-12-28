@@ -10,10 +10,13 @@
               <div class="card-header">
                 <div class="block-header row">
                   <div class="col-md-6 mb-2">
+                    <button class="btn btn-primary show-form mt-2 mb-2" data-url="{% url 'customer_create_pos' %}"> <span class="fa fa-plus fa-1x"></span> New Customer</button>
+                  </div>
+                  <div class="col-md-6 mb-2">
                    {{header}}
                   </div>
                 <!-- DataTables init on table by adding .js-dataTable-buttons class, functionality is initialized in js/pages/be_tables_datatables.min.js which was auto compiled from _es6/pages/be_tables_datatables.js -->
-                <table class="table table-bordered table-striped table-vcenter js-dataTable-buttons" id="customer-table">
+                <table class="table table-bordered table-striped table-vcenter js-dataTable-buttons" id="customer-table-pos">
                   <thead >
                       <tr>
                           <th class="text-center" style="width: 5%;">ID</th>
@@ -26,14 +29,14 @@
                       </tr>
                   </thead>
                   <tbody>
-                    {% include "customers/customer_list_2.html" %}
+                    {% include "customers/customer_list_2_pos.html" %}
                   </tbody>
               </table>
         </div>
     </div>
 </div>
 
-  <div class="modal fade" id="modal-customer">
+  <div class="modal fade" id="modal-customer-pos">
     <div class="modal-dialog">
       <div class="modal-content"></div>
     </div>

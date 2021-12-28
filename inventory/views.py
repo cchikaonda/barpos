@@ -42,7 +42,6 @@ def inventory_dashboard(request):
 
     for ordered_item in ordered_items:
         stock_o = Stock.objects.filter(item = ordered_item.item).order_by('-created_at')[0].ordered_price 
-        print(stock_o)
 
     for ordered_item in ordered_items:
        total_cog_sold += Stock.objects.filter(item = ordered_item.item).order_by('-created_at')[0].ordered_price * ordered_item.quantity
