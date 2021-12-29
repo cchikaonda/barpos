@@ -146,6 +146,18 @@
   <script src="{% static '/dist/js/adminlte.min.js' %}"></script>
     
   <script src="{% static '/custom_js/tables_crud.js' %}"></script>
+  
+
+  <script src="{% static '/plugins/intl-tel-input-master/build/js/intlTelInput.js' %}"></script>
+
+  <script>
+    var input = document.querySelector("#phone_number");
+    window.intlTelInput(input, {
+      // any initialisation options go here
+    });
+  </script>
+
+
      <!--personal_order_list page script -->
   <script>
     $(function () {

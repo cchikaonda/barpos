@@ -1,19 +1,44 @@
 {% extends 'base_pos.html' %}
 {% load crispy_forms_tags %}
 
+
+
 {% block body %}
   <style>
     .dashboard_menu_item{
       height: 175px;
     }
   </style>
- 
+
+<script>
+  var input = document.querySelector("#phone_number");
+    window.intlTelInput(input, {
+    // any initialisation options go here
+    
+    initialCountry: "auto",
+      geoIpLookup: function(callback) {
+        $.get('https://ipinfo.io', function() {}, "jsonp").always(function(resp) {
+        var countryCode = (resp && resp.country) ? resp.country : "mw";
+        callback(countryCode);
+        });
+    },
+    separateDialCode: true,
+      customPlaceholder: function (
+        selectedCountryPlaceholder,
+        selectedCountryData
+      ) {
+        return "e.g. " + selectedCountryPlaceholder;
+      },
+
+    });
+</script>
+
 
     <!-- Content Wrapper. Contains page content -->
     <div class="content ml-2 mr-2 mt-2 mb-6">
         <!-- Small Box (Stat card) -->
         <div class="row">
-            <div class="col-6">
+            <div class="col-8">
               {% if unpaid_orders %}
               <div class="card mb-4">
                 <div class="card-header bg-secondary">
@@ -143,15 +168,15 @@
               </div>
               {% endif %}
             </div>
-            <div class="col-6">
+            <div class="col-4">
               <div class="card">
                   <div class="card-header bg-secondary">
                       <h3 class="card-title"><i class="fa fa-users"></i> SELECT CUSTOMER</h3>
                   </div>
                         <form action="{% url 'add_customer_to_order' %}" method="post"  class="mt-2 mb-2 ml-2 mr-2">
                           {% csrf_token %}
-                          <div class="input-group-prepend " >
-                            <select class="form-control payment_form pos_form" name="customer_name" >
+                          <div class="input-group-prepend " id="customer-list">
+                            <select class="form-control payment_form pos_form" name="customer_name">
                               {% for customers in customers %}
                                 <option value="{{customers.name}}" class="pos_form"> {{customers.name}} {% if customers.phone_number %} ({{customers.phone_number}}){% endif %}</option>
                               {%endfor%}
@@ -161,35 +186,13 @@
                         </form>   
                   </div>
                   <div class="card">
-                    <div class="card-header bg-secondary">
-                       ADD NEW CUSTOMER
-                    </div>
                     <div class="ml-2 mb-2 mt-2 mr-2">
-                          
-                              
-                      <form action="{% url 'add_new_customer_from_pos_dash' %}" method="post" >
-                        {% csrf_token %}
-                        
-                        <!-- {{form}} -->
-                      <div class="row">
-                        <div class="form-group col-6 mb-0 " >
-                            {{form.name|as_crispy_field}}
-                        </div>
-                        <div class="form-group col-6 mb-0" >
-                            {{form.phone_number|as_crispy_field}}
-                        </div>
-                        <div class="form-group col-12 mb-0" >
-                          {{form.address|as_crispy_field}}
-                      </div>
-                      </div>
-                      <div class="mt-2 mb-2">
-                        <button type="submit" class="btn btn-secondary main_btn" style="float: right;"> Submit</button>
-                      </div>
-                      </form>
-                 
+                      
+                      <button class="btn btn-lg btn-primary show-form mt-2 mb-2" data-url="{% url 'create_new_customer_on_pos_dash' %}"> <span class="fa fa-plus fa-1x"></span> New Customer</button>
+                    
                     </div> 
                 </div>
-                  {% if unpaid_orders %}
+                  <!-- {% if unpaid_orders %}
                   <div class="card">
                       <div class="card-header bg-secondary">
                           <h3 class="card-title"><i class="fa fa-users"></i> MY CUSTOMERS</h3> <h5 class="text-right">TOTAL: {{count_my_customers}}</h5>
@@ -197,28 +200,27 @@
                       <div class="row ml-1 mr-1">
                       {% for unpaid_order in unpaid_orders %}
                           <div class="col-3 mb-4">
-                            
-                              <a class="block block-rounded block-link-pop" href="{% url 'personal_order_list' unpaid_order.id %}" >
-                                  <div class="small-box bg-light dashboard_menu_item block-content block-content-full text-center bg-city">
-                                      <div class="item item-2x item-circle bg-white-10 py-3 my-3 mx-auto js-appear-enabled animated fadeIn" data-toggle="appear" data-offset="50" data-class="animated fadeIn">
-                                          <i class="icon fa fa-users fa-3x"></i>
-                                      </div>
-                                      <div class="text-dark" id="customer">
-                                          {{unpaid_order.customer}}
-                                      </div>
-                                  </div>
-                              </a>
+
+                            <button class="btn btn-lg btn-secondary show-form mt-2 mb-2 " href="{% url 'personal_order_list' unpaid_order.id %}" >{{unpaid_order.customer}}</button>
                             
                           </div>
                       
                       {% endfor %}
                       </div> 
                   </div>
-                  {% endif %}
+                  {% endif %} -->
             </div>
         </div>
        
         <!-- ./col -->
+    </div>
+
+
+
+    <div class="modal fade" id="modal-customer-dash">
+      <div class="modal-dialog">
+        <div class="modal-content"></div>
+      </div>
     </div>
 
 {% endblock %}

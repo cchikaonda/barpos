@@ -36,5 +36,5 @@ urlpatterns = [
     path('customers/customer_update_pos/<int:id>/', customer_update_pos, name = 'customer_update_pos'),
     path('customers/customer_delete_pos/<int:id>/', customer_delete_pos, name = 'customer_delete_pos'),
     
-    
+    path('create_new_customer_on_pos_dash/', create_new_customer_on_pos_dash, name = 'create_new_customer_on_pos_dash'),
 ]

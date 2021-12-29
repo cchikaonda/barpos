@@ -21,16 +21,16 @@
 
 		});
 </script>
-<form method="post" data-url="{% url 'customer_update_pos' form.instance.id %}" class="update-form " >
+<form method="post" data-url="{% url 'create_new_customer_on_pos_dash' %}" class="create-form">
 	{% csrf_token %}
-	<div class="modal-header bg-warning">
-        <h4 class="modal-title ">UPDATE CUSTOMER DETAILS</h4>
+	<div class="modal-header bg-success">
+        <h4 class="modal-title ">ADD NEW CUSTOMER DASH</h4>
     </div>
 		<div class="modal-body">
 		{{form|crispy}}
 		</div>
 		<div class="modal-footer block-content block-content-full text-right border-top">
-		<button type="button" class="btn btn-sm btn-outline-primary" data-dismiss="modal">Cancel Changes</button>
-		<button type="submit" class="btn btn-sm btn-outline-danger"><i class="fa fa-check mr-1"></i>Save Changes</button>
+		<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+		<button type="submit" class="btn btn-primary">add customer</button>
 		</div>
 </form>

@@ -25,6 +25,9 @@ class AddSupplierForm(forms.ModelForm):
     class Meta:
         model = Supplier
         fields = ('name','address','phone_number','description')
+        widgets = {
+                'phone_number': forms.TextInput(attrs={'class': 'js-max-length form-control', 'id':'phone_number'})
+                }
 
 
 class AddCategoryForm(forms.ModelForm):

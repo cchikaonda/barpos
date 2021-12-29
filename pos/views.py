@@ -601,6 +601,31 @@ def supplier_list_pos(request):
     return render(request, 'suppliers/supplier_list_pos.html', context)
 
 @login_required
+def create_new_customer_on_pos_dash(request):
+    if request.method == 'POST':
+        form = AddCustomerForm(request.POST)
+    else:
+        form = AddCustomerForm()
+    return save_added_customer_on_pos_dash(request, form, 'create_new_customer_on_pos_dash.html')
+
+@login_required
+def save_added_customer_on_pos_dash(request, form, template_name):
+    data = dict()
+    if request.method == 'POST':
+        if form.is_valid():
+            form.save()
+            data['form_is_valid'] = True
+            customers = Customer.objects.all()
+            data['customer_list'] = render_to_string('pos_dashboard.html', {'customers': customers})
+        else:
+            data['form_is_valid'] = False
+    context = {
+        'form': form
+    }
+    data['html_form'] = render_to_string(template_name, context, request=request)
+    return JsonResponse(data)
+
+@login_required
 def customer_list_pos(request):
     customers = Customer.objects.all()
     context = {
@@ -626,6 +651,7 @@ def save_customer_list(request, form, template_name):
     }
     data['html_form'] = render_to_string(template_name, context, request=request)
     return JsonResponse(data)
+
 
 @login_required
 def customer_create_pos(request):
