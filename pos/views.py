@@ -585,6 +585,35 @@ def view_my_orders(request):
     return render(request, "view_my_orders.html", context)
 
 @login_required
+def view_all_orders(request):
+    customers = Customer.objects.all()
+    paid_orders = Order.objects.filter(ordered = True)
+    unpaid_orders = Order.objects.filter(ordered = False)
+    count_my_customers = Order.objects.filter(ordered = False).count()
+
+    
+    sum_unpaid_orders = 0.0
+    sum_paid_orders = 0.0
+
+    for paid_order in paid_orders:
+        sum_paid_orders += paid_order.order_total_due()
+    for unpaid_order in unpaid_orders:
+        sum_unpaid_orders += unpaid_order.order_total_due()
+
+    context = {
+        'customers':customers,
+        'config':config,
+        'paid_orders':paid_orders,
+        'unpaid_orders':unpaid_orders,
+        'sum_unpaid_orders':sum_unpaid_orders,
+        'sum_paid_orders':sum_paid_orders,
+        'count_my_customers':count_my_customers,
+
+
+    }
+    return render(request, "view_all_orders.html", context)
+
+@login_required
 def supplier_list_pos(request):
     suppliers = Supplier.objects.all()
     context = {

@@ -2,10 +2,9 @@
   <tr>
     <td>{{ forloop.counter }}</td>
     <td>{{ customer.name }}</td>
-    <td>{{ customer.address }}, {{customer.country}}</td>
+    <td>{{ customer.address }}</td>
     <td>{{ customer.phone_number }}</td>
-    <td>{{ customer.email }}</td>
-    <td>{{ customer.total_quotations }}</td>
+    <td class="text-center">{{ customer.total_orders }}</td>
     <td class="text-center">
         <div class="btn-group">
             <button type="button" class="btn btn-sm btn-light show-form-update" data-url="{% url 'customer_update_pos' customer.id %}" data-toggle="tooltip" title="Edit {{ customer.name }} ">

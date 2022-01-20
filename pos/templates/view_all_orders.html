@@ -12,41 +12,135 @@
     <!-- Content Wrapper. Contains page content -->
     <div class="content ml-2 mr-2 mt-2" style="max-height: 500px;">   
       {% if unpaid_orders %}
-      <!-- small card -->
-      <div class="card col-12">
+      <div class="card mb-4 col-12">
         <div class="card-header bg-secondary">
-          <h3 class="card-title"><i class="fa fa-money-bill"></i> UNPAID ORDERS</h3> <h5 class="text-right"><b>TOTAL: {{sum_unpaid_orders}}</b></h5>
+          <h3 class="card-title"><i class="fa fa-money-bill-wave"></i> UNPAID ORDERS</h3>  <h5 class="text-right"><b>TOTAL: {{sum_unpaid_orders}}</b></h5>
         </div>
         <!-- /.card-header -->
         <div class="card-body">
-          <table class="table table-bordered table-striped js-dataTable-buttons" id="unpaid-orders-table">
+        
+          <div>
+          <div class="block-content block-content-full">
+            <table  class="table table-bordered table-striped js-dataTable-buttons" id="unpaid-orders-table">
             <thead>
-            <tr role="row">
-              <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Order ID</th>
-              <th class="text-left">Customer</th>
-              <th class="sorting text-right" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Total</th>
-            
-            </tr>
+            <tr role="row"> 
+              <th>Order ID</th>
+              <th class="sorting_asc" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Rendering engine: activate to sort column descending">Customer Name</th>
+              <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Total Bill</th>
+              <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Date</th><th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Cashier</th>
+              <th class="sorting" tabindex="0" aria-controls="example1">Action</th></tr>
             </thead>
             <tbody>
-      
+            {% for paid_order in unpaid_orders %}
+            <tr role="row" class="odd">
+                {% if request.user == paid_order.user %}
+                      <td class="text-left"><a href="{% url 'personal_order_list' paid_order.id %}">{{paid_order.get_code}}</a></td>
+                      <td class="text-left"><a href="{% url 'personal_order_list' paid_order.id %}">{{paid_order.customer}}</a></td>
+            {% else %}
+              <td>{{paid_order.get_code}}</td>
+              <td tabindex="0" class="sorting_1">{{paid_order.customer}}</td>
+            {% endif %}
+             
+              <td>{{paid_order.order_total_cost}}</td>
+              <td>{{paid_order.order_date| date:"d/m/Y"}}, {{paid_order.order_date| date:"H:m:s"}}</td>
+              <td>{{paid_order.user.full_name}}</td>
+              <td class="project-actions text-left">
+                <a class="btn btn-info btn-sm" data-toggle="modal" data-target="#order_details{{paid_order.id}}">
+                    <i class="fas fa-trash">
+                    </i>
+                    View Bill Items
+                </a>
+
+                <!--View Bill Modal-->
+                <div class="modal fade" id="order_details{{paid_order.id}}">
+                  <div class="modal-dialog modal-dialog-centered modal-lg">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h4 class="modal-title">{{paid_order.get_code}} : {{paid_order.customer}} </h4> 
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+                        
+                        <form action="{% url 'add_payment' %}" method="post" >
+                          {% csrf_token %}
+                            
+                          <div class="form-group">
+                            <div class="mb-4">
+                              <table class="table table-striped">
+                                {% if paid_order.items.all %}
+                                <thead>
+                                  <tr>
+                                    <th>#</th>
+                                    <th>Item</th>
+                                    <th>Price</th>
+                                    <th class="text-center">Quantity</th>
+                                    <th class="text-right">Total</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {% for ordered_item in paid_order.items.all %}
+                                  <tr>
+                                    <td>{{forloop.counter}}</td>
+                                    <td>{{ordered_item.item}}</td>
+                                    <td>{{ordered_item.price}}</td>
+                                    <td class="text-center">{{ordered_item.quantity}}</td>
+                                    <td class="text-right">{{ordered_item.get_total_amount}}</td>
+                                  </tr>
+                                  {% endfor %}
+                                  
+                                  <tr>
+                                    <td colspan="4" class="font-w600 text-right">TAXABLE @({{config.TAX_NAME}}%)</td>
+                                    <td class="text-right bg-body-dark">{{paid_order.get_taxable_value}}</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="4" class="font-w600 text-right">VAT @({{config.TAX_NAME}}%)</td>
+                                    <td class="text-right bg-body-dark">{{paid_order.get_vat_value}}</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="4" class="font-w700 text-uppercase text-right bg-body-light">Total Due</td>
+                                    <td class="font-w700 text-right bg-body-dark" >{{paid_order.order_total_due}}</td>
+                                </tr>
+                                  
+                                </tbody>
+                                {% else %}
+                                <div>No Items in Order!</div>
+                                {% endif %}
+                          
+                              </table>
+                            
+                            </div>
+                          </div>
+                          
+                      
+                      </div>
+                      <div class="modal-footer justify-content-between">
+                        <button type="button" class="btn btn-lg btn-default" data-dismiss="modal">Close</button>
+                      </div>
+                    </div>
+                  </form>
+                    <!-- /.modal-content -->
+                  </div>
+                </div>
+                <!--End View Bill Modal-->
+
+              </td>
               
-        
-                {% for unpaid_order in unpaid_orders %}
-                <tr role="row" class="odd">
-                  
-                      <td class="text-left"><a href="{% url 'personal_order_list' unpaid_order.id %}">{{unpaid_order.get_code}}</a></td>
-                      <td class="text-left"><a href="{% url 'personal_order_list' unpaid_order.id %}">{{unpaid_order.customer}}</a></td>
-                      <td class="text-right">{{unpaid_order.order_total_due}}</td>
-                <tr>
-                  {% endfor %}
-              </tr>
-            </tbody>
+            </tr>
+            {% endfor %}
+        </tbody>
             <tfoot>
             </tfoot>
-          </table>
+            </table>
+          </div>
+      
+          <div><br></div>
+          </div>
+          
+        <!-- /.card-body -->
         </div>
-      </div>
+      </div> 
       {% endif %}
       <div class="card mb-4 col-12">
         <div class="card-header bg-secondary">
