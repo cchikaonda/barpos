@@ -557,11 +557,6 @@ def view_order_items(request, id):
 
 @login_required
 def view_my_orders(request):
-    if 'opened_order' in request.session:
-        del request.session['opened_order']
-    if config.QUICK_SALE == 'yes':
-        return redirect ('add_customer_to_order')
-    form = AddCustomerForm()
     customers = Customer.objects.all()
     paid_orders = Order.objects.filter(user = request.user, ordered = True)
     unpaid_orders = Order.objects.filter(user = request.user, ordered = False)
@@ -584,7 +579,6 @@ def view_my_orders(request):
         'sum_unpaid_orders':sum_unpaid_orders,
         'sum_paid_orders':sum_paid_orders,
         'count_my_customers':count_my_customers,
-        'form':form,
 
 
     }
