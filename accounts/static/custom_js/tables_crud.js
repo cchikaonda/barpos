@@ -445,3 +445,53 @@ $(document).ready(function(){
 	$('#category-table').on("click",".show-form-delete",ShowForm);
 	$('#modal-category').on("submit",".delete-form",SaveForm)
 	});
+
+
+//quotation
+$(document).ready(function(){
+	var ShowForm = function(){
+		var btn = $(this);
+		$.ajax({
+			url: btn.attr("data-url"),
+			type: 'get',
+			dataType:'json',
+			beforeSend: function(){
+				$('#modal-quotation').modal('show');
+			},
+			success: function(data){
+				$('#modal-quotation .modal-content').html(data.html_form);
+			}
+		});
+	};
+
+	var SaveForm =  function(){
+		var form = $(this);
+		$.ajax({
+			url: form.attr('data-url'),
+			data: form.serialize(),
+			type: form.attr('method'),
+			dataType: 'json',
+			success: function(data){
+				if(data.form_is_valid){
+					$('#quotation-table tbody').html(data.quotation_list);
+					$('#modal-quotation').modal('hide');
+				} else {
+					$('#modal-quotation .modal-content').html(data.html_form)
+				}
+			}
+		})
+		return false;
+	}
+
+	// create
+	$(".show-form").click(ShowForm);
+	$("#modal-quotation").on("submit",".create-form",SaveForm);
+
+	//update
+	$('#quotation-table').on("click",".show-form-update",ShowForm);
+	$('#modal-quotation').on("submit",".update-form",SaveForm)
+
+	//delete
+	$('#quotation-table').on("click",".show-form-delete",ShowForm);
+	$('#modal-quotation').on("submit",".delete-form",SaveForm)
+	});

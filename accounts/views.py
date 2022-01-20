@@ -8,24 +8,30 @@ from inventory.models import ItemCategory, Supplier, Unit, Item
 from pos.models import Customer, OrderItem, Order
 from constance import config
 from django.db.models import Count
+from quotations.models import Quotation
 
 # Create your views here.
 @login_required
 def system_dashboard(request):
     suppliers_count = Supplier.objects.all().count()
-    customers_count = Customer.objects.all().count()
-    orders_count = Order.objects.filter(user=request.user).count()
-    count_my_customers = Order.objects.filter(user = request.user, ordered = False).count()
+    my_invoices_count = Order.objects.filter(user = request.user).count()
+    all_invoices_count = Order.objects.all().count()
+    count_my_invoices = Order.objects.filter(user = request.user, ordered = False).count()
+    quotations_count = Quotation.objects.all().count()
+    count_customers = Customer.objects.all().count()
+
     # filter(user = request.user, ordered = False).count(distinct = True)
     context={
         'home':'Home',
         'header':'Home', 
         'config':config,
         'suppliers_count':suppliers_count,
-        'customers_count':customers_count,
-        'orders_count':orders_count,
+        'my_invoices_count':my_invoices_count,
+        'all_invoices_count':all_invoices_count,
         'config':config,
-        'count_my_customers':count_my_customers,
+        'count_my_invoices':count_my_invoices,
+        'quotations_count':quotations_count,
+        'count_customers':count_customers,
         }
     return render(request, 'system_dashboard.html', context)
 

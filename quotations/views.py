@@ -1,3 +1,4 @@
+import imp
 from django.shortcuts import render,redirect, get_object_or_404
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView
@@ -32,6 +33,7 @@ from pos.models import Customer, CustomUser
 from inventory.templatetags.inventory_template_tags import cart_item_count
 from pos.forms import SearchForm
 from pos.forms import AddCustomerForm
+from quotations.forms import UpdateQuotationForm
 
 def quotation(request):
     current_quotation = Quotation.objects.get(user=request.user, ordered = False)
@@ -247,7 +249,7 @@ def quotation_list(request):
 
 @login_required
 def quotation_update(request, id):
-    quotation = get_object_or_404(QuotationItem, id=id)
+    quotation = get_object_or_404(Quotation, id=id)
     if request.method == 'POST':
         form = UpdateQuotationForm(request.POST, instance=quotation)
     else:

@@ -1,16 +1,9 @@
 {% load crispy_forms_tags %}
-<form method="post" data-url="{% url 'quotation_update' form.instance.id %}" class="update-form " >
+<form method="post" data-url="{% url 'quotation_update' form.instance.id %}" class="update-form" >
 	{% csrf_token %}
-	<div class="block block-themed block-transparent mb-0">
-			<div class="block-header bg-primary-dark">
-				<h5 class="modal-title block-title ">Update Quotation</h5>
-					<div class="block-options">
-						<button type="button" class="btn-block-option" data-dismiss="modal" aria-label="Close">
-						<i class="fa fa-fw fa-times"></i>
-						</button>
-						<span aria-hidden="true"></span>
-					</div>
-		</div>
+	<div class="modal-header bg-warning">
+        <h4 class="modal-title">UPDATE QUOTATION STATUS</h4>
+    </div>
 	</div>
 		<div class="modal-body">
 		{{form|crispy}}

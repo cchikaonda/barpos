@@ -1,48 +1,56 @@
-{% extends 'base.html' %}
-{% block content %}
+{% extends 'base_pos.html' %}
+{% block body %}
 
 
 
 <div id="page-container">
       
-  <div class="content">
+  <div class="block-content">
         <!-- Full Table -->
-        <div class="block card-body mb-4">
-            <div class="block-content">
-              <div class="block-header">
+       
+        <div class="card">
+          <div class="card-header">
+            <div class="block-header row">
+              <div class="col-md-6 mb-2">
                 <a href="{% url 'quotation_dashboard' %}"><button class="btn btn-primary"> <span class="fa fa-plus fa-1x"></span> Add New Quotation</button> </a>
               </div>
-            <div class="block-content block-content-full">
-                <!-- DataTables init on table by adding .js-dataTable-buttons class, functionality is initialized in js/pages/be_tables_datatables.min.js which was auto compiled from _es6/pages/be_tables_datatables.js -->
-                <table class="table  table-hover table-vcenter js-dataTable-buttons" id="quotation-table">
-                  <thead >
-                    <tr>
-                        <th class="text-center" style="width: 5%;">ID</th>
-                        <th class="d-none d-sm-table-cell" style="width: 10%;">Quotation #</th>
-                        <th class="d-none d-sm-table-cell" style="width: 20%;">Customer</th>
-                        <th class="d-none d-sm-table-cell" style="width: 20%;">Date Issued</th>
-                        <th style="width: 15%;">Expire Date</th>
-                        <th style="width: 15%;">Quotation Total</th>
-                        <th style="width: 20%;">Issued By</th>
-                        <th style="width: 5%;">Status</th>
-                        <th style="width: 10%;">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {% include "quotations/quotation_list_2.html" %}
-                  </tbody>
-              </table>
-        </div>
+              <div class="col-md-6 mb-2">
+               {{header}}
+              </div>
+            </div>
+            <!-- DataTables init on table by adding .js-dataTable-buttons class, functionality is initialized in js/pages/be_tables_datatables.min.js which was auto compiled from _es6/pages/be_tables_datatables.js -->
+            <table class="table table-bordered table-striped table-vcenter js-dataTable-buttons" id="quotation-table">
+              <thead >
+                <tr>
+                  <th class="text-center" style="width: 5%;">ID</th>
+                  <th class="d-none d-sm-table-cell" style="width: 10%;">Quotation #</th>
+                  <th class="d-none d-sm-table-cell" style="width: 20%;">Customer</th>
+                  <th class="d-none d-sm-table-cell" style="width: 20%;">Date Issued</th>
+                  <th style="width: 15%;">Expire Date</th>
+                  <th style="width: 15%;">Quotation Total</th>
+                  <th style="width: 20%;">Issued By</th>
+                  <th style="width: 5%;">Status</th>
+                  <th style="width: 10%;">Actions</th>
+              </tr>
+              </thead>
+              <tbody>
+                {% include "quotations/quotation_list_2.html" %}
+              </tbody>
+          </table>
     </div>
+</div>
+        </div>
+  </div>
+</div>
+  
+
+
+<div class="modal fade" id="modal-quotation">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content"></div>
   </div>
 </div>
 
-
-  <div class="modal fade" id="modal-quotation">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content"></div>
-    </div>
-  </div>
 <script>
     function deleteItem(id){
         var thisId = id
