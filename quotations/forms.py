@@ -15,7 +15,7 @@ from quotations.models import Quotation
 class UpdateQuotationForm(forms.ModelForm):
     class Meta:
         model = Quotation
-        fields = ('code', 'status', )
+        fields = ('code', 'status','customer',)
         widgets = {
                 'code':forms.TextInput(attrs={'class': 'form-control','readonly':'readonly'}),
                 }
