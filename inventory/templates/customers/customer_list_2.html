@@ -10,11 +10,11 @@
             <button type="button" class="btn btn-sm btn-light show-form-update" data-url="{% url 'customer_update_pos' customer.id %}" data-toggle="tooltip" title="Edit {{ customer.name }} ">
                 <a class="fa fa-fw fa-pencil-alt"></a>
             </button>
-            {% if request.user.is_superuser == True %}
+            <!-- {% if request.user.is_superuser == True %}
             <button type="button" class="btn btn-sm btn-light show-form-delete" data-url="{% url 'customer_delete_pos' customer.id %}" data-toggle="tooltip" title="Delete {{ customer.name }}">
                 <a class="fa fa-fw fa-times"> </a>
             </button>
-            {% endif %}
+            {% endif %} -->
         </div>
     </td>
   </tr>
