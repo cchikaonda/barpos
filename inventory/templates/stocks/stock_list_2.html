@@ -7,8 +7,9 @@
     <td class="text-center">{{ stock.previous_quantity }}</td>
     <td class="text-center">{{ stock.stock_in }}</td>
     <td class="text-center">{{ stock.new_quantity }}</td>
+    <td>{{stock.get_total_cost_of_items}}</td>
     <td>{{ stock.created_at| date:"d/m/Y"}}, {{ stock.created_at|  date:"H:m:s"}} </td>
-    <td>{{ stock.updated_at| date:"d/m/Y" }}, {{ stock.updated_at|  date:"H:m:s" }} </td>
+    <!-- <td>{{ stock.updated_at| date:"d/m/Y" }}, {{ stock.updated_at|  date:"H:m:s" }} </td> -->
     
 
     <td class="text-center">

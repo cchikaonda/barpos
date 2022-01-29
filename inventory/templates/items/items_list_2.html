@@ -7,6 +7,7 @@
     <td>{{ items.price }}</td>
     <td>{{ items.category }}</td>
     <td>{{ items.quantity_at_hand }}</td>
+    <td>{{items.get_expected_revenue}}</td>
     <td class="text-center">
       {% if items.active == True%}
       <span class="nav-main-link-badge badge badge-pill badge-success" data-toggle="tooltip" title="User is Admin">Yes</span>
@@ -21,12 +22,16 @@
                 <a class="fa fa-fw fa-pencil-alt"></a>
             </button>
            
-            <button type="button"  class="btn btn-sm btn-light show-form-delete" data-url="{% url 'item_delete' items.id %}" data-toggle="tooltip" title="Delete {{ items.item_name }}">
+            <!-- <button type="button"  class="btn btn-sm btn-light show-form-delete" data-url="{% url 'item_delete' items.id %}" data-toggle="tooltip" title="Delete {{ items.item_name }}">
                 <a class="fa fa-fw fa-times"> </a>
-            </button>
+            </button> -->
 
 
         </div>
     </td>
 </tr>
 {% endfor %}
+<tr style="background-color: hsla(192, 4%, 77%, 0.479);">
+    <td colspan="7" class="text-right"> <strong>TOTAL</strong></td>
+    <td colspan="4"><strong>{{expected_sum_items_cost}}</strong></td>
+</tr>

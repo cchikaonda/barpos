@@ -160,6 +160,11 @@ def get_items_running_out_of_stock():
 @login_required
 def item_list(request):
     items = Item.get_all_items()
+
+    expected_sum_items_cost = 0
+    for item in items:
+        expected_sum_items_cost += item.get_expected_revenue()
+
     item_cats = ItemCategory.get_all_item_categories()
     item_cat_id = request.GET.get('category')
     print(item_cat_id)
@@ -170,6 +175,7 @@ def item_list(request):
         'header': 'Manage Items',
         'item_cats': item_cats,
         'config':config,
+        'expected_sum_items_cost':expected_sum_items_cost,
     }
     return render(request, 'items/items_list.html', context)
 

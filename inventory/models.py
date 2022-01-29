@@ -82,6 +82,9 @@ class Item(models.Model):
             return self.discount_price
         else:
             return self.price
+            
+    def get_expected_revenue(self):
+        return self.selling_price() * self.quantity_at_hand
 
     
     @staticmethod
@@ -137,6 +140,7 @@ class Stock(models.Model):
     
     def get_item_ordered_price(self):
         return self.ordered_price
+    
 
     @property
     def get_total_cost_of_items(self):
