@@ -167,7 +167,7 @@ def item_list(request):
 
     item_cats = ItemCategory.get_all_item_categories()
     item_cat_id = request.GET.get('category')
-    print(item_cat_id)
+    # print(item_cat_id)
     if item_cat_id != None:
         items = Item.get_all_items_by_category_id(item_cat_id)
     context = {
