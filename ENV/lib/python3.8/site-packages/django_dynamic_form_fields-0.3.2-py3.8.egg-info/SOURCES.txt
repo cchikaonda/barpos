@@ -1,0 +1,16 @@
+MANIFEST.in
+README.rst
+setup.cfg
+setup.py
+django_dynamic_form_fields.egg-info/PKG-INFO
+django_dynamic_form_fields.egg-info/SOURCES.txt
+django_dynamic_form_fields.egg-info/dependency_links.txt
+django_dynamic_form_fields.egg-info/requires.txt
+django_dynamic_form_fields.egg-info/top_level.txt
+dynamic_fields/__init__.py
+dynamic_fields/apps.py
+dynamic_fields/fields.py
+dynamic_fields/urls.py
+dynamic_fields/views.py
+dynamic_fields/static/dynamic_fields/js/dynamic_fields.js
+dynamic_fields/templates/dynamic_fields/forms/widgets/dynamic_select.html
