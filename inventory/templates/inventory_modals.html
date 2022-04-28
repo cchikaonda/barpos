@@ -1,0 +1,19 @@
+{% block inventory_modals %}
+<!-- Logout Modal-->
+<div id="logout_confirm" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+  <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">×</span>
+        </button>
+      </div>
+      <div class="modal-body text-center"><b><h3>Are you sure you want to logout ?</h3></b></div>
+      <div class="modal-footer">
+        <button class="btn btn-primary confirm_button" data-dismiss="modal" type="button">NO</button>
+        <a href="{% url 'logout_request' %}" ><button class="btn btn-danger confirm_button" type="button">YES</button></a>
+      </div>
+    </div>
+  <!-- Logout Modal -->
+{% endblock inventory_modals %}

@@ -1,0 +1,63 @@
+{% load static %}
+{% block css %}
+<!-- Font Awesome Icons -->
+<link rel="stylesheet" href="{% static '/plugins/fontawesome-free/css/all.min.css' %}" type="text/css">
+<!-- overlayScrollbars -->
+<link rel="stylesheet" href="{% static '/plugins/overlayScrollbars/css/OverlayScrollbars.min.css' %}" type="text/css">
+<!-- Theme style -->
+<link rel="stylesheet" href="{% static '/dist/css/adminlte.min.css' %}" type="text/css">
+<!-- {{form.media.css }} -->
+
+<link rel="stylesheet" href="{% static '/plugins/intl-tel-input-master/build/css/intlTelInput.css' %}" type="text/css">
+
+<!-- DataTables -->
+<link rel="stylesheet" href="{% static '/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css' %}" type="text/css">
+<link rel="stylesheet" href="{% static '/plugins/datatables-responsive/css/responsive.bootstrap4.min.css' %}" type="text/css">
+<link rel="stylesheet" href="{% static '/plugins/datatables-buttons/css/buttons.bootstrap4.min.css' %}" type="text/css">
+
+<link rel="stylesheet" href="{% static '/plugins/num_pad/css/numpad-dark.css' %}" type="text/css">
+<link rel="stylesheet" href="{% static '/plugins/num_pad/css/numpad-light.css' %}" type="text/css">
+
+
+
+
+<style>
+  #customer_name_label{
+    display: none;
+  }
+  .main-footer{
+    margin-left: auto !important;      
+  }
+  .confirm_button{
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+  }
+  .posoption_button{
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+  }
+  .modal_btns{
+      width: 300px;
+      height: 60px;
+    }
+    .main_btn{
+      width: 200px;
+      height: 50px;
+      font-size: large;
+    }
+    .pos_form{
+      height: 50px;
+      font-size: xx-large;
+    }
+</style>
+{% endblock css %}

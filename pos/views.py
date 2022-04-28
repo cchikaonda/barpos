@@ -1,12 +1,12 @@
 from django.shortcuts import render,redirect, get_object_or_404
 from inventory.models import ItemCategory, Unit, Item, Supplier
-from pos.models import Customer, LayByOrders, OrderItem, Order, Payment
+from pos.models import Customer, LayByOrders, OrderItem, Order, Payment, RefundOrder
 from django.contrib import messages
 from constance import config
 from django.utils import timezone
 from datetime import date, timedelta, datetime
 from django.core.exceptions import ObjectDoesNotExist
-from pos.forms import AddPaymentForm, CashPaymentForm, SearchForm, AddCustomerForm, AddLayByPaymentForm
+from pos.forms import AddPaymentForm, CashPaymentForm, SearchForm, AddCustomerForm, AddLayByPaymentForm, OrderTypeForm, RefundOrderItemForm
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 
@@ -52,6 +52,7 @@ def pos_dashboard(request):
     form = AddCustomerForm()
     unpaid_orders = Order.objects.filter(user = request.user, ordered = False)
     count_my_customers = Order.objects.filter(user = request.user, ordered = False).count()
+    
 
 
     sum_unpaid_orders = 0.0
@@ -129,29 +130,36 @@ def add_payment(request):
             if form.is_valid():
                 paid_amount = form.cleaned_data.get('paid_amount')
                 payment_mode = request.POST.get('payment_mode')
-                print(payment_mode)
-                
+                print(paid_amount)
+                customer = order.customer
+                order_type = order.order_type
                 payment = Payment()
                 payment.payment_mode = payment_mode
+                payment.order_type = order_type
                 payment.paid_amount = paid_amount
-            
+                payment.customer = customer
+                payment.order_id = order.get_code()
+                
+                
                 if str(payment_mode).lower() == str('Cash').lower():
                     reference = 'CASH'
-                    payment.payment_mode = reference
+                    # payment.payment_mode = reference
                     payment.reference = reference
-                elif str(payment_mode).lower() == str('Lay By').lower():
-                    reference = 'Lay By'
-                    payment.payment_mode = reference
+                    print(reference)
+                elif str(payment_mode).lower() == str('Bank').lower():
+                    reference = form.cleaned_data.get('reference') 
+                    # payment.payment_mode = reference
                     payment.reference = reference
                 else:
                     reference = form.cleaned_data.get('reference') 
                     payment.reference = reference
-                
+                   
+                    
                 payment.save()
-                print(payment.payment_mode)
-                order.paid_amount = payment
+                order.payments.add(payment)
                 order.payment_reference = reference
                 order.save()
+                order = Order.objects.get(id = order_id)
                 request.session['opened_order'] = order.id
             return redirect('/pos/personal_order_list/'+ str(order.id))
         except ObjectDoesNotExist:
@@ -160,6 +168,34 @@ def add_payment(request):
             request.session['opened_order'] = order.id
             return redirect('/pos/personal_order_list/'+ str(order.id))
         return None
+
+@login_required
+def change_order_type(request):
+    form = OrderTypeForm(request.POST or None)
+    if request.method == "POST":
+        order_id =request.session['opened_order']
+        order = Order.objects.filter(id = order_id)
+        try:
+            if form.is_valid():
+                order_type = form.cleaned_data.get('order_type')
+                print(order_type)
+                order.update(order_type = order_type)
+                order = Order.objects.get(user = request.user, ordered = False)
+                order_id = order.get_code()
+
+                order_payments = Payment.objects.filter(order_id =order_id)
+                for order_payment in order_payments:
+                    order_payment.order_type = order_type
+                    order_payment.save()
+                # request.session['opened_order'] = order.id
+            return redirect('/pos/personal_order_list/'+ str(order.id))
+        except ObjectDoesNotExist:
+            messages.info(request, "You do not have an active order")
+            # request.session['opened_order'] = order.id
+            return redirect('/pos/personal_order_list/'+ str(order.id))
+        return None
+
+
 
 @login_required
 def complete_order_only(order, request):
@@ -178,10 +214,6 @@ def complete_order_only(order, request):
     order.ordered = True
     order.vat_p = order.vat_rate
     order.vat_cost = order.get_vat_value
-    payment = Payment()
-    payment.paid_amount = order.order_total_cost
-    payment.save()
-    order.add(payment)
     order.save()
     request.session['opened_order'] = order.id
 
@@ -202,10 +234,6 @@ def complete_order(request):
     order.ordered = True
     order.vat_p = order.vat_rate
     order.vat_cost = order.get_vat_value
-    payment = Payment()
-    payment.paid_amount = order.order_total_cost
-    payment.save()
-    order.paid_amount = payment
     order.save()
     return redirect("pos_dashboard")
 
@@ -249,11 +277,13 @@ def customers_list(request):
 
 @login_required
 def personal_order_list(request, id):
-    layby_payment_form = AddLayByPaymentForm(initial={"payment_mode":'Lay By', "paid_amount":['']})
-    payment_form = AddPaymentForm(initial={"payment_mode":'Cash', "paid_amount":[''],})
-    airtel_money_payment_form = AddPaymentForm(initial={"payment_mode":'Airtel Money', "paid_amount":['']})
-    mpamba_payment_form = AddPaymentForm(initial={"payment_mode":'Mpamba', "paid_amount":['']})
+    order_type_form = OrderTypeForm(initial={"order_type":'Cash'})
+    payment_form = AddPaymentForm(initial={"paid_amount":[''],})
     order = get_object_or_404(Order,id=id)
+
+    total_paid_amount = order.total_paid_amount()
+    order_total_due = order.order_total_due()
+    
     try:
         layb_order = LayByOrders.objects.get(order_id = order.id)
     except ObjectDoesNotExist:
@@ -284,6 +314,10 @@ def personal_order_list(request, id):
     if query is not None:
         items = (items.filter(barcode__startswith  = query) | items.filter(item_name__startswith  = query))|items.filter(item_name__icontains = query)
     item_search_form = SearchForm()
+
+    # for payment in order.payments.all():
+    #     print(order.payments.last())
+    # last_payment = payments.last()
     context = {
         'order':order,
         'item_categories':item_categories,
@@ -293,16 +327,16 @@ def personal_order_list(request, id):
         'config':config,
         'items_in_order':items_in_order,
         'home':'Home',
-        'header':'Order Number:',
+        'header':'Order' + ' ' + str(order.id),
         'payment_form':payment_form,
-        'airtel_money_payment_form':airtel_money_payment_form,
-        'mpamba_payment_form':mpamba_payment_form,
         'category':category,
         'unsettled_orders':unsettled_orders,
         'item_search_form':item_search_form,
         'config':config,
-        'layby_payment_form':layby_payment_form,
+        'order_type_form':order_type_form,
         'layb_order':layb_order,
+        'total_paid_amount':total_paid_amount,
+        'order_total_due':order_total_due,
         
 
     }
@@ -588,6 +622,7 @@ def view_my_orders(request):
 def view_all_orders(request):
     customers = Customer.objects.all()
     paid_orders = Order.objects.filter(ordered = True)
+    refund_order = RefundOrder.objects.all()
     unpaid_orders = Order.objects.filter(ordered = False)
     count_my_customers = Order.objects.filter(ordered = False).count()
 
@@ -601,6 +636,7 @@ def view_all_orders(request):
         sum_unpaid_orders += unpaid_order.order_total_due()
 
     context = {
+        'refund_order':refund_order,
         'customers':customers,
         'config':config,
         'paid_orders':paid_orders,
@@ -608,7 +644,6 @@ def view_all_orders(request):
         'sum_unpaid_orders':sum_unpaid_orders,
         'sum_paid_orders':sum_paid_orders,
         'count_my_customers':count_my_customers,
-
 
     }
     return render(request, "view_all_orders.html", context)
@@ -706,71 +741,3 @@ def customer_delete_pos(request, id):
         context = {'customer': customer}
         data['html_form'] = render_to_string('customers/customer_delete_pos.html', context, request=request)
     return JsonResponse(data)
-
-# def add_layby_payment(request):
-#     form = AddLayByPaymentForm.POST or None)
-#     if request.method == "POST":
-#         order_id =request.session['opened_order']
-#         order = Order.objects.get(id = order_id, user = request.user, ordered=False)
-
-#         # customer_id = request.POST.get('customer')
-#         # order = Order.objects.get(customer = customer_id, ordered = False, active=True )
-#         # items_in_order = get_items_in_order(order)
-#         try:
-#             if form.is_valid():
-#                 paid_amount = form.cleaned_data.get('paid_amount')
-#                 payment_mode = request.POST.get('payment_mode') 
-                
-#                 payment = Payment()
-#                 payment.payment_mode = payment_mode
-#                 payment.paid_amount = paid_amount
-            
-#                 if str(payment_mode).lower() == str('Cash').lower():
-#                     reference = 'CASH'
-#                     payment.reference = reference
-#                 else:
-#                     reference = form.cleaned_data.get('reference') 
-#                     payment.reference = reference
-#                 order.paid_amount = payment
-#                 payment.save()
-#                 order.save()
-#                 request.session['opened_order'] = order.id
-#             return redirect('/pos/personal_order_list/'+ str(order.id))
-#         except ObjectDoesNotExist:
-#             messages.info(request, "You do not have an active order")
-#             order = Order.objects.get(user = request.user, ordered = False)
-#             request.session['opened_order'] = order.id
-#             return redirect('/pos/personal_order_list/'+ str(order.id))
-#         return None
-
-
-
-# def admin_settings(request):
-#     initial = get_values()
-#     form = CustomConfigForm(initial=initial, request=request)
-
-#     if request.method == 'POST':
-#         if form.is_valid():
-#             form.save()
-#             messages.info(request, "Settings Updated successfully!")
-#             return HttpResponseRedirect('.')
-#         else:
-#             messages.warning(request, "Failed!")
-#     context = {
-#         'form':form,
-#     }
-#     return render(request, "admin_settings.html", context)
-
-# def get_values():
-#     """
-#     Get dictionary of values from the backend
-#     :return:
-#     """
-
-#     # First load a mapping between config name and default value
-#     default_initial = ((name, options[0])
-#                        for name, options in settings.CONSTANCE_CONFIG.items())
-#     # Then update the mapping with actually values from the backend
-#     initial = dict(default_initial, **dict(config._backend.mget(settings.CONSTANCE_CONFIG_FIELDSETS)))
-
-#     return initial

@@ -72,7 +72,7 @@
               <td>{{paid_order.get_code}}</td>
               <td tabindex="0" class="sorting_1">{{paid_order.customer}}</td>
               <td>{{paid_order.order_total_cost}}</td>
-              <td>{{paid_order.order_date| date:"d/m/Y"}}, {{paid_order.order_date| date:"H:m:s"}}</td>
+              <td>{{paid_order.created_at| date:"d/m/Y"}}, {{paid_order.created_at| date:"H:m:s"}}</td>
               <td>{{paid_order.user.full_name}}</td>
               <td class="project-actions text-left">
                 <a class="btn btn-info btn-sm" data-toggle="modal" data-target="#order_details{{paid_order.id}}">

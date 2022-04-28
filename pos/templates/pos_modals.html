@@ -1,0 +1,361 @@
+{% block pos_modals %}
+<!--Confirm Receipt Printingl-->
+<div class="modal fade" id="produceReceiptModal">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Print Receipt?</h4>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="text-right">
+          <div class="mb-4 ml-2 mr-2">
+            <table class="table table-striped">
+              <tbody style="font-size: x-large;">
+                <tr>
+                  <td>AMOUNT TENDERED</td>
+                  <td>{{order.total_paid_amount}}</td>
+                </tr>
+                <tr>
+                  <td>BALANCE</td>
+                  <td>{{order.get_balance}}</td>
+                </tr>
+                <tr>
+                  <td>CHANGE</td>
+                  <td class="bg-dark">{{order.get_change}}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="modal-body">  
+          <div class="modal-footer justify-content-between">
+            <a href="{% url 'complete_order' %}"> <button type="button" class="btn btn-dark modal_btns">NO</button> </a>
+           <a href="{% url 'final_receipt' %}"> <button type="submit" class="btn btn-primary modal_btns">YES</button></a>
+          </div>
+        </div>
+    </div>
+    </div>
+</div>
+<!--End Confirm Receipt Printing Modal-->
+  
+<!--Confirm Save Order with Printing-->
+<div class="modal fade" id="produceReceiptSavedBillModal">
+<div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+    <div class="modal-header">
+        <h4 class="modal-title">Print Receipt?</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="text-right">
+        <div class="mb-4">
+        <table class="table table-striped">
+            <tbody style="font-size: x-large;">
+            <tr>
+                <td>AMOUNT TENDERED</td>
+                <td>{{order.paid_amount}}</td>
+            </tr>
+            <tr>
+                <td>BALANCE</td>
+                <td>{{order.get_balance}}</td>
+            </tr>
+            <tr>
+                <td>CHANGE</td>
+                <td class="bg-dark">{{order.get_change}}</td>
+            </tr>
+            </tbody>
+        </table>
+        </div>
+    </div>
+    <div class="modal-body">  
+        <div class="modal-footer justify-content-between">
+        <a href="{% url 'save_bill' %}"> <button type="button" class="btn btn-dark modal_btns">NO</button> </a>
+        <a href="{% url 'print_receipt_only' %}"> <button type="submit" class="btn btn-primary modal_btns">YES</button></a>
+        </div>
+    </div>
+</div>
+</div>
+</div>
+<!--End Save Order with Printing Modal-->
+  
+<!--Cash Payment Modal-->
+<div class="modal fade" id="cashModal">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h4 class="modal-title">Cash Payment</h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            
+            <form action="{% url 'add_payment' %}" method="post" >
+            {% csrf_token %}
+                
+            <label for="topay">TO PAY</label>
+            <div class="form-group" >
+                <input id="topay" class="form-control text-right pos_form" name="" value="{{order.get_balance}}" style="background-color: rgb(62, 74, 89); font-size: 200%; font-family: monospace; color: chartreuse;" disabled/>
+            </div>
+            <br>
+            <div class="form-group ">
+                <label for="payment_mode">Payment Mode</label>
+                <div class="mb-4">
+                {{payment_form.payment_mode}}
+                </div>
+                <div class="mt-4 mb-4">
+                <label for="paid_amount">Tendered</label>
+                {{payment_form.paid_amount}}
+                </div>
+                <div class=" mt-4 mb-4 disabled">
+                {{payment_form.reference.as_hidden}}
+                <input type="hidden" name="reference" value="300">
+                </div>
+                <div class=" mt-4 mb-4 disabled">
+                <input type="hidden" name="customer" value="{{order.customer.id}}">
+                </div>
+            </div>
+            <div>
+                {% include 'numpad.html' %}
+        </div>
+        <div class="modal-footer justify-content-between">
+            <button type="button" class="btn btn-default btn-lg" data-dismiss="modal">CLOSE</button>
+            <button type="submit" class="btn btn-primary btn-lg">PROCESS</button>
+        </div>
+        </div>
+    </form>
+        <!-- /.modal-content -->
+        </div>
+    </div>
+</div>
+<!--End Cash Payment Modal-->
+
+
+<!--Lay by Payment Modal-->
+<div class="modal fade" id="laybyModal">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h4 class="modal-title">Lay by Payment</h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            
+            <form action="{% url 'change_order_type' %}" method="post" >
+            {% csrf_token %}
+                
+            <label for="topay">TO PAY</label>
+            <div class="form-group" >
+                <input id="topay" class="form-control text-right pos_form" name="" value="{{order.get_balance}}" style="background-color: rgb(62, 74, 89); font-size: 200%; font-family: monospace; color: chartreuse;" disabled/>
+            </div>
+            <br>
+            <div class="form-group ">
+                <label for="payment_mode">Order Type</label>
+                <div class="mb-4">
+                {{order_type_form.order_type}}
+                </div>
+            </div>
+            <div>
+        </div>
+        <div class="modal-footer justify-content-between">
+            <button type="button" class="btn btn-default btn-lg" data-dismiss="modal">CLOSE</button>
+            <button type="submit" class="btn btn-primary btn-lg">PROCESS</button>
+        </div>
+        </div>
+    </form>
+        <!-- /.modal-content -->
+        </div>
+    </div>
+</div>
+<!--End Lay by Payment Modal-->
+
+<!--View Bill Modal-->
+<div class="modal fade" id="order_details{{paid_order.id}}">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">{{paid_order.get_code}} : {{paid_order.customer}} </h4> 
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        
+        <form action="{% url 'add_payment' %}" method="post" >
+          {% csrf_token %}
+            
+          <div class="form-group">
+            <div class="mb-4">
+              <table class="table table-striped">
+                {% if paid_order.items.all %}
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Item</th>
+                    <th>Price</th>
+                    <th class="text-center">Quantity</th>
+                    <th class="text-right">Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for ordered_item in paid_order.items.all %}
+                  <tr>
+                    <td>{{forloop.counter}}</td>
+                    <td>{{ordered_item.item}}</td>
+                    <td>{{ordered_item.price}}</td>
+                    <td class="text-center">{{ordered_item.quantity}}</td>
+                    <td class="text-right">{{ordered_item.get_total_amount}}</td>
+                  </tr>
+                  {% endfor %}
+                  
+                  <tr>
+                    <td colspan="4" class="font-w600 text-right">TAXABLE @({{config.TAX_NAME}}%)</td>
+                    <td class="text-right bg-body-dark">{{paid_order.get_taxable_value}}</td>
+                </tr>
+                <tr>
+                    <td colspan="4" class="font-w600 text-right">VAT @({{config.TAX_NAME}}%)</td>
+                    <td class="text-right bg-body-dark">{{paid_order.get_vat_value}}</td>
+                </tr>
+                <tr>
+                    <td colspan="4" class="font-w700 text-uppercase text-right bg-body-light">Total Due</td>
+                    <td class="font-w700 text-right bg-body-dark" >{{paid_order.order_total_due}}</td>
+                </tr>
+                  
+                </tbody>
+                {% else %}
+                <div>No Items in Order!</div>
+                {% endif %}
+          
+              </table>
+            
+            </div>
+          </div>
+          
+      
+      </div>
+      <div class="modal-footer justify-content-between">
+        <button type="button" class="btn btn-lg btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-lg btn-warning" data-dismiss="modal">Refund</button>
+      </div>
+    </div>
+  </form>
+    <!-- /.modal-content -->
+  </div>
+</div>
+<!--End View Bill Modal-->
+  
+<!--View Bill Modal-->
+<div class="modal fade" id="{unpaid_order.id}">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Order: {{unpaid_order.get_code}}</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form action="{% url 'add_payment' %}" method="post" >
+                {% csrf_token %}
+                <div class="modal-body">  
+                    <label for="topay">TO PAY</label>
+                    <div class="form-group" >
+                        <input id="topay" class="form-control text-right payment_form" name="" value="{{order.order_mpamba_total_due}}" style="background-color: rgb(62, 74, 89); font-size: 200%; font-family: monospace; color: chartreuse;" disabled/>
+                    </div>
+                    <br>
+                    <div class="form-group">
+                        <div class="mb-4">
+                        <label for="topay">Payment Mode</label>
+                        {{mpamba_payment_form.payment_mode}}
+                        </div>
+                        <div class=" mt-4 mb-4">
+                        <label for="topay">Amount Received</label>
+                        {{mpamba_payment_form.paid_amount}}
+                        </div>
+                        <div class=" mt-4 mb-4">
+                        <label for="topay">Reference Number</label>
+                        {{mpamba_payment_form.reference}}
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!--End View Bill Modal-->
+  
+<!-- Logout Modal-->
+<div id="logout_confirm" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+    <!-- Modal content-->
+    <div class="modal-content">
+    <div class="modal-header">
+    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">×</span>
+    </button>
+    </div>
+    <div class="modal-body text-center"><b><h3>Are you sure you want to logout ?</h3></b></div>
+    <div class="modal-footer">
+    <button class="btn btn-primary confirm_button" data-dismiss="modal" type="button">NO</button>
+    <a href="{% url 'logout_request' %}" ><button class="btn btn-danger confirm_button" type="button">YES</button></a>
+    </div>
+    </div>
+</div>
+</div>
+<!-- Logout Modal -->
+
+<!--Refund Modal-->
+<div class="modal fade" id="refundModal">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+      <div class="modal-header">
+          <h4 class="modal-title">Refund Payment</h4>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+          </button>
+      </div>
+      <div class="modal-body">
+          
+          <form action="{% url 'refund_payment' %}" method="post" >
+          {% csrf_token %}
+              
+          <label for="topay">Amount to Refund</label>
+          <div class="form-group" >
+              <input id="topay" class="form-control text-right pos_form" name="" value="{{refund_order2.refund_order_total}}" style="background-color: rgb(62, 74, 89); font-size: 200%; font-family: monospace; color: chartreuse;" disabled/>
+          </div>
+          <br>
+          <div class="form-group ">
+              <label for="payment_mode">Payment Mode</label>
+              <div class="mb-4">
+              {{refund_payment_form.payment_mode}}
+              </div>
+              <div class=" mt-4 mb-4 disabled">
+              {{refund_payment_form.reference.as_hidden}}
+              <input type="hidden" name="reference" value="300">
+              </div>
+              <div class=" mt-4 mb-4 disabled">
+              <input type="hidden" name="customer" value="{{order.customer.id}}">
+              </div>
+          </div>
+          <div>
+      </div>
+      <div class="modal-footer justify-content-between">
+          <button type="button" class="btn btn-default btn-lg" data-dismiss="modal">CLOSE</button>
+          <button type="submit" class="btn btn-primary btn-lg">PROCESS</button>
+      </div>
+      </div>
+  </form>
+      <!-- /.modal-content -->
+      </div>
+  </div>
+</div>
+<!--End Cash Payment Modal-->
+{% endblock pos_modals %}

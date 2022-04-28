@@ -90,8 +90,19 @@
       </tr>
       <tr >
         <td colspan="6" class="text-center">
-          LAY BAY PAYMENTS
+          REVENUE COLLECTED
         </td>
+      </tr>
+      <tr class="text-bold">
+        
+        <td class="text-right " colspan="5">
+         ORDERED ITEMS TOTAL
+        </td >
+       
+        <td class="text-right">
+          {{total_cost_items_ordered}}
+        </td>
+        
       </tr>
       <tr class="text-bold">
         
@@ -107,10 +118,21 @@
       <tr class="text-bold">
         
         <td class="text-right " colspan="5">
-         TOTAL CASH IN HAND
+         OTHER PAYMENTS
         </td >
        
         <td class="text-right">
+          {{other_payments}}
+        </td>
+        
+      </tr>
+      <tr class="text-bold">
+        
+        <td class="text-right " colspan="5">
+         TOTAL CASH IN HAND
+        </td >
+       
+        <td class="text-right" bgcolor="grey">
           {{total_cash_in_hand}}
         </td>
         

@@ -1,6 +1,7 @@
 from django.urls import path
 from django.contrib.auth import views as auth_views
 from pos.views import *
+from pos.refundsViews  import *
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.csrf import csrf_exempt
 
@@ -19,6 +20,8 @@ urlpatterns = [
     path('print_receipt_only/', print_receipt_only, name='print_receipt_only'),
     
     path('add_payment', add_payment, name = 'add_payment'),
+    path('change_order_type', change_order_type, name = 'change_order_type'),
+    
     path('add_customer_to_order',add_customer_to_order, name='add_customer_to_order'),
     path('add_new_customer_from_pos_dash', add_new_customer_from_pos_dash, name = 'add_new_customer_from_pos_dash'),
     path('complete_order', complete_order, name = 'complete_order'),
@@ -37,4 +40,18 @@ urlpatterns = [
     path('customers/customer_delete_pos/<int:id>/', customer_delete_pos, name = 'customer_delete_pos'),
     
     path('create_new_customer_on_pos_dash/', create_new_customer_on_pos_dash, name = 'create_new_customer_on_pos_dash'),
+
+    path('add_to_refund/<int:id>/', add_to_refund, name = 'add_to_refund'),
+    path('refund_order/<int:id>', refund_order, name = 'refund_order'),
+    path('create_refund_order',create_refund_order, name='create_refund_order'),
+
+    path('remove_single_item_refund_order/<int:id>/', remove_single_item_refund_order, name = 'remove_single_item_refund_order'),
+    path('cancel_refund_order/<int:id>/', cancel_refund_order, name = 'cancel_refund_order'),
+    path('refund_payment', refund_payment, name = 'refund_payment'),
+    
+    
+    
+    
+
+    
 ]

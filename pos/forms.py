@@ -8,7 +8,7 @@ from django_countries.fields import CountryField
 # from constance.admin import ConstanceAdmin, ConstanceForm, Config
 from djmoney.forms.widgets import MoneyWidget
 from django.contrib.auth import authenticate, login, logout, get_user_model
-from pos.models import Customer, LayByOrders, Payment
+from pos.models import Customer, LayByOrders, Payment, Order, RefundOrderItem, RefundPayment
 from inventory.models import Item
 
 class CustomMoneyWidget(MoneyWidget):
@@ -30,7 +30,8 @@ class AddPaymentForm(forms.ModelForm):
         widgets = {
                 'paid_amount': forms.TextInput(attrs={'class': 'form-control pos_form',}),
                 'reference': forms.TextInput(attrs={'class': 'form-control pos_form',}),
-                'payment_mode': forms.TextInput(attrs={'class': 'form-control pos_form','readonly':'readonly'}),
+                'payment_mode': forms.Select(attrs={'class': 'form-control pos_form',}),
+                'paid_amount': forms.TextInput(attrs={'class': 'form-control pos_form', 'readonly':'readonly'}),
         }
     
 class CashPaymentForm(forms.ModelForm):
@@ -45,6 +46,14 @@ class CashPaymentForm(forms.ModelForm):
                 'paid_amount': forms.TextInput(attrs={'class': 'form-control pos_form',}),
                 'payment_mode': forms.Select(attrs={'class': 'form-control pos_form',}),
         }
+
+class OrderTypeForm(forms.ModelForm):
+     class Meta:
+         model = Order
+         fields = ('order_type',)
+         widgets = {
+                  'order_type': forms.Select(attrs={'class': 'form-control pos_form'})
+          }
 
 
 class SearchForm(forms.ModelForm):
@@ -77,6 +86,32 @@ class AddLayByPaymentForm(forms.ModelForm):
                 'paid_amount': forms.TextInput(attrs={'class': 'form-control pos_form',}),
                 'payment_mode': forms.TextInput(attrs={'class': 'form-control pos_form','readonly':'readonly'}),
                 'reference': forms.TextInput(attrs={'class': 'form-control pos_form',}),
+        }
+
+class RefundOrderItemForm(forms.ModelForm):
+    class Meta:
+        model = RefundOrderItem
+        fields = ['order_id', 'user', 'item','returned','return_quantity','initial_quantity','return_items_total_cost',]
+        name = forms.CharField()
+        date = forms.DateInput()
+        members = forms.ModelMultipleChoiceField(
+        queryset=RefundOrderItem.objects.all(),
+        widget=forms.CheckboxSelectMultiple
+    )
+
+
+class AddRefundPaymentForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(AddRefundPaymentForm, self).__init__(*args, **kwargs)
+        refund_amount, currency = self.fields['refund_amount'].fields
+        self.fields['refund_amount'].widget = CustomMoneyWidget(amount_widget = refund_amount.widget, currency_widget = currency.widget)
+    class Meta:
+        model = RefundPayment
+        fields = ('payment_mode','refund_amount','reference')
+        widgets = {
+                'reference': forms.TextInput(attrs={'class': 'form-control pos_form',}),
+                'payment_mode': forms.Select(attrs={'class': 'form-control pos_form',}),
+                'refund_amount': forms.TextInput(attrs={'class': 'form-control pos_form',}),
         }
 
          

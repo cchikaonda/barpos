@@ -3,13 +3,13 @@ from django.conf import settings
 from djmoney.models.fields import MoneyField
 from django.contrib.auth.models import User
 from django.contrib.auth.models import (
-    AbstractBaseUser, BaseUserManager
+    AbstractBaseUser, BaseUserManager, PermissionsMixin
 )
 from django.shortcuts import reverse
 from constance import config
 from datetime import date
 from phonenumber_field.modelfields import PhoneNumberField
-
+from django.contrib.auth.models import Group
 
 # Create your models here.
 class UserManager(BaseUserManager):
@@ -49,12 +49,12 @@ class UserManager(BaseUserManager):
         return user
 
 
-class CustomUser(AbstractBaseUser):
+class CustomUser(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(max_length=255, unique=True)
     full_name = models.CharField(max_length=255, blank = True, null=True)
     roles =(
         ('Admin','Admin'),
-        ('User', 'General User')
+        ('User', 'General User'),
     )
     user_role = models.CharField(max_length = 15, choices = roles, default = "General User")
     phone_number = PhoneNumberField(null = True, blank = True)
@@ -65,7 +65,7 @@ class CustomUser(AbstractBaseUser):
     staff = models.BooleanField(default=False)
     timestamp = models.DateTimeField(auto_now_add=True)
     image = models.ImageField(default = "avatar0.jpg", null = True, blank = True)
-
+    group = Group.add_to_class('description', models.CharField(max_length=180,null=True, blank=True))
     USERNAME_FIELD = 'email' #loginuser
     REQUIRED_FIELDS = ['full_name','phone_number',]
 
@@ -112,6 +112,8 @@ class CustomUser(AbstractBaseUser):
         except:
             url = ''
         return url
+
+
 
 
 

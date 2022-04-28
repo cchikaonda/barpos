@@ -67,6 +67,8 @@ class OrderItem(models.Model):
     def get_ordered_item_category(self):
         return self.item.category
 
+        
+
 @receiver(post_save, sender=OrderItem)
 def update_orderitem_quantities(sender, instance, **kwargs):
     OrderItem.objects.filter(id=instance.id).update(ordered_item_price=instance.price, ordered_items_total = instance.amount)
@@ -78,12 +80,14 @@ class Payment(models.Model):
         ('Cash','Cash'),
         ('Mpamba', 'Mpamba'),
         ('Airtel Money', 'Airtel Money'),
-        ('Lay By', 'Lay By'),
+        ('Bank', 'Bank'),
         
     )
     customer = models.ForeignKey(Customer, on_delete = models.SET_NULL, null = True)
-    payment_mode = models.CharField(max_length = 15, choices = payment_options)
-    paid_amount = MoneyField(max_digits=14, decimal_places=2, default_currency='MWK', null = True)
+    payment_mode = models.CharField(max_length = 15, choices = payment_options, default='Cash')
+    order_id = models.CharField(max_length=20, null=True)
+    order_type = models.CharField(max_length=20, null=True)
+    paid_amount = MoneyField(max_digits=14, decimal_places=2, default_currency='MWK', default= 0.0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     reference = models.CharField(max_length = 30, null= True,)
@@ -94,18 +98,21 @@ class Payment(models.Model):
         return '{0}'.format(self.paid_amount)
 
 
-    
+order_type_options =(
+        ('Cash','Cash'),
+        ('Lay By', 'Lay By'),
+    )
     
 class Order(models.Model):
     def gen_code(self):
             return 'ORD%04d'%self.pk
     code = models.CharField(max_length=50, null=True, default="0000")
+    order_type = models.CharField(max_length = 15, choices = order_type_options, default='Cash')
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     items = models.ManyToManyField(OrderItem)
-    order_date = models.DateTimeField(auto_now_add=True)
     ordered = models.BooleanField(default=False)
-    paid_amount = models.ForeignKey(Payment, on_delete=models.CASCADE, default = 1)
+    payments = models.ManyToManyField(Payment)
     order_total_cost = MoneyField(max_digits=14, decimal_places=2, default_currency='MWK', default= 0.0)
     vat_p = models.FloatField(default=config.TAX_NAME)
     vat_cost = MoneyField(max_digits=14, decimal_places=2, default_currency='MWK', default= 0.0)
@@ -113,14 +120,14 @@ class Order(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     payment_reference = models.CharField(max_length=50, null=True)
 
-    def __init__(self, *args, **kwargs):
-        super(Order, self).__init__(*args, **kwargs)
-        self.original_paid_amount = self.paid_amount
+    # def __init__(self, *args, **kwargs):
+    #     super(Order, self).__init__(*args, **kwargs)
+    #     self.original_paid_amount = self.paid_amount
 
     
 
     def __str__(self):
-        return '{1} {0}'.format(self.order_date, self.customer)
+        return '{1} {0}'.format(self.created_at, self.customer)
 
     @property
     def vat_rate(self):
@@ -179,19 +186,26 @@ class Order(models.Model):
     
     @property
     def get_payment_mode(self):
-        return self.paid_amount.payment_mode
+        return self.order_type
+    
+    def total_paid_amount(self):
+        sum_paid = Money(0.0, 'MWK')
+        for payment in self.payments.all():
+            sum_paid += payment.paid_amount
+        return sum_paid
+
     
     def get_change(self):
-        change = self.paid_amount.paid_amount - self.order_total_due()
+        change = self.total_paid_amount() - self.order_total_due()
         return change
     
     def get_balance(self):
-        default_amount = Money(0.0, 'MWK')
-        if self.paid_amount.paid_amount < self.order_total_due():
-            return -1 * (self.paid_amount.paid_amount - self.order_total_due())
+        balance = Money(0.0, 'MWK')
+        sum_paid = self.total_paid_amount()
+        if sum_paid < self.order_total_due():
+            return self.order_total_due() - sum_paid
         else:
-            return default_amount
-    
+            return balance
     
     def default_amount_paid(self):
         default_money = Money(0.0, 'MWK')
@@ -202,9 +216,117 @@ class Order(models.Model):
     def get_customer(self):
         return self.items.customer
 
-# @receiver(post_save, sender=Payment)
-# def update_ordered_date_if_payment_is_done(sender, instance, **kwargs):
-#     instance.paid_amount
+class RefundPayment(models.Model):
+    payment_options =(
+        ('Cash','Cash'),
+        ('Mpamba', 'Mpamba'),
+        ('Airtel Money', 'Airtel Money'),
+        ('Bank', 'Bank'),
+        
+    )
+    payment_mode = models.CharField(max_length = 15, choices = payment_options, default='Cash')
+    order_id = models.CharField(max_length=20, null=True)
+    refund_amount = MoneyField(max_digits=14, decimal_places=2, default_currency='MWK', null = True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    reference = models.CharField(max_length = 30, null= True,)
+
+
+
+    def __str__(self):
+        return '{0}'.format(self.paid_amount)
+
+class RefundOrderItem(models.Model):
+    order_id = models.CharField(default="", max_length=30)
+    user = models.ForeignKey(CustomUser, on_delete = models.SET_NULL, null = True)
+    item = models.ForeignKey(OrderItem, on_delete = models.CASCADE)
+    returned = models.BooleanField(default=False)
+    return_quantity = models.IntegerField(default=0)
+    initial_quantity = models.IntegerField(default=0)
+    return_items_total_cost = MoneyField(max_digits=14, decimal_places=2, default_currency='MWK', default= 0.0)
+    returned_time = models.DateTimeField(auto_now_add=True, null = True)
+
+    
+    @property
+    def price(self):
+        return self.item.ordered_item_price
+
+    @property
+    def return_amount(self):
+        amount = MoneyField()
+        amount = self.return_quantity * self.price
+        return amount
+
+    
+
+    def __str__(self):
+        return f"{self.return_quantity} {self.item.item.unit} of {self.item.item.item_name}"
+    
+    @property
+    def get_ordered_item_category(self):
+        return self.item.item.category
+
+
+class RefundOrder(models.Model):
+    order_id = models.ForeignKey(Order, on_delete=models.CASCADE)
+    code = models.CharField(max_length=50, null=True, default="0000")
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    refunded_items = models.ManyToManyField(RefundOrderItem)
+    refunded = models.BooleanField(default=False)
+    refund_total_cost = MoneyField(max_digits=14, decimal_places=2, default_currency='MWK', default= 0.0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    payments = models.ManyToManyField(RefundPayment)
+
+   
+    def __str__(self):
+        return '{1} {0}'.format(self.created_at, self.order_id.customer)
+
+    @property
+    def get_code(self):
+        return self.order_id.get_code()
+    
+    @property
+    def get_payment_mode(self):
+        return self.order_type
+    
+    def total_paid_amount(self):
+        sum_paid = Money(0.0, 'MWK')
+        for payment in self.payments.all():
+            sum_paid += payment.paid_amount
+        return sum_paid
+
+    
+    def default_amount_paid(self):
+        default_money = Money(0.0, 'MWK')
+        # default_money = ("MWK", 0.0)
+        return default_money 
+
+    # @property()
+    def get_customer(self):
+        return self.items.customer
+    
+  
+    def refund_order_total(self):
+        total = Money('0.0', 'MWK')
+        for order_item in self.refunded_items.all():
+            total += order_item.return_amount
+        return total 
+
+
+
+
+# Update the last payment if it is more than the balance
+@receiver(post_save, sender=Order)
+def update_last_payment_on_order(sender, instance, **kwargs):
+    if instance.ordered == True:
+        last_payment = instance.payments.last()
+        total_paid_amount = instance.total_paid_amount()
+        print(last_payment)
+        previous_paid_amount =  total_paid_amount - last_payment.paid_amount
+        balance_required = instance.order_total_due() -  previous_paid_amount
+        Payment.objects.filter(id=last_payment.id).update(paid_amount = balance_required )
+
 
 
 @receiver(post_save, sender=Order)

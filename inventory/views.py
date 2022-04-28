@@ -21,6 +21,7 @@ from django.utils import timezone
 from datetime import date, timedelta, datetime
 from django.db.models.functions import Lower
 from djmoney.models.fields import MoneyField
+from accounts.forms import *
 
 
 
@@ -49,7 +50,7 @@ def inventory_dashboard(request):
     total_tax = 0
     sales_overtime = 0
     for sales_all_time in sales_all_time:
-        sales_overtime += sales_all_time.paid_amount.paid_amount
+        sales_overtime += sales_all_time.total_paid_amount()
         total_tax += sales_all_time.vat_cost
     
     profit = sales_overtime -(total_tax + total_cog_sold) 
@@ -76,7 +77,7 @@ def inventory_dashboard(request):
    
 
     context = {
-        'header':'Dashboard',
+        'header':'Inventory Dashboard',
         'config':config,
         'total_item_categories':total_item_categories,
         'total_items':total_items,
@@ -116,11 +117,11 @@ def get_total_sales_this_week(this_day):
     week_start -= timedelta(days=week_start.weekday())
     week_end = week_start + timedelta(days=6)
 
-    total_sales = Order.objects.filter(ordered = True, paid_amount__created_at__gte=week_start, paid_amount__created_at__lt=week_end).filter(
-        paid_amount__created_at__week_day=this_day)
+    total_sales = Payment.objects.filter(created_at__gte=week_start, created_at__lt=week_end).filter(
+        created_at__week_day=this_day)
     sum_total_cost = 0
     for total_sales in total_sales:
-        sum_total_cost += total_sales.paid_amount.paid_amount
+        sum_total_cost += total_sales.paid_amount
 
     orders_r = Order.objects.filter(ordered = False)
     lay_by_orders = LayByOrders.objects.filter(order_id__in = orders_r)
@@ -136,12 +137,10 @@ def get_total_lastwk_sale(this_day_lw):
     some_day_last_week = date.today() - timedelta(days=7)
     monday_of_last_week = some_day_last_week - timedelta(days=(some_day_last_week.isocalendar()[2] - 1))
     monday_of_this_week = monday_of_last_week + timedelta(days=7)
-    total_sales = Order.objects.filter(paid_amount__created_at__gte=monday_of_last_week,
-                                                    paid_amount__created_at__lt=monday_of_this_week).filter(
-    paid_amount__created_at__week_day = this_day_lw)
+    total_sales = Payment.objects.filter(created_at__gte=monday_of_last_week,created_at__lt=monday_of_this_week).filter(created_at__week_day = this_day_lw)
     sum_total_cost = 0
     for total_sales in total_sales:
-        sum_total_cost += total_sales.paid_amount.paid_amount
+        sum_total_cost += total_sales.paid_amount
     
     orders_r = Order.objects.filter(ordered = False)
     lay_by_orders = LayByOrders.objects.filter(order_id__in = orders_r)
@@ -478,6 +477,7 @@ def user_profile(request):
     context = {
         'form': form,
         'config':config,
+        'header':'Update Profile'
     }
     return render(request, 'users/user_profile.html', context)
 

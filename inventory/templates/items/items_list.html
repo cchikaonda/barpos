@@ -2,63 +2,58 @@
 
 {% block content %}    
 <!-- Main content -->
-<section class="content">
-  <div class="container-fluid">
-    
-      
-      <div class="card col-12">
-        <div class="card-header">
-          <div class="block-header row">
-            <div class="col-12">
-              <div class="card-header">
-                <div class="row">
-                  
-                  <div class="col-2">
-                    <button class="btn btn-primary show-form" data-url="{% url 'item_create' %}"> <span class="fa fa-plus fa-1x"></span> Add New Item</button>
-                  </div>
-                  <div class="col-6">
-                    {% include "includes/category_list.html" %}
-                  </div>
-                  <div class="col-4">
-                    <button id="download-button-items" class="btn btn-light" style="float: right;"> <i class="fa fa-download"></i> Download PDF</button>
-                    <button id="download-excel-button" class="btn btn-light exportToExcel" style="float: right;"> <i class="fa fa-download"></i> Export to Excel</button>
-                  </div>
-                </div>
-                
-                
-              </div>
-            
-              <table class="table table-bordered table-striped" id="item-table">
-                <thead >
-                  <tr>
-                      <th class="text-center" style="width: 5%;">ID</th>
-                      <th class="d-none d-sm-table-cell" style="width: 15%;">Item</th>
-                      <th class="d-none d-sm-table-cell" style="width: 15%;">Description</th>
-                      <th class="d-none d-sm-table-cell" style="width: 10%;">Unit</th>
-                      <th style="width: 5%;">Price</th>
-                      <th style="width: 10%;">Category</th>
-                      <th style="width: 10%;">Qty at Hand</th>
-                      <th style="width: 10%;">Expected Revenue</th>
-                      <th style="width: 10%;">Active in POS</th>
-                      <th style="width: 10%;">Action</th>
-  
-                  </tr>
-                </thead>
-                <tbody>
-                  {% include "items/items_list_2.html" %}
-                </tbody>
-              </table>     
-          </div>
-              
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-8">
+      {% include "includes/category_list.html" %}
+    </div>
+    <div class="breadcrumb breadcrumb-alt col-4" style="float: right;">
+      <div class="inner">
+          <strong>TOTAL EXPECTED REVENUE:  {{expected_sum_items_cost}}</strong>
+      </div>
+    </div>
+  </div>
+  <div class="card col-12">
+    <div class="card-header">
+      <div class="block-header row">
+        <div class="col-2">
+          <button class="btn btn-primary show-form" data-url="{% url 'item_create' %}"> <span class="fa fa-plus fa-1x"></span> Add New Item</button>
         </div>
-      
+        
+        <!-- <div class="col-4">
+          <button id="download-button-items" class="btn btn-light" style="float: right;"> <i class="fa fa-download"></i> Download PDF</button>
+          <button id="download-excel-button" class="btn btn-light exportToExcel" style="float: right;"> <i class="fa fa-download"></i> Export to Excel</button>
+        </div> -->
       </div>
-
-      </div>
-       
+    </div>
     
+    <div class="card-body">
+      <table class="table table-bordered table-striped" id="item-table">
+        <thead >
+          <tr>
+              <th>ID</th>
+              <th >Item</th>
+              <th>Description</th>
+              <th>Unit</th>
+              <th>Price</th>
+              <th>Category</th>
+              <th>Qty at Hand</th>
+              <th>Expected Revenue</th>
+              <th>Active in POS</th>
+              <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% include "items/items_list_2.html" %}
+        </tbody>
+      </table>  
+    </div> 
+        
+  </div>
+
+
+  </div>
 </div>
-</section>
 
 <div class="modal fade" id="modal-item">
   <div class="modal-dialog modal-lg">

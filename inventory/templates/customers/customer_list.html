@@ -11,15 +11,15 @@
               </div>
             <div class="block-content block-content-full">
                 <!-- DataTables init on table by adding .js-dataTable-buttons class, functionality is initialized in js/pages/be_tables_datatables.min.js which was auto compiled from _es6/pages/be_tables_datatables.js -->
-                <table class="table table-bordered table-striped table-vcenter js-dataTable-buttons" id="customer-table">
+                <table class="table table-bordered table-striped" id="customer-table">
                   <thead >
                     <tr>
-                      <th class="text-center" style="width: 5%;">ID</th>
-                      <th class="d-none d-sm-table-cell" style="width: 20%;">Customer Name</th>
-                      <th class="d-none d-sm-table-cell" style="width: 25%;">Address</th>
-                      <th class="d-none d-sm-table-cell" style="width: 15%;">Phone#</th>
-                      <th class="d-none d-sm-table-cell" style="width: 10%;">Total Invoices</th>
-                      <th style="width: 10%;">Actions</th>
+                      <th>ID</th>
+                      <th>Customer Name</th>
+                      <th>Address</th>
+                      <th >Phone#</th>
+                      <th>Total Invoices</th>
+                      <th >Actions</th>
                   </tr>
                   </thead>
                   <tbody>
@@ -32,9 +32,9 @@
   </div>
 </div>
 
-  <div class="modal fade" id="modal-customer">
-    <div class="modal-dialog">
-      <div class="modal-content"></div>
-    </div>
+<div class="modal fade" id="modal-customer">
+  <div class="modal-dialog">
+    <div class="modal-content"></div>
   </div>
+</div>
 {% endblock %}
