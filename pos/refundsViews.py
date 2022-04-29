@@ -1,6 +1,6 @@
 from django.shortcuts import render,redirect, get_object_or_404
 from inventory.models import ItemCategory, Unit, Item, Supplier
-from pos.models import Customer, LayByOrders, OrderItem, Order, Payment, RefundOrder, RefundOrderItem
+from pos.models import Customer, LayByOrders, OrderItem, Order, Payment, RefundOrder, RefundOrderItem, RefundPayment
 from django.contrib import messages
 from constance import config
 from django.utils import timezone
@@ -90,7 +90,7 @@ def add_to_refund(request, id):
                 item.save()
         return redirect('/pos/refund_order/'+ str(order_id))
     else:
-        messages.info(request, "Item not in order")
+        messages.info(request, "No Refund order is opened. Please open the refund order..")
     return redirect('/pos/refund_order/'+ str(order_id))
 
 @login_required
@@ -101,7 +101,8 @@ def create_refund_order(request):
     if Order_qs.exists():
         order = Order_qs[0]
         order_id_code = order.get_code()
-        refund_order, created = RefundOrder.objects.get_or_create(order_id = order, code = order_id_code, user = request.user)
+        ordered_total_cost = order.order_total_cost
+        refund_order, created = RefundOrder.objects.get_or_create(order_id = order, code = order_id_code, ordered_total_cost = ordered_total_cost, user = request.user)
         return redirect('/pos/refund_order/'+ str(order.id))  
     else:
         return redirect('/pos/refund_order/'+ str(order.id))
@@ -160,4 +161,46 @@ def remove_single_item_refund_order(request, id):
 
 
 def refund_payment(request):
-    pass
+    form = AddRefundPaymentForm(request.POST or None)
+    if request.method == "POST":
+        order_id =request.session['refund_order']
+        Order_qs = Order.objects.filter(id = order_id)
+        
+        try:
+            if form.is_valid():
+                order = Order_qs[0]
+                order_id_code = order.get_code()
+                refund_order = RefundOrder.objects.get(code = order_id_code)
+                print(refund_order.code)
+            
+                refund_amount = form.cleaned_data.get('refund_amount')
+                payment_mode = request.POST.get('payment_mode')
+                refund_payment = RefundPayment()
+                refund_payment.payment_mode = payment_mode
+                refund_payment.refund_amount = refund_amount
+                refund_payment.order_id = order.get_code()
+                
+                if str(payment_mode).lower() == str('Cash').lower():
+                    reference = 'CASH'
+                    # payment.payment_mode = reference
+                    refund_payment.reference = reference
+                elif str(payment_mode).lower() == str('Bank').lower():
+                    reference = form.cleaned_data.get('reference') 
+                    # payment.payment_mode = reference
+                    refund_payment.reference = reference
+                else:
+                    reference = form.cleaned_data.get('reference') 
+                    refund_payment.reference = reference
+                refund_payment.save()
+                refund_order.payments.add(refund_payment)
+                refund_order.payment_reference = reference
+                refund_order.save()
+                order = Order.objects.get(id = order_id)
+            return redirect('/pos/refund_order/'+ str(order_id))
+        except ObjectDoesNotExist:
+            messages.info(request, "You do not have an active order")
+            request.session['refund_order'] = order.id
+            return redirect('/pos/refund_order/'+ str(order.id))
+        return None
+
+    

@@ -19,24 +19,7 @@
     <div class="content ml-2 mr-2 mt-2" style="max-height: 500px;">
         <!-- Small Box (Stat card) -->
         <div class="row">
-            <!-- {% if request.user.admin == True %}
-            <div class="col-lg-3 col-6">
-              
-              <a href="{% url 'supplier_list_pos' %}">
-                <div class="small-box bg-light dashboard_menu_item">
-                    <div class="inner text-secondary">
-                    <h3>Suppliers</h3>
-
-                    <p class="ml-4">{{suppliers_count}}</p>
-                    </div>
-                    <div class="icon">
-                    <i class="fas fa-truck"></i>
-                    </div>
-                </div>
-              </a>
-            </div>
-            {% endif %} -->
-
+        
             <div class="col-lg-3 col-6">
               <a href="{% url 'customer_list_pos' %}">
               <!-- small card -->
@@ -143,6 +126,23 @@
             </a>
         </div>
 
+        {% if request.user.admin == True %}
+          <div class="col-lg-3 col-6">
+            
+            <a href="{% url 'supplier_list_pos' %}">
+              <div class="small-box bg-light dashboard_menu_item">
+                  <div class="inner text-secondary">
+                  <h3>Refunds</h3>
+
+                  <p class="ml-4">{{refunds_count}}</p>
+                  </div>
+                  <div class="icon">
+                  <i class="fa fa-wallet"></i>
+                  </div>
+              </div>
+            </a>
+          </div>
+        {% endif %}
          
 
         {% if request.user.is_admin == True %}
@@ -161,7 +161,9 @@
             </div>
             <!-- ./col -->
             <!-- ./col -->
-            {%endif%}
+        {%endif%}
+
+
         
       </div>
 

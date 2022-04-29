@@ -18,7 +18,7 @@
                             <th class="text-center">Qty to return</th>
                             <th></th>
                             <th class="text-center">Total</th>
-                            <th class="text-right">Refund</th>
+                            <th class="text-right">Restock Inventory</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -27,11 +27,17 @@
                             <td>{{forloop.counter}}</td>
                             <td>{{ordered_item.item.item.item_name}}</td>
                             <td>{{ordered_item.item.ordered_item_price}}</td>
+                            
                             <td class="text-right"><a href="{% url 'remove_single_item_refund_order' ordered_item.item.id %}"><button class="btn btn-outline-info"><i class="fas fa-minus"></i></button></a></td>
+                            
                             <td class="text-center">{{ordered_item.return_quantity}}</td>
+                            {% if ordered_item.initial_quantity > ordered_item.return_quantity %}
                             <td class="text-left"><a href="{% url 'add_to_refund' ordered_item.item.id %}"><button class="btn btn-outline-info"><i class="fas fa-plus"></i></button></a></td>
+                            {% else %}
+                            <td></td>
+                            {% endif %}
                             <td class="text-right">{{ordered_item.return_amount}}</td>
-                            <td class="text-right"> <input type="checkbox" name="active" class="checkboxinput" id="id_active" > </td>
+                            <td class="text-center"> <input type="checkbox" name="active" class="checkboxinput" id="id_active" > </td>
                           </tr>
                           {% endfor %}
                           
@@ -58,7 +64,7 @@
               {% if refund_order_items %}
               <div class="modal-footer justify-content-between">
                 <button type="button" class="btn btn-lg btn-default" data-dismiss="modal">Close</button>
-               <a data-toggle="modal" data-target="#refundModal"><button type="button" class="btn btn-lg btn-warning" data-dismiss="modal">Refund</button> </a>
+                <a data-toggle="modal" data-target="#refundModal"><button type="button" class="btn btn-lg btn-warning" data-dismiss="modal">Refund</button> </a>
               </div>
               {% else %}
               {% endif %}

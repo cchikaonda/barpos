@@ -52,7 +52,7 @@ admin.site.register( LayByOrders,  LayByOrdersAdmin)
 
 
 class RefundOrderAdmin(admin.ModelAdmin):
-    list_display = ('order_id','code','user','refunded','refund_total_cost','created_at','updated_at',)
+    list_display = ('order_id','code','user','refunded','ordered_total_cost','created_at','updated_at','total_refunded_amount')
     search_fields = ['item__item_name',]
     class Meta:
         model = RefundOrder

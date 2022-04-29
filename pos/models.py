@@ -234,7 +234,7 @@ class RefundPayment(models.Model):
 
 
     def __str__(self):
-        return '{0}'.format(self.paid_amount)
+        return '{0}'.format(self.refund_amount)
 
 class RefundOrderItem(models.Model):
     order_id = models.CharField(default="", max_length=30)
@@ -273,7 +273,7 @@ class RefundOrder(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     refunded_items = models.ManyToManyField(RefundOrderItem)
     refunded = models.BooleanField(default=False)
-    refund_total_cost = MoneyField(max_digits=14, decimal_places=2, default_currency='MWK', default= 0.0)
+    ordered_total_cost = MoneyField(max_digits=14, decimal_places=2, default_currency='MWK', default= 0.0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     payments = models.ManyToManyField(RefundPayment)
@@ -290,19 +290,18 @@ class RefundOrder(models.Model):
     def get_payment_mode(self):
         return self.order_type
     
-    def total_paid_amount(self):
+    @property
+    def total_refunded_amount(self):
         sum_paid = Money(0.0, 'MWK')
         for payment in self.payments.all():
-            sum_paid += payment.paid_amount
+            sum_paid += payment.refund_amount
         return sum_paid
 
     
     def default_amount_paid(self):
         default_money = Money(0.0, 'MWK')
-        # default_money = ("MWK", 0.0)
         return default_money 
 
-    # @property()
     def get_customer(self):
         return self.items.customer
     

@@ -326,14 +326,15 @@
           
           <form action="{% url 'refund_payment' %}" method="post" >
           {% csrf_token %}
+          {{refund_payment_form}}
               
-          <label for="topay">Amount to Refund</label>
+          <!-- <label for="refund_amount">Amount to Refund</label>
           <div class="form-group" >
-              <input id="topay" class="form-control text-right pos_form" name="" value="{{refund_order2.refund_order_total}}" style="background-color: rgb(62, 74, 89); font-size: 200%; font-family: monospace; color: chartreuse;" disabled/>
+              <input id="refund_amount" class="form-control text-right pos_form" name="refund_amount" value="{{refund_order2.refund_order_total}}" style="background-color: rgb(62, 74, 89); font-size: 200%; font-family: monospace; color: chartreuse;" disabled/>
           </div>
           <br>
           <div class="form-group ">
-              <label for="payment_mode">Payment Mode</label>
+              <label for="payment_mode">Refund Mode</label>
               <div class="mb-4">
               {{refund_payment_form.payment_mode}}
               </div>
@@ -345,11 +346,13 @@
               <input type="hidden" name="customer" value="{{order.customer.id}}">
               </div>
           </div>
-          <div>
+          <div> -->
       </div>
       <div class="modal-footer justify-content-between">
           <button type="button" class="btn btn-default btn-lg" data-dismiss="modal">CLOSE</button>
-          <button type="submit" class="btn btn-primary btn-lg">PROCESS</button>
+          <!-- <button type="submit" class="btn btn-primary btn-lg">PROCESS</button> -->
+          <a data-toggle="modal" data-target="#refund_confirm"><button type="button" class="btn btn-lg btn-warning" data-dismiss="modal">Refund</button> </a>
+          
       </div>
       </div>
   </form>
@@ -358,4 +361,27 @@
   </div>
 </div>
 <!--End Cash Payment Modal-->
+
+<!-- Confirm refund Modal-->
+<div id="refund_confirm" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+  <!-- Modal content-->
+  <div class="modal-content">
+  <div class="modal-header">
+  <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+      <span aria-hidden="true">×</span>
+  </button>
+  </div>
+  <div class="modal-body text-center"><b><h3>Are you sure you want to refund this item(s) ?</h3></b></div>
+  <div class="modal-footer">
+  <button class="btn btn-primary confirm_button" data-dismiss="modal" type="button">NO</button>
+  <a href="{% url 'refund_payment' %}" ><button class="btn btn-danger confirm_button" type="button">YES</button></a>
+  
+  </div>
+  </div>
+</div>
+</div>
+<!-- COnfirm refund Modal -->
+
+
 {% endblock pos_modals %}

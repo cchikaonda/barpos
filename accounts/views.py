@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.shortcuts import render,redirect, get_object_or_404
 from inventory.models import ItemCategory, Supplier, Unit, Item
-from pos.models import Customer, OrderItem, Order
+from pos.models import Customer, OrderItem, Order, RefundOrder
 from constance import config
 from django.db.models import Count
 from quotations.models import Quotation
@@ -20,6 +20,8 @@ def system_dashboard(request):
     count_my_invoices = Order.objects.filter(user = request.user, ordered = False).count()
     quotations_count = Quotation.objects.all().count()
     count_customers = Customer.objects.all().count()
+
+    refunds_count = RefundOrder.objects.all().count()
     
     # filter(user = request.user, ordered = False).count(distinct = True)
     context={
@@ -33,6 +35,7 @@ def system_dashboard(request):
         'count_my_invoices':count_my_invoices,
         'quotations_count':quotations_count,
         'count_customers':count_customers,
+        'refunds_count':refunds_count,
         }
     return render(request, 'system_dashboard.html', context)
 
