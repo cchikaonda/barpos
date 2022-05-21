@@ -45,13 +45,11 @@ urlpatterns = [
     path('refund_order/<int:id>', refund_order, name = 'refund_order'),
     path('create_refund_order',create_refund_order, name='create_refund_order'),
 
+    
+    path('refunds_list', refunds_list, name = 'refunds_list'),
     path('remove_single_item_refund_order/<int:id>/', remove_single_item_refund_order, name = 'remove_single_item_refund_order'),
     path('cancel_refund_order/<int:id>/', cancel_refund_order, name = 'cancel_refund_order'),
     path('refund_payment', refund_payment, name = 'refund_payment'),
-    
-    
-    
-    
-
-    
+    path('complete_refund', complete_refund, name = 'complete_refund'),
+   
 ]

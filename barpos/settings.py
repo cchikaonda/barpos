@@ -45,11 +45,13 @@ INSTALLED_APPS = [
     'pos',
     'reports',
     'quotations',
+    'expenses',
 
     'djmoney',
     'crispy_forms',
     'rest_framework',
     'jsonify',
+    'bootstrap_datepicker_plus',
     'bootstrap_modal_forms',
     'widget_tweaks',
     'sweetify',
@@ -60,6 +62,8 @@ INSTALLED_APPS = [
     'qrcode',
     'barcode',
     'phonenumber_field',
+
+    
 ]
 
 MIDDLEWARE = [
@@ -85,6 +89,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'expenses.context_processors.expense_form_processor'
             ],
         },
     },
@@ -215,7 +220,13 @@ CONSTANCE_CONFIG_FIELDSETS = {
 'Shop Options': ('SHOP_NAME','LOGO_IMAGE','TAG_LINE','ADDRESS','LOCATION','TEL','FAX','EMAIL','CEL','COUNTRY'),
 'Invoice Options': ('TAX_NAME','SERVICE_FEE_A','SERVICE_FEE_B', 'SERVICE_FEE_C'),
 'Pos Settings':('QUICK_SALE','ACCOUNT_NUMBER',),
+'Airtel Money Fees':('SERVICE_FEE_A','SERVICE_FEE_B', 'SERVICE_FEE_C'),
+'Mbamba Money Fees':('SERVICE_FEE_A','SERVICE_FEE_B', 'SERVICE_FEE_C')
 }
 
 PHONENUMBER_DB_FORMAT = 'NATIONAL'
 PHONENUMBER_DEFAULT_REGION = 'MW'
+
+MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
+
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'

@@ -169,11 +169,13 @@
                 </i>
                 Order Items
             </a>
+            {% if request.user.is_admin == True %}
             <a class="btn btn-warning btn-sm" href="{% url 'refund_order' paid_order.id %}">
               <i class="fa fa-wallet">
               </i>
               Refund
-          </a>
+            </a>
+            {% endif %}
 
             <!--View Bill Modal-->
             <div class="modal fade" id="order_details{{paid_order.id}}">

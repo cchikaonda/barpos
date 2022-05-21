@@ -1,4 +1,5 @@
 {% block pos_modals %}
+{% load crispy_forms_tags %}
 <!--Confirm Receipt Printingl-->
 <div class="modal fade" id="produceReceiptModal">
     <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -86,7 +87,7 @@
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
         <div class="modal-header">
-            <h4 class="modal-title">Cash Payment</h4>
+            <h4 class="modal-title">Payment</h4>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
             </button>
@@ -326,32 +327,25 @@
           
           <form action="{% url 'refund_payment' %}" method="post" >
           {% csrf_token %}
-          {{refund_payment_form}}
-              
-          <!-- <label for="refund_amount">Amount to Refund</label>
+          
+          <label for="refund_amount">Amount to Refund</label>
           <div class="form-group" >
-              <input id="refund_amount" class="form-control text-right pos_form" name="refund_amount" value="{{refund_order2.refund_order_total}}" style="background-color: rgb(62, 74, 89); font-size: 200%; font-family: monospace; color: chartreuse;" disabled/>
+              <input id="refund_amount" class="form-control text-right pos_form" name="refund_amount" value="{{refund_order.balance_to_refund}}" style="background-color: rgb(62, 74, 89); font-size: 200%; font-family: monospace; color: chartreuse;" disabled/>
           </div>
           <br>
-          <div class="form-group ">
-              <label for="payment_mode">Refund Mode</label>
-              <div class="mb-4">
-              {{refund_payment_form.payment_mode}}
-              </div>
-              <div class=" mt-4 mb-4 disabled">
-              {{refund_payment_form.reference.as_hidden}}
-              <input type="hidden" name="reference" value="300">
-              </div>
-              <div class=" mt-4 mb-4 disabled">
-              <input type="hidden" name="customer" value="{{order.customer.id}}">
-              </div>
+          {{refund_payment_form}}
+          <div class="mt-4 mb-4">
+            <label for="paid_amount">Reason For Refund</label>
+            {{reason_for_refund_form.reason_for_refund}}
           </div>
-          <div> -->
+          <div class="mt-4 mb-4">
+            {{restock.restock_to_inventory}} <label for="restock"> Restock to Inventory</label>
+          </div>
       </div>
       <div class="modal-footer justify-content-between">
           <button type="button" class="btn btn-default btn-lg" data-dismiss="modal">CLOSE</button>
-          <!-- <button type="submit" class="btn btn-primary btn-lg">PROCESS</button> -->
-          <a data-toggle="modal" data-target="#refund_confirm"><button type="button" class="btn btn-lg btn-warning" data-dismiss="modal">Refund</button> </a>
+          <button type="submit" class="btn btn-primary btn-lg">PROCESS</button>
+          <!-- <a data-toggle="modal" data-target="#refund_confirm"><button type="button" class="btn btn-lg btn-warning" data-dismiss="modal">Refund</button> </a> -->
           
       </div>
       </div>
@@ -382,6 +376,5 @@
 </div>
 </div>
 <!-- COnfirm refund Modal -->
-
 
 {% endblock pos_modals %}

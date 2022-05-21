@@ -93,7 +93,7 @@
         <!-- ./col -->
         <div class="col-4">
             <!-- small card -->
-            <a href="#">
+            <a href="{% url 'inventory_quantity_report' %}">
             <div class="small-box bg-light dashboard_menu_item">
                 <div class="inner text-info">
                 <h3><i class="fas fa-warehouse"></i> Stock/Inventory Report</h3>
@@ -104,7 +104,7 @@
 
         <div class="col-4">
           <!-- small card -->
-          <a href="{% url 'sales_report' %}"> 
+          <a href="{% url 'refund_report' %}"> 
           <div class="small-box bg-light dashboard_menu_item">
               <div class="inner text-info">
               <h3><i class="fas fa-money-bill"></i> Refunds Reports</h3>
@@ -113,7 +113,14 @@
           </a>
         </div>
         <div class="col-4">
-          
+          <!-- small card -->
+          <a href="{% url 'sales_report' %}"> 
+            <div class="small-box bg-light dashboard_menu_item">
+                <div class="inner text-info">
+                <h3><i class="fas fa-money-bill"></i> Profit Reports</h3>
+                </div>
+            </div>
+            </a>
         </div>
         <div class="col-4">
           

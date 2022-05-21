@@ -49,6 +49,22 @@ class cached_property:
         return res
 
 
+class classproperty:
+    """
+    Decorator that converts a method with a single cls argument into a property
+    that can be accessed directly from the class.
+    """
+    def __init__(self, method=None):
+        self.fget = method
+
+    def __get__(self, instance, cls=None):
+        return self.fget(cls)
+
+    def getter(self, method):
+        self.fget = method
+        return self
+
+
 class Promise:
     """
     Base class for the proxy class created in the closure of the lazy function.
@@ -159,6 +175,12 @@ def lazy(func, *resultclasses):
             if self._delegate_text:
                 return str(self) % rhs
             return self.__cast() % rhs
+
+        def __add__(self, other):
+            return self.__cast() + other
+
+        def __radd__(self, other):
+            return other + self.__cast()
 
         def __deepcopy__(self, memo):
             # Instances of this class are effectively immutable. It's just a

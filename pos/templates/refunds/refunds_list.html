@@ -1,0 +1,144 @@
+{% extends 'base_pos.html' %}
+{% load crispy_forms_tags %}
+
+{% block body %}
+<!-- Content Wrapper. Contains page content -->
+<div class="content ml-2 mr-2 mt-2 mb-4">   
+<div class="card mb-4 col-12">
+  <!-- /.card-header -->
+  <div class="card-header bg-secondary">
+    <h3 class="card-title"><i class="fa fa-money-bill-wave"></i> REFUNDED INVOICES</h3>  <h5 class="text-right"><b>TOTAL: {{sum_refund_items_total}}</b></h5>
+  </div>
+    <!-- /.card-body -->
+  <div class="card-body">
+      <table id="orders-table" class="table table-bordered table-striped">
+      <thead>
+      <tr> 
+        <th>Order ID</th>
+        <th>Customer Name</th>
+        <th>Total Refunded</th>
+        <th>Date</th>
+        <th>Cashier</th>
+        <th class="text-center">Refunded</th>
+        <th>Action</th>
+      </tr>
+      </thead>
+      <tbody>
+      {% for refunded_order in refunded_orders %}
+      <tr role="row" class="odd">
+        <td>{{refunded_order.get_code}}</td>
+        <td tabindex="0" class="sorting_1">{{refunded_order.order_id.customer}}</td>
+        <td>{{refunded_order.total_refunded_amount}}</td>
+        <td>{{refunded_order.created_at| date:"d/m/Y"}}, {{refunded_order.created_at| date:"H:m:s"}}</td>
+        <td>{{refunded_order.user.full_name}}</td>
+        {% if refunded_order.refunded == True %}
+        <td class="text-center" style="display: none;">
+      
+          <span class="nav-main-link-badge badge badge-pill badge-success" data-toggle="tooltip" title="User is Admin">Yes</span>
+          
+        </td>
+        {% else %}
+        <td class="text-center"><span class="nav-main-link-badge badge badge-pill badge-danger" data-toggle="tooltip" title="User is not Admin">No</span></td>
+        {% endif %}
+        <td class="project-actions text-left">
+          <a class="btn btn-info btn-sm" data-toggle="modal" data-target="#order_details{{refunded_order.order_id.id}}">
+              <i class="fas fa-eye">
+              </i>
+              Refund Items
+          </a>
+          
+          <!--View Bill Modal-->
+          <div class="modal fade" id="order_details{{refunded_order.order_id.id}}">
+            <div class="modal-dialog modal-dialog-centered modal-xl">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4 class="modal-title">{{refunded_order.order_id.get_code}} : {{refunded_order.order_id.customer}} </h4> 
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                  </button>
+                </div>
+                <div class="modal-body">  
+                    <div class="form-group">
+                      <div class="mb-4">
+                        <table class="table table-striped">
+                          {% if refunded_order.refunded_items.all %}
+                          <thead>
+                            <tr>
+                              <th>#</th>
+                              <th>Item</th>
+                              <th>Price</th>
+                              <th class="text-center">Ordered Qty</th>
+                              <th class="text-center">Refunded Qty</th>
+                              <th class="text-right">Total</th>
+                              <th class="text-center">Restocked</th>
+
+                            </tr>
+                          </thead>
+                          
+                          <tbody>
+                            {% for ordered_item in refunded_order.refunded_items.all %}
+                            <tr>
+                              <td>{{forloop.counter}}</td>
+                              <td>{{ordered_item.item.item}}</td>
+                              <td>{{ordered_item.item.ordered_item_price}}</td>
+                              <td class="text-center">{{ordered_item.initial_quantity}}</td>
+                              <td class="text-center">{{ordered_item.return_quantity}}</td>
+                              <td class="text-right">{{ordered_item.return_amount}}</td>
+                              <td class="text-center">
+                                {% if ordered_item.restock_to_inventory == True %}
+                                <span class="nav-main-link-badge badge badge-pill badge-success" >Yes</span>
+                                {% else %}
+                                <span class="nav-main-link-badge badge badge-pill badge-danger" >No</span>
+                                {% endif %}
+                              </td>
+                            </tr>
+                            {% endfor %}
+                          <tr>
+                            
+                              <td  colspan="5" class="font-w700 text-uppercase text-right bg-body-light">Total Refund</td>
+                              <td class="font-w700 text-right bg-body-dark" >{{refunded_order.total_refunded_amount}}</td>
+                              <td></td>
+                          </tr>
+                          {% if refunded_order.total_refunded_amount > refunded_order.default_amount_paid %}
+                          <tr>
+                            <td class="font-w700 text-uppercase text-left bg-body-light" colspan="7"> 
+                               <b>Refund Type:</b> 
+                              <span>
+                                <i class="fas fa-square text-success"></i> {% for payment in refunded_order.payments.all %} {{payment.payment_mode}}: {{payment.refund_amount}}  {% endfor %}
+                              </span>
+                            </td>
+                          </tr>
+                          {% endif %}
+                            
+                          </tbody>
+                          {% else %}
+                          <div>No Items in Order!</div>
+                          {% endif %}
+                    
+                        </table>
+                      
+                      </div>
+                    </div>
+                <div class="modal-footer justify-content-between">
+                  <button type="button" class="btn btn-lg btn-default" data-dismiss="modal">Close</button>
+                </div>
+              </div>
+            
+              <!-- /.modal-content -->
+            </div>
+          </div>
+          <!--End View Bill Modal-->
+
+        </td>
+      </tr>
+
+      {% endfor %}
+      </tbody>
+      </table>
+  <div>
+      
+</div>
+  </div>
+</div>
+</div>
+{% endblock %}

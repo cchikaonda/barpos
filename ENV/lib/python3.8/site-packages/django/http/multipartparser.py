@@ -9,6 +9,7 @@ import binascii
 import cgi
 import collections
 import html
+import os
 from urllib.parse import unquote
 
 from django.conf import settings
@@ -149,6 +150,8 @@ class MultiPartParser:
         num_post_keys = 0
         # To limit the amount of data read from the request.
         read_size = None
+        # Whether a file upload is finished.
+        uploaded_file = True
 
         try:
             for item_type, meta_data, field_stream in Parser(stream, self._boundary):
@@ -158,6 +161,7 @@ class MultiPartParser:
                     # we hit the next boundary/part of the multipart content.
                     self.handle_file_complete(old_field_name, counters)
                     old_field_name = None
+                    uploaded_file = True
 
                 try:
                     disposition = meta_data['content-disposition'][1]
@@ -209,7 +213,7 @@ class MultiPartParser:
                     file_name = disposition.get('filename')
                     if file_name:
                         file_name = force_str(file_name, encoding, errors='replace')
-                        file_name = self.IE_sanitize(html.unescape(file_name))
+                        file_name = self.sanitize_file_name(file_name)
                     if not file_name:
                         continue
 
@@ -223,6 +227,7 @@ class MultiPartParser:
                         content_length = None
 
                     counters = [0] * len(handlers)
+                    uploaded_file = False
                     try:
                         for handler in handlers:
                             try:
@@ -277,6 +282,9 @@ class MultiPartParser:
             if not e.connection_reset:
                 exhaust(self._input_data)
         else:
+            if not uploaded_file:
+                for handler in handlers:
+                    handler.upload_interrupted()
             # Make sure that the request data is all fed
             exhaust(self._input_data)
 
@@ -297,9 +305,13 @@ class MultiPartParser:
                 self._files.appendlist(force_str(old_field_name, self._encoding, errors='replace'), file_obj)
                 break
 
-    def IE_sanitize(self, filename):
-        """Cleanup filename from Internet Explorer full paths."""
-        return filename and filename[filename.rfind("\\") + 1:].strip()
+    def sanitize_file_name(self, file_name):
+        file_name = html.unescape(file_name)
+        # Cleanup Windows-style path separators.
+        file_name = file_name[file_name.rfind('\\') + 1:].strip()
+        return os.path.basename(file_name)
+
+    IE_sanitize = sanitize_file_name
 
     def _close_files(self):
         # Free up all file handles.
@@ -664,12 +676,12 @@ def parse_header(line):
                 if p.count(b"'") == 2:
                     has_encoding = True
             value = p[i + 1:].strip()
-            if has_encoding:
-                encoding, lang, value = value.split(b"'")
-                value = unquote(value.decode(), encoding=encoding.decode())
             if len(value) >= 2 and value[:1] == value[-1:] == b'"':
                 value = value[1:-1]
                 value = value.replace(b'\\\\', b'\\').replace(b'\\"', b'"')
+            if has_encoding:
+                encoding, lang, value = value.split(b"'")
+                value = unquote(value.decode(), encoding=encoding.decode())
             pdict[name] = value
     return key, pdict
 

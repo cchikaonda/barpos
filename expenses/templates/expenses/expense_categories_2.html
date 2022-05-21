@@ -1,0 +1,14 @@
+{%for expense_cat in expense_categories%}
+<tr>
+    <td>{{ forloop.counter }}</td>
+    <td>
+       {{ expense_cat.category_name}} 
+    </td>
+    <td>
+      {{expense_cat.category_description}}
+    </td>
+    <td>
+    </td>
+</tr>
+
+{% endfor %}

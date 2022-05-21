@@ -1,3 +1,4 @@
+from dataclasses import field
 from django import forms
 from django.contrib.auth import get_user_model
 from accounts.models import CustomUser
@@ -8,7 +9,7 @@ from django_countries.fields import CountryField
 # from constance.admin import ConstanceAdmin, ConstanceForm, Config
 from djmoney.forms.widgets import MoneyWidget
 from django.contrib.auth import authenticate, login, logout, get_user_model
-from pos.models import Customer, LayByOrders, Payment, Order, RefundOrderItem, RefundPayment
+from pos.models import Customer, LayByOrders, Payment, Order, RefundOrder, RefundOrderItem, RefundPayment
 from inventory.models import Item
 
 class CustomMoneyWidget(MoneyWidget):
@@ -91,7 +92,7 @@ class AddLayByPaymentForm(forms.ModelForm):
 class RefundOrderItemForm(forms.ModelForm):
     class Meta:
         model = RefundOrderItem
-        fields = ['order_id', 'user', 'item','returned','return_quantity','initial_quantity','return_items_total_cost',]
+        fields = ['order_id', 'user', 'item','return_quantity','initial_quantity','return_items_total_cost',]
         name = forms.CharField()
         date = forms.DateInput()
         members = forms.ModelMultipleChoiceField(
@@ -107,11 +108,27 @@ class AddRefundPaymentForm(forms.ModelForm):
         self.fields['refund_amount'].widget = CustomMoneyWidget(amount_widget = refund_amount.widget, currency_widget = currency.widget)
     class Meta:
         model = RefundPayment
-        fields = ('payment_mode','refund_amount','reference')
+        fields = ('payment_mode','refund_amount')
         widgets = {
-                'reference': forms.TextInput(attrs={'class': 'form-control pos_form',}),
                 'payment_mode': forms.Select(attrs={'class': 'form-control pos_form',}),
                 'refund_amount': forms.TextInput(attrs={'class': 'form-control pos_form',}),
         }
+
+class ReasonForRefund(forms.ModelForm):
+    class Meta:
+        model = RefundOrder
+        fields = {'reason_for_refund',}
+        widgets = {
+                'reason_for_refund': forms.TextInput(attrs={'class': 'form-control pos_form',}),
+        }
+
+class RestockItemForm(forms.ModelForm):
+    class Meta:
+        model = RefundOrderItem
+        fields = {'restock_to_inventory',}
+        widgets = {
+            'restock_to_inventory': forms.CheckboxInput,
+        }
+
 
          

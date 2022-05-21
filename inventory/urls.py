@@ -5,7 +5,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.csrf import csrf_exempt
 
 urlpatterns = [
-    path('', inventory_dashboard, name = 'inventory_dashboard'),
+    path('inventory_dashboard/', inventory_dashboard, name = 'inventory_dashboard'),
     path('item_list/', item_list, name = 'items_list'),  
     path('item_create/', item_create, name = 'item_create'),
     path('item_update/<int:id>/', item_update, name = 'item_update'),
@@ -33,6 +33,7 @@ urlpatterns = [
     path('customers/customer_update/<int:id>/', customer_update, name = 'customer_update'),
     path('customers/customer_delete/<int:id>/', customer_delete, name = 'customer_delete'),
 
+    path('batch_list/', batch_list, name = 'batch_list'),
     path('stock_list/', stock_list, name = 'stock_list'),  
     path('stock_create/', stock_create, name = 'stock_create'),
     path('stock_delete/<int:id>/', stock_delete, name = 'stock_delete'),

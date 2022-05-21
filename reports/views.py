@@ -1,3 +1,4 @@
+from enum import unique
 from django.db.models.functions.datetime import TruncWeek
 from django.shortcuts import render,redirect, get_object_or_404
 from rest_framework.serializers import Serializer
@@ -249,7 +250,7 @@ def is_valid_queryparam(param):
 
 def get_todays_total_sales():
     today_date = timezone.now().date()
-    total_sales = Payment.objects.filter(created_at__gte=today_date)
+    total_sales = Payment.objects.filter(updated_at__gte=today_date)
     sum_total_cost = 0
     for total_sales in total_sales:
         sum_total_cost += total_sales.paid_amount
@@ -259,7 +260,7 @@ def get_todays_total_sales():
 def get_yesterday_total_sales():
     today_date = timezone.now().date()
     yesterday_date = today_date - timedelta(days=1)
-    total_sales = Payment.objects.filter(created_at__range = [yesterday_date, today_date])
+    total_sales = Payment.objects.filter(updated_at__range = [yesterday_date, today_date])
 
     sum_total_cost = 0
     for total_sales in total_sales:
@@ -304,7 +305,12 @@ def sales_report(request):
     today = timezone.now().date()
     report_time = timezone.now()
     yesterday = today-timedelta(days=1)
-    
+
+    sum_total_vat = Money(0.0, 'MWK')
+    orders = Order.objects.filter(ordered = True)
+    for order in orders:
+        sum_total_vat += order.vat_cost
+
     if request.method == "POST":
         item_cat = request.POST.get('item_categories_option')
         report_period = request.POST.get('report_period')
@@ -324,7 +330,15 @@ def sales_report(request):
             report_period = "Today"
 
             orders_r = Order.objects.all()
-            today_payments = Payment.objects.filter(order__id__in = orders_r, created_at__gte = today)
+            today_payments = Payment.objects.filter(order__id__in = orders_r, updated_at__gte = today)
+
+
+            sum_total_vat = Money(0.0, 'MWK')
+            orders = Order.objects.filter(ordered = True, updated_at__gte = today)
+            for order in orders:
+                sum_total_vat += order.vat_cost
+            
+
             sum_today_payments = Money(0.0, 'MWK')
             for today_payment in today_payments:
                 if str(today_payment.paid_amount) != "None":
@@ -332,7 +346,7 @@ def sales_report(request):
             
 
             orders_r = Order.objects.filter(order_type = 'Lay By', ordered = False)
-            today_layby_payments = Payment.objects.filter(order__id__in = orders_r, order_type = 'Lay By', created_at__gte = today)
+            today_layby_payments = Payment.objects.filter(order__id__in = orders_r, order_type = 'Lay By', updated_at__gte = today)
             
             sum_layby_paid_amount = Money(0.0, 'MWK')
             for today_layby_payments in today_layby_payments:
@@ -347,11 +361,17 @@ def sales_report(request):
 
             orders_r = Order.objects.filter(ordered = False)
             lay_by_orders = LayByOrders.objects.filter(order_id__in = orders_r)
-            lay_b_payments = Payment.objects.filter(laybyorders__in = lay_by_orders, created_at__gte = yesterday,created_at__lt = date_today)
+            lay_b_payments = Payment.objects.filter(laybyorders__in = lay_by_orders, updated_at__gte = yesterday,updated_at__lt = date_today)
             sum_layby_paid_amount = Money(0.0, 'MWK')
             for lay_b_payments in lay_b_payments:
                 if str(lay_b_payments.paid_amount) != "None":
                     sum_layby_paid_amount += lay_b_payments.paid_amount
+            
+
+            sum_total_vat = Money(0.0, 'MWK')
+            orders = Order.objects.filter(ordered = True, updated_at__gte = yesterday,updated_at__lt = date_today)
+            for order in orders:
+                sum_total_vat += order.vat_cost
   
         elif report_period == 3:
             ordered_items = last_7_days_ordered_items(item_cat)
@@ -362,11 +382,20 @@ def sales_report(request):
 
             orders_r = Order.objects.filter(ordered = False)
             lay_by_orders = LayByOrders.objects.filter(order_id__in = orders_r)
-            lay_b_payments = Payment.objects.filter(laybyorders__in = lay_by_orders, created_at__range = [seven_days_b4, date_today])
+            lay_b_payments = Payment.objects.filter(laybyorders__in = lay_by_orders, updated_at__range = [seven_days_b4, date_today])
             sum_layby_paid_amount = Money(0.0, 'MWK')
             for lay_b_payments in lay_b_payments:
                 if str(lay_b_payments.paid_amount) != "None":
                     sum_layby_paid_amount += lay_b_payments.paid_amount
+
+            sum_total_vat = Money(0.0, 'MWK')
+            orders = Order.objects.filter(ordered = True, updated_at__range = [seven_days_b4, date_today])
+            print(orders.count())
+            for order in orders:
+                print(order.get_code())
+                sum_total_vat += order.vat_cost
+                print(order.vat_cost)
+                print(sum_total_vat)
             
         elif report_period == 4:
             ordered_items= last_30_days_ordered_items(item_cat)
@@ -377,11 +406,16 @@ def sales_report(request):
 
             orders_r = Order.objects.filter(ordered = False)
             lay_by_orders = LayByOrders.objects.filter(order_id__in = orders_r)
-            lay_b_payments = Payment.objects.filter(laybyorders__in = lay_by_orders, created_at__range = [thirty_days_b4, date_today])
+            lay_b_payments = Payment.objects.filter(laybyorders__in = lay_by_orders, updated_at__range = [thirty_days_b4, date_today])
             sum_layby_paid_amount = Money(0.0, 'MWK')
             for lay_b_payments in lay_b_payments:
                 if str(lay_b_payments.paid_amount) != "None":
                     sum_layby_paid_amount += lay_b_payments.paid_amount
+            
+            sum_total_vat = Money(0.0, 'MWK')
+            orders = Order.objects.filter(ordered = True, updated_at__range = [thirty_days_b4, date_today])
+            for order in orders:
+                sum_total_vat += order.vat_cost
 
         elif report_period == 5:
             ordered_items = this_month_ordered_items(item_cat)
@@ -392,11 +426,16 @@ def sales_report(request):
 
             orders_r = Order.objects.filter(ordered = False)
             lay_by_orders = LayByOrders.objects.filter(order_id__in = orders_r)
-            lay_b_payments = Payment.objects.filter(laybyorders__in = lay_by_orders, created_at__range = [this_month_firstday, today])
+            lay_b_payments = Payment.objects.filter(laybyorders__in = lay_by_orders, updated_at__range = [this_month_firstday, today])
             sum_layby_paid_amount = Money(0.0, 'MWK')
             for lay_b_payments in lay_b_payments:
                 if str(lay_b_payments.paid_amount) != "None":
                     sum_layby_paid_amount += lay_b_payments.paid_amount
+            
+            sum_total_vat = Money(0.0, 'MWK')
+            orders = Order.objects.filter(ordered = True, updated_at__range = [this_month_firstday, today])
+            for order in orders:
+                sum_total_vat += order.vat_cost
 
         elif report_period == 6:
             ordered_items = last_month_ordered_items(item_cat)
@@ -410,11 +449,16 @@ def sales_report(request):
 
             orders_r = Order.objects.filter(ordered = False)
             lay_by_orders = LayByOrders.objects.filter(order_id__in = orders_r)
-            lay_b_payments = Payment.objects.filter(laybyorders__in = lay_by_orders, created_at__range = [last_monthfirstday, last_monthlastday])
+            lay_b_payments = Payment.objects.filter(laybyorders__in = lay_by_orders, updated_at__range = [last_monthfirstday, last_monthlastday])
             sum_layby_paid_amount = Money(0.0, 'MWK')
             for lay_b_payments in lay_b_payments:
                 if str(lay_b_payments.paid_amount) != "None":
                     sum_layby_paid_amount += lay_b_payments.paid_amount 
+            
+            sum_total_vat = Money(0.0, 'MWK')
+            orders = Order.objects.filter(ordered = True, updated_at__range = [last_monthfirstday, last_monthlastday])
+            for order in orders:
+                sum_total_vat += order.vat_cost
     else:
         orders_r = Order.objects.filter(ordered = False)
         lay_by_orders = LayByOrders.objects.filter(order_id__in = orders_r)
@@ -423,13 +467,9 @@ def sales_report(request):
         for lay_b_payments in lay_b_payments:
             if str(lay_b_payments.paid_amount) != "None":
                 sum_layby_paid_amount += lay_b_payments.paid_amount
+    
 
-        
-    sum_total_vat = Money(0.0, 'MWK')
-    # orders_with_ordered_items = Order.objects.all()
-    orders_with_ordered_items = Order.objects.filter(items__in = ordered_items)
-    for order in orders_with_ordered_items:
-        sum_total_vat += order.vat_cost
+    
     
     sum_ordered_items_count = 0
     total_cost_items_ordered = Money(0.0, 'MWK') 
@@ -437,7 +477,7 @@ def sales_report(request):
         sum_ordered_items_count += ordered_items_count.quantity
         total_cost_items_ordered += ordered_items_count.ordered_items_total
 
-    net_total_sales = total_cost_items_ordered -sum_total_vat
+    net_total_sales = total_cost_items_ordered - sum_total_vat
 
     
     total_cash_in_hand = sum_layby_paid_amount + total_cost_items_ordered
@@ -474,6 +514,11 @@ def sales_report_custom_range(request):
 
     ordered_items = all_days_sales(0)
 
+    sum_total_vat = Money(0.0, 'MWK')
+    orders = Order.objects.filter(ordered = True)
+    for order in orders:
+        sum_total_vat += order.vat_cost
+
     if request.method == "POST":
         if form.is_valid:
             from_date = request.POST.get('start_date_time')
@@ -488,10 +533,16 @@ def sales_report_custom_range(request):
             if get_item_cat.exists():
                 ordered_items = ordered_items.filter(ordered_time__gte = from_date, ordered_time__lte = to_date, item__category__in = get_item_cat)
             ordered_items = ordered_items.filter(ordered_time__gte = from_date, ordered_time__lte = to_date)
+
+            sum_total_vat = Money(0.0, 'MWK')
+            orders = Order.objects.filter(ordered = True, updated_at__gte = from_date, updated_at__lte = to_date)
+            for order in orders:
+                sum_total_vat += order.vat_cost
+        
         orders_r = Order.objects.filter(ordered = False)
 
         lay_by_orders = LayByOrders.objects.filter(order_id__in = orders_r)
-        lay_b_payments = Payment.objects.filter(laybyorders__in = lay_by_orders, created_at__gte = from_date, created_at__lte = to_date)
+        lay_b_payments = Payment.objects.filter(laybyorders__in = lay_by_orders, updated_at__gte = from_date, updated_at__lte = to_date)
         sum_layby_paid_amount = Money(0.0, 'MWK')
         for lay_b_payments in lay_b_payments:
             if str(lay_b_payments.paid_amount) != "None":
@@ -505,12 +556,7 @@ def sales_report_custom_range(request):
             if str(lay_b_payments.paid_amount) != "None":
                 sum_layby_paid_amount += lay_b_payments.paid_amount
 
-    sum_total_vat = Money(0.0, 'MWK')
-    # orders_with_ordered_items = Order.objects.all()
-    orders_with_ordered_items = Order.objects.filter(ordered = True, items__in = ordered_items)
-    for order in orders_with_ordered_items:
-        sum_total_vat += order.vat_cost
-    
+ 
     sum_ordered_items_count = 0
     total_cost_items_ordered = Money(0.0, 'MWK') 
     for ordered_items_count in ordered_items:
@@ -740,6 +786,7 @@ def this_month_ordered_items(category):
         return OrderItem.objects.filter(ordered = True, item__category__in = get_item_cat, ordered_time__range = [this_month_firstday, today])
     else:
        return OrderItem.objects.filter(ordered = True, ordered_time__range = [this_month_firstday, today])
+
 def last_month_ordered_items(category):
     today = datetime.now().date()
     this_month_firstday = today.replace(day=1)
@@ -750,7 +797,6 @@ def last_month_ordered_items(category):
     get_item_cat = ItemCategory.objects.filter(category_name = category_id)
     if get_item_cat.exists():
         return OrderItem.objects.filter(ordered = True, item__category__in = get_item_cat, ordered_time__range = [last_monthfirstday, last_monthlastday])
-        # return Item.objects.filter(category__category_name = category_id).filter(orderitem__ordered_time__range = [last_monthfirstday, last_monthlastday]).annotate(sum=Sum('orderitem__quantity')).annotate(total = Sum(F('orderitem__quantity')*F('orderitem__ordered_item_price'), output_field = FloatField())).annotate(default_item_price = Sum(F('price')*1)).annotate(item_price = Sum(F('orderitem__ordered_item_price')*1)).annotate(vat_value = Sum(F('orderitem__quantity')*F('orderitem__ordered_item_price')*vat, output_field = FloatField())).annotate(tota_vat_inclusive = Sum((F('orderitem__quantity')*F('orderitem__ordered_item_price')*vat) + (F('orderitem__quantity')*F('orderitem__ordered_item_price')), output_field = FloatField()))   
     else:
         return OrderItem.objects.filter(ordered = True,ordered_time__range = [last_monthfirstday, last_monthlastday])
 
@@ -770,4 +816,316 @@ def sales_report_data(request):
     items = OrderItem.objects.all()
     selialised_items = OrderItemSerializer(items, many=True)
     return JsonResponse(selialised_items.data,safe=False)
+
+
+
+def inventory_quantity_report(request):
+    items = Item.get_all_items()
+
+    expected_sum_items_cost = 0
+    for item in items:
+        expected_sum_items_cost += item.get_expected_revenue()
+
+    item_cats = ItemCategory.get_all_item_categories()
+    item_cat_id = request.GET.get('category')
+  
+    if item_cat_id != None:
+        items = Item.get_all_items_by_category_id(item_cat_id)
+    context = {
+        'items': items,
+        'header': 'Inventory quantity report',
+        'item_cats': item_cats,
+        'config':config,
+        'expected_sum_items_cost':expected_sum_items_cost,
+    }
+    return render(request, 'inventory_reports/inventory_quantity_report.html', context)
+
+def refund_report(request):
+    item_cat = "All Categories"
+    report_period = "All Days"
+
+    total_items_refunded = Money(0.0, 'MWK')
+    total_cost_items_refunded = Money('0.0', 'MWK')
+
+    item_categories = ItemCategory.objects.all().order_by('category_name')
+
+    refunded_items = all_days_refunds(report_period)
+
+    today = timezone.now().date()
+    report_time = timezone.now()
+    yesterday = today-timedelta(days=1)
+
+    refunded_payments_r = RefundPayment.objects.all()
+
+
+    if request.method == "POST":
+        item_cat = request.POST.get('item_categories_option')
+        report_period = request.POST.get('report_period')
+        report_period = int(report_period)
+        if report_period == 777:
+            refunded_items = all_days_refunds(item_cat)
+            report_period = "All Days"
+
+        elif report_period == 1:
+            refunded_items = todays_refunded_items(item_cat)
+            report_period = "Today"
+
+            refunded_payments_r = RefundPayment.objects.filter(updated_at__gte = today)
+
+           
+        elif report_period == 2:
+            refunded_items = yesterday_refunded_items(item_cat)
+            report_period = "Yesterday"
+
+            refunded_payments_r = RefundPayment.objects.filter(updated_at__gte = yesterday,updated_at__lt = today)
+  
+        elif report_period == 3:
+            refunded_items = last_7_days_refunded_items(item_cat)
+            report_period = "Last 7 Days"
+            date_today = datetime.now().date()
+            seven_days_b4 = date_today-timedelta(days=7)
+            refunded_payments_r = RefundPayment.objects.filter(updated_at__range = [seven_days_b4, date_today])
+           
+        elif report_period == 4:
+            refunded_items= last_30_days_refunded_items(item_cat)
+            report_period = "Last 30 Days"
+            date_today = datetime.now().date()
+            thirty_days_b4 = date_today-timedelta(days=30)
+            refunded_payments_r = RefundPayment.objects.filter(updated_at__range = [thirty_days_b4, date_today])
+           
+
+        elif report_period == 5:
+            refunded_items = this_month_refunded_items(item_cat)
+            report_period = "This Month"
+            today = datetime.now()
+            this_month_firstday = datetime.now().date().replace(day=1)
+            refunded_payments_r = RefundPayment.objects.filter(updated_at__range = [this_month_firstday, today])
+        
+
+        elif report_period == 6:
+            refunded_items = last_month_refunded_items(item_cat)
+            report_period = "Last Month"
+            today = datetime.now().date()
+            this_month_firstday = today.replace(day=1)
+            last_monthlastday = this_month_firstday - timedelta(days=1)
+            last_monthlastday2 = last_monthlastday
+            last_monthfirstday = last_monthlastday2.replace(day=1)
+            refunded_payments_r = RefundPayment.objects.filter(updated_at__range = [last_monthfirstday, last_monthlastday])
+    else:
+        refunded_payments_r = RefundPayment.objects.all()
+    
+    cash_refund_payemnts = refunded_payments_r.filter(payment_mode = 'Cash')
+    total_cash_refund = Money(0.0, 'MWK')
+    for cash_refund_payemnt in cash_refund_payemnts:
+        total_cash_refund += cash_refund_payemnt.refund_amount
+    
+    bank_refund_payments = refunded_payments_r.filter(payment_mode = 'Bank')
+    total_bank_refund = Money(0.0, 'MWK')
+    for bank_refund_payment in bank_refund_payments:
+        total_bank_refund += bank_refund_payment.refund_amount
+
+    
+    airtel_money_refund_payments = refunded_payments_r.filter(payment_mode = 'Airtel Money')
+    total_airtel_refund = Money(0.0, 'MWK')
+    for airtel_money_refund_payment in airtel_money_refund_payments:
+        total_airtel_refund += airtel_money_refund_payment.refund_amount
+
+
+    mpamba_refund_payments = refunded_payments_r.filter(payment_mode = 'Mpamba')
+    total_mpamba_refund = Money(0.0, 'MWK')
+    for mpamba_refund_payment in mpamba_refund_payments:
+        total_mpamba_refund += mpamba_refund_payment.refund_amount
+        
+    sum_refunded_items_count = 0
+    total_cost_items_refunded = Money(0.0, 'MWK') 
+    for refunded_items_count in refunded_items:
+        sum_refunded_items_count += refunded_items_count.return_quantity
+        total_cost_items_refunded += refunded_items_count.return_items_total_cost
+
+    net_total_sales = total_cost_items_refunded
+
+    
+
+    context = {
+        "header": "Refunds Report for " + " " + report_period,
+        "item_cat":item_cat,
+        "report_period":report_period,
+        "item_categories":item_categories,
+        "refunded_items":refunded_items,
+        "total_items_refunded":total_items_refunded,
+        "total_cost_items_refunded":total_cost_items_refunded,
+        "config":config,
+        "sum_refunded_items_count":sum_refunded_items_count,
+        "net_total_sales":net_total_sales,
+        "report_time":report_time,
+        # "refund_payment_options":refund_payment_options,
+        "total_cash_refund":total_cash_refund,
+        "total_bank_refund":total_bank_refund,
+        "total_airtel_refund":total_airtel_refund,
+        "total_mpamba_refund":total_mpamba_refund,
+    }
+    return render(request, 'refunds_reports/refund_report.html', context)
+
+
+def custom_range_refund_report(request):
+    form = SearchBetweenTwoDatesForm()
+    item_cat = "All Categories"
+    
+    total_items_refunded = 0
+    total_cost_items_refunded = Money('0.0', 'MWK')
+
+    item_categories = ItemCategory.objects.all().order_by('category_name')
+
+    refunded_items = all_days_refunds(0)
+
+    sum_total_vat = Money(0.0, 'MWK')
+    orders = RefundOrder.objects.filter(ordered = True)
+    for order in orders:
+        sum_total_vat += order.vat_cost
+
+    if request.method == "POST":
+        if form.is_valid:
+            from_date = request.POST.get('start_date_time')
+            to_date = request.POST.get('end_date_time')
+        
+            item_cat = request.POST.get('item_categories_option')
+
+        
+        if is_valid_queryparam(from_date) and is_valid_queryparam(to_date):
+            category_id = item_cat
+            get_item_cat = ItemCategory.objects.filter(category_name = category_id)
+            if get_item_cat.exists():
+                refunded_items = refunded_items.filter(ordered_time__gte = from_date, ordered_time__lte = to_date, item__category__in = get_item_cat)
+            refunded_items = refunded_items.filter(ordered_time__gte = from_date, ordered_time__lte = to_date)
+
+            sum_total_vat = Money(0.0, 'MWK')
+            orders = RefundOrder.objects.filter(ordered = True, updated_at__gte = from_date, updated_at__lte = to_date)
+            for order in orders:
+                sum_total_vat += order.vat_cost
+        
+        orders_r = RefundOrder.objects.filter(ordered = False)
+
+        lay_by_orders = LayByOrders.objects.filter(order_id__in = orders_r)
+        lay_b_payments = Payment.objects.filter(laybyorders__in = lay_by_orders, updated_at__gte = from_date, updated_at__lte = to_date)
+        sum_layby_paid_amount = Money(0.0, 'MWK')
+        for lay_b_payments in lay_b_payments:
+            if str(lay_b_payments.paid_amount) != "None":
+                sum_layby_paid_amount += lay_b_payments.paid_amount
+    else:
+        orders_r = RefundOrder.objects.filter(ordered = False)
+        lay_by_orders = LayByOrders.objects.filter(order_id__in = orders_r)
+        lay_b_payments = Payment.objects.filter(laybyorders__in = lay_by_orders)
+        sum_layby_paid_amount = Money(0.0, 'MWK')
+        for lay_b_payments in lay_b_payments:
+            if str(lay_b_payments.paid_amount) != "None":
+                sum_layby_paid_amount += lay_b_payments.paid_amount
+
+ 
+    sum_refunded_items_count = 0
+    total_cost_items_refunded = Money(0.0, 'MWK') 
+    for refunded_items_count in refunded_items:
+        sum_refunded_items_count += refunded_items_count.quantity
+        total_cost_items_refunded += refunded_items_count.refunded_items_total
+
+    net_total_sales =  total_cost_items_refunded - sum_total_vat
+    total_cash_in_hand = total_cost_items_refunded + sum_layby_paid_amount
+
+    context = {
+        "item_cat":item_cat,
+        "item_categories":item_categories,
+        "form":form,
+        "refunded_items":refunded_items,
+        "total_items_refunded":total_items_refunded,
+        "total_cost_items_refunded":total_cost_items_refunded,
+        "config":config,
+        "sum_refunded_items_count":sum_refunded_items_count,
+        "sum_total_vat":sum_total_vat,
+        "net_total_sales":net_total_sales,
+        "sum_layby_paid_amount":sum_layby_paid_amount,
+        "total_cash_in_hand":total_cash_in_hand,
+    }
+    return render(request, 'refunds_reports/custom_range_refund_report.html', context)
+
+def all_days_refunds(category):
+    category_id = str(category)
+    get_item_cat = ItemCategory.objects.filter(category_name = category_id)
+    if get_item_cat.exists():
+        return RefundOrderItem.objects.filter(item__category__in = get_item_cat)
+    else:
+        return RefundOrderItem.objects.filter()
+
+def todays_refunded_items(category):
+    today = timezone.now().date()
+    category_id = str(category)
+    get_item_cat = ItemCategory.objects.filter(category_name = category_id)
+    if get_item_cat.exists():
+        return RefundOrderItem.objects.filter(item__item__category__in = get_item_cat, returned_time__gte = today)  
+    else:
+        return RefundOrderItem.objects.filter(returned_time__gte = today)
+
+
+def yesterday_refunded_items(category):
+    today = timezone.now().date()
+    yesterday = today -timedelta(days=1)
+    category_id = str(category)
+    get_item_cat = ItemCategory.objects.filter(category_name = category_id)
+    if get_item_cat.exists():
+        return RefundOrderItem.objects.filter(item__item__category__in = get_item_cat, returned_time__range = [yesterday, today])
+    else:
+        return RefundOrderItem.objects.filter(returned_time__range = [yesterday, today])
+
+def last_7_days_refunded_items(category):
+    date_today = datetime.now().date()
+    seven_days_b4 = date_today-timedelta(days=7)
+
+    category_id = str(category)
+    get_item_cat = ItemCategory.objects.filter(category_name = category_id)
+
+    if get_item_cat.exists():
+        return RefundOrderItem.objects.filter(item__item__category__in = get_item_cat, returned_time__range = [seven_days_b4, date_today])
+    else:
+        return RefundOrderItem.objects.filter(returned_time__range = [seven_days_b4, date_today])
+
+def last_30_days_refunded_items(category):
+    date_today = datetime.now().date()
+    thirty_days_b4 = date_today-timedelta(days=30)
+    category_id = str(category)
+    get_item_cat = ItemCategory.objects.filter(category_name = category_id)
+    if get_item_cat.exists():
+        return RefundOrderItem.objects.filter(item__item__category__in = get_item_cat, returned_time__range = [thirty_days_b4, date_today])
+    else:
+        return RefundOrderItem.objects.filter(returned_time__range = [thirty_days_b4, date_today])
+
+def this_month_refunded_items(category):
+    today = datetime.now()
+    this_month_firstday = datetime.now().date().replace(day=1)
+    category_id = str(category)
+    get_item_cat = ItemCategory.objects.filter(category_name = category_id)
+    if get_item_cat.exists():
+        return RefundOrderItem.objects.filter(item__item__category__in = get_item_cat, returned_time__range = [this_month_firstday, today])
+    else:
+       return RefundOrderItem.objects.filter(returned_time__range = [this_month_firstday, today])
+
+def last_month_refunded_items(category):
+    today = datetime.now().date()
+    this_month_firstday = today.replace(day=1)
+    last_monthlastday = this_month_firstday - timedelta(days=1)
+    last_monthlastday2 = last_monthlastday
+    last_monthfirstday = last_monthlastday2.replace(day=1)
+    category_id = str(category)
+    get_item_cat = ItemCategory.objects.filter(category_name = category_id)
+    if get_item_cat.exists():
+        return RefundOrderItem.objects.filter(item__item__category__in = get_item_cat, returned_time__range = [last_monthfirstday, last_monthlastday])
+    else:
+        return RefundOrderItem.objects.filter(returned_time__range = [last_monthfirstday, last_monthlastday])
+
+
+def profit_report(request):
+    context = {
+        "header":"Profit report",
+    }
+    return render(request, 'profit_report.html', context)
+
+
+
 

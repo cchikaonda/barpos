@@ -16,43 +16,6 @@
 
 <!-- /.card-header -->
 <div id="page-content" class="card-body not-visible">
-  
-
-    <!--Custom Date Range-->
-   
-    <!-- <div class="card-body">
-      <form action="" method="POST">
-        {% csrf_token %}
-          <div class="row">
-            <div class="form-group mt-2 ml-4">
-              {{form.start_date_time|as_crispy_field}}
-            </div>
-            <div class="form-group mt-2 ml-1">
-              {{form.end_date_time|as_crispy_field}}
-            </div>
-            <div class="mt-2 ml-2 ">
-              <div class="ml-2 mt-2 mb-4">
-                <label for="date-rage">Category</label>
-                  <div class="input-group-prepend " >
-                    <select class="form-control" name="item_categories_option" >
-                      <option value = 2022>All Categories</option>
-                      {% for item_cat in item_categories %}
-                        <option value="{{item_cat.category_name}}"> {{item_cat.category_name}}</option>
-                      {%endfor%}
-                    </select>
-                  </div>
-                  <script type="text/javascript">
-                    document.getElementById('item_categories_option').value = "<?php echo $_GET['item_categories_option'];?>";
-                </script>
-                
-              </div>
-              <button type="submit" class="btn btn-info" style="float: right;"> Submit</button>
-            
-              
-            </div>
-        </div>
-      </form>
-    </div> -->
 
     {% include "report_filter_section_custom_report.html" %}
     <div id="report" class="dataTables_wrapper dt-bootstrap4 mb-4">
@@ -60,8 +23,13 @@
         <div class="col-sm-12 col-md-6">
         <div class="dataTables_length" id="example1_length">
           </div></div><div class="col-sm-12 col-md-6"><div id="example1_filter" class="dataTables_filter"></div></div></div><div class="row"><div class="col-sm-12">
-    <table id="sales_report_table" class="table table-bordered table-striped dataTable dtr-inline" role="grid" aria-describedby="example1_info">
+    <table id="sales_report_table" class="table table-bordered table-striped dataTable dtr-inline js-dataTable-buttons" role="grid" aria-describedby="example1_info">
       <thead>
+        <tr role="row">
+          <th colspan="6" class="text-center">
+            SALES REPORT (Generated on {{report_time|date:"d/m/Y"}}, {{report_time|date:"H:i:s"}})
+          </th>
+        </tr>
       <tr role="row">
         <th class="text-left" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Date</th>
         <th class="text-left" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Time</th>
@@ -123,8 +91,19 @@
       </tr>
       <tr >
         <td colspan="6" class="text-center">
-          LAY BAY PAYMENTS
+          REVENUE COLLECTED
         </td>
+      </tr>
+      <tr class="text-bold">
+        
+        <td class="text-right " colspan="5">
+         ORDERED ITEMS TOTAL
+        </td >
+       
+        <td class="text-right">
+          {{total_cost_items_ordered}}
+        </td>
+        
       </tr>
       <tr class="text-bold">
         
@@ -140,10 +119,21 @@
       <tr class="text-bold">
         
         <td class="text-right " colspan="5">
-         TOTAL CASH IN HAND
+         OTHER PAYMENTS
         </td >
        
         <td class="text-right">
+          {{other_payments}}
+        </td>
+        
+      </tr>
+      <tr class="text-bold">
+        
+        <td class="text-right " colspan="5">
+         TOTAL CASH IN HAND
+        </td >
+       
+        <td class="text-right" bgcolor="grey">
           {{total_cash_in_hand}}
         </td>
         

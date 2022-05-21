@@ -1,0 +1,202 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+
+{% block title %}
+
+{% endblock title %}
+
+{% block content %}
+
+<div id="spinner-box" class="text-center mt-3"> 
+    <div class="fa fa-spinner fa-spin fa-fw" role="status">
+    </div>
+    <span v-if="progress">Loading...</span>
+</div>
+
+<!-- /.card-header -->
+<div id="page-content" class="card-body not-visible">
+
+    <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Sales Report</strong> For {{item_cat}} </h3>
+          <button id="download-button" class="btn btn-light" style="float: right;"> <i class="fa fa-download"></i> Download Report</button>
+          <button id="download-excel-button" class="btn btn-light exportToExcel" style="float: right;"> <i class="fa fa-download"></i> Export Report to Excel</button>
+        </div>
+        
+        <div class="row ml-3">
+            <form action="" method="POST" class="row form-select ml-2 mr-2 mt-2 mb-2">
+              {% csrf_token %}
+              <div class="row">
+                <div class="form-group mt-2 ml-4">
+                  {{form.start_date_time|as_crispy_field}}
+                </div>
+                <div class="form-group mt-2 ml-1">
+                  {{form.end_date_time|as_crispy_field}}
+                </div>
+                <div class="mt-2 ml-2 ">
+                  <div class="ml-2 mt-1">
+                    <label for="date-rage">Category</label>
+                      <div class="input-group-prepend " >
+                        <select class="form-control" name="item_categories_option" >
+                          <option value = "All Categories">All Categories</option>
+                          {% for item_cat in item_categories %}
+                            <option value="{{item_cat.category_name}}"> {{item_cat.category_name}}</option>
+                          {%endfor%}
+                        </select>
+                      </div>
+                      <script type="text/javascript">
+                        document.getElementById('item_categories_option').value = "<?php echo $_GET['item_categories_option'];?>";
+                    </script>
+                    
+                  </div>
+                  
+                </div>
+              </div>
+            
+              
+            <div class="ml-4 mt-2 mb-4" >
+              <label for="custom-rage text-right" >****</label>
+              <div>
+               <button  type="submit" name="button" class=" btn btn-success mt-2 mb-4">Submit</button>
+              </div>   
+            </div> 
+          </form>
+        </div>
+              
+    </div>
+    
+
+    <div id="report" class="dataTables_wrapper dt-bootstrap4 mb-4">
+      <div class="row">
+        <div class="col-sm-12 col-md-6">
+        <div class="dataTables_length" id="example1_length">
+          </div></div><div class="col-sm-12 col-md-6"><div id="example1_filter" class="dataTables_filter"></div></div></div><div class="row"><div class="col-sm-12">
+    <table id="sales_report_table" class="table table-bordered table-striped dataTable dtr-inline js-dataTable-buttons" role="grid" aria-describedby="example1_info">
+      <thead>
+        <tr role="row">
+          <th colspan="6" class="text-center">
+            SALES REPORT (Generated on {{report_time|date:"d/m/Y"}}, {{report_time|date:"H:i:s"}})
+          </th>
+        </tr>
+      <tr role="row">
+        <th class="text-left" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Date</th>
+        <th class="text-left" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Time</th>
+        <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Item Name</th>
+        <th class="sorting text-center" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Quantity</th>
+        <th class="text-right">Unit Price</th>
+        <th class="sorting text-right" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Total</th>
+      </thead>
+      <tbody>
+      {% for ordered_items in ordered_items %}
+      <tr role="row" class="odd">
+        <td class="text-left">{{ordered_items.ordered_time| date:"d/m/Y"}}</td>
+        <td class="text-left">{{ordered_items.ordered_time| date:"H:m:s"}}</td>
+        <td>{{ordered_items.item}}</td>
+        <td class="text-center">{{ordered_items.quantity}}</td>
+        <td class="text-right">{{ordered_items.ordered_item_price}}</td>
+        <td class="text-right">{{ordered_items.ordered_items_total}}</td>
+      </tr>
+      {% endfor %}
+      <tr class="text-bold">
+        
+        <td class="text-right " colspan="3">
+          TOTAL
+        </td >
+       
+        <td class="text-center">
+          {{sum_ordered_items_count}}
+        </td>
+        <td >
+
+        </td>
+        <td class="text-right">
+          {{total_cost_items_ordered}}
+        </td>
+        
+      </tr>
+      <tr class="text-bold">
+        
+        <td class="text-right " colspan="5">
+          TOTAL VAT
+        </td >
+       
+    
+        <td class="text-right">
+          {{sum_total_vat}}
+        </td>
+        
+      </tr>
+      <tr class="text-bold">
+        
+        <td class="text-right " colspan="5">
+          NET TOTAL
+        </td >
+       
+        <td class="text-right">
+          {{net_total_sales}}
+        </td>
+        
+      </tr>
+      <tr >
+        <td colspan="6" class="text-center">
+          REVENUE COLLECTED
+        </td>
+      </tr>
+      <tr class="text-bold">
+        
+        <td class="text-right " colspan="5">
+         ORDERED ITEMS TOTAL
+        </td >
+       
+        <td class="text-right">
+          {{total_cost_items_refunded}}
+        </td>
+        
+      </tr>
+      <tr class="text-bold">
+        
+        <td class="text-right " colspan="5">
+         LAY BY PAYMENTS
+        </td >
+       
+        <td class="text-right">
+          {{sum_layby_paid_amount}}
+        </td>
+        
+      </tr>
+      <tr class="text-bold">
+        
+        <td class="text-right " colspan="5">
+         OTHER PAYMENTS
+        </td >
+       
+        <td class="text-right">
+          {{other_payments}}
+        </td>
+        
+      </tr>
+      <tr class="text-bold">
+        
+        <td class="text-right " colspan="5">
+         TOTAL CASH IN HAND
+        </td >
+       
+        <td class="text-right" bgcolor="grey">
+          {{total_cash_in_hand}}
+        </td>
+        
+      </tr>
+      </tbody>
+      <tfoot>
+      </tfoot>
+    </table>
+  </div>
+  
+  <div><br></div>
+</div>
+    </div>
+  <!-- /.card-body -->
+</div>
+
+{% endblock content %}

@@ -1,0 +1,188 @@
+{% extends 'base.html' %}
+
+
+{% block title %}
+
+{% endblock title %}
+
+{% block content %}
+
+<div id="spinner-box" class="text-center mt-3"> 
+    <div class="fa fa-spinner fa-spin fa-fw" role="status">
+    </div>
+    <span v-if="progress">Loading...</span>
+</div>
+
+<!-- /.card-header -->
+
+<div id="page-content" class="card-body not-visible">
+  
+    <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Refund Report <strong>For {{report_period}}</strong> For {{item_cat}} </h3>
+          <button id="download-button" class="btn btn-light" style="float: right;"> <i class="fa fa-download"></i> Download Report</button>
+          <button id="download-excel-button" class="btn btn-light exportToExcel" style="float: right;"> <i class="fa fa-download"></i> Export Report to Excel</button>
+        </div>
+        
+        <div class="row ml-3">
+            <form action="{% url 'refund_report' %}" method="POST" class="row form-select ml-2 mr-2 mt-2 mb-2">
+              {% csrf_token %}
+                  <div class="mt-2 ml-4">
+                    <label for="measure">Select Period</label>
+                    <div class="input-group">
+                    
+                      <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="far fa-calendar-alt"></i></span>
+    
+                      </div>
+                        <select class="form-control" id="example-select" name="report_period">
+                          <i class="far fa-calendar-alt"> 
+                            <option value="777"> All Days </option>
+                          </i>
+                            <option value="1" id="today_option" >Today</option>
+                            <option value="2">Yesterday</option>
+                            <option value="3">Last 7 Days</option>
+                            <option value="4">Last 30 Days</option>
+                            <option value="5">This Month</option>
+                            <option value="6">Last Month</option>
+                        </select>
+                    </div>
+                    <script type="text/javascript">
+                        document.getElementById('report_period').value = "<?php echo $_GET['report_period'];?>";
+                    </script>
+          
+                  </div>
+                  
+                  <div class="ml-4 mt-2 mb-4">
+                    <label for="date-rage">Category</label>
+                      <div class="input-group-prepend " >
+                        <select class="form-control" name="item_categories_option" >
+                          <option value = "All Categories">All Categories</option>
+                          {% for item_cat in item_categories %}
+                            <option value="{{item_cat.category_name}}"> {{item_cat.category_name}}</option>
+                          {%endfor%}
+                        </select>
+                        <button type="submit" name="button" class=" btn btn-info ml-2" style="width: 100px;">Select</button>
+                        <a href="{% url 'refund_report' %}"> <button type="button" name="button" class=" btn btn-secondary ml-2" style="width: 100px;">Reset</button> </a>
+                        <!--Custom Date Range-->
+                      </div>
+                      <script type="text/javascript">
+                        document.getElementById('item_categories_option').value = "<?php echo $_GET['item_categories_option'];?>";
+                      </script>
+                  </div>   
+            </form>
+              
+            <div class="ml-4 mt-2 mb-4" >
+              <label for="custom-rage text-right" >Custom Dates</label>
+              <div>
+                <a href="{% url 'custom_range_refund_report' %}"> <button type="button" name="button" class=" btn btn-success mt-2 mb-4">Custom Dates</button> </a>
+              </div>   
+            </div> 
+        </div>
+              
+    </div>
+
+    <div id="report" class="dataTables_wrapper dt-bootstrap4 mb-4">
+      <div class="row">
+        <div class="col-sm-12 col-md-6">
+        <div class="dataTables_length" id="example1_length">
+          </div></div><div class="col-sm-12 col-md-6"><div id="example1_filter" class="dataTables_filter"></div></div></div><div class="row"><div class="col-sm-12">
+    <table id="refunds_report_table" class="table table-bordered table-striped" role="grid">
+      <thead>
+      <tr role="row">
+        <th colspan="7" class="text-center">
+          REFUND REPORT (Generated on {{report_time|date:"d/m/Y"}}, {{report_time|date:"H:i:s"}})
+        </th>
+      </tr>
+      <tr role="row">
+        <th class="text-left" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Date</th>
+        <th class="text-left" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Time</th>
+        <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Item Name</th>
+        <th class="text-center">Restocked</th>
+        <th class="sorting text-center" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Quantity</th>
+        <th class="text-right">Unit Price</th>
+        <th class="sorting text-right" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Total</th>
+      </thead>
+      <tbody>
+      {% for refunded_items in refunded_items %}
+      <tr role="row" class="odd">
+        <td class="text-left">{{refunded_items.returned_time| date:"d/m/Y"}}</td>
+        <td class="text-left">{{refunded_items.returned_time| date:"H:m:s"}}</td>
+        <td>{{refunded_items.item.item}}</td>
+        <td class="text-center">
+          {% if refunded_items.restock_to_inventory == True %}
+          <span class="nav-main-link-badge badge badge-pill badge-success" >Yes</span>
+          {% else %}
+          <span class="nav-main-link-badge badge badge-pill badge-danger" >No</span>
+          {% endif %}
+        </td>
+        <td class="text-center">{{refunded_items.return_quantity}}</td>
+        <td class="text-right">{{refunded_items.item.ordered_item_price}}</td>
+        <td class="text-right">{{refunded_items.return_items_total_cost}}</td>
+      </tr>
+      {% endfor %}
+      </tbody>
+      <tfoot>
+      </tfoot>
+    </table>
+    <table class="table table-bordered table-striped">
+      <tr >
+        <th colspan="7" class="text-center">
+          TOTAL REFUNDED AMOUNTS
+        </td>
+      </tr>
+      
+      <tr class="text-bold">
+        
+        <th class="text-right " colspan="6">
+          Cash
+        </th >
+       
+        <th class="text-right">
+          {{total_cash_refund}}
+        </th>
+        
+      </tr>
+      <tr class="text-bold">
+        
+        <th class="text-right " colspan="6">
+          Bank
+        </th >
+       
+        <th class="text-right">
+          {{total_bank_refund}}
+        </th>
+        
+      </tr>
+      <tr class="text-bold">
+        
+        <th class="text-right " colspan="6">
+          Mpamba
+        </th >
+       
+        <th class="text-right">
+          {{total_mpamba_refund}}
+        </th>
+        
+      </tr>
+      <tr class="text-bold">
+        
+        <th class="text-right " colspan="6">
+          Airtel Money
+        </th >
+       
+        <th class="text-right">
+          {{total_airtel_refund}}
+        </th>
+        
+      </tr>
+    </table>
+  </div>
+  
+  <div><br></div>
+</div>
+    </div>
+  <!-- /.card-body -->
+</div>
+
+{% endblock content %}

@@ -14,14 +14,14 @@
 <!-- Bootstrap4 Duallistbox -->
 <script src="{% static '/plugins/bootstrap4-duallistbox/jquery.bootstrap-duallistbox.min.js' %}"></script>
 <!-- InputMask -->
-<script src="{% static '/plugins/moment/moment.min.js'  %}"></script>
+<!-- <script src="{% static '/plugins/moment/moment.min.js'  %}"></script> -->
 <script src="{% static '/plugins/inputmask/min/jquery.inputmask.bundle.min.js' %}"></script>
 <!-- date-range-picker -->
 <script src="{% static '/plugins/daterangepicker/daterangepicker.js' %}"></script>
 <!-- bootstrap color picker -->
 <script src="{% static '/plugins/bootstrap-colorpicker/js/bootstrap-colorpicker.min.js' %}"></script>
 <!-- Tempusdominus Bootstrap 4 -->
-<script src="{% static '/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js' %}"></script>
+<!-- <script src="{% static '/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js' %}"></script> -->
 <!-- Bootstrap Switch -->
 <script src="{% static '/plugins/bootstrap-switch/js/bootstrap-switch.min.js' %}"></script>
 
@@ -37,8 +37,8 @@
 <!-- ChartJS -->
 <script src="{% static '/plugins/chart.js/Chart.min.js' %}"></script>  
 <!-- PAGE SCRIPTS -->
-<script src="{% static '/dist/js/pages/dashboard2.js' %}"></script>
-<script src="{% static '/custom_js/helpers.js' %}"></script>
+<!-- <script src="{% static '/dist/js/pages/dashboard2.js' %}"></script> -->
+<!-- <script src="{% static '/custom_js/helpers.js' %}"></script> -->
 <script src="{% static '/custom_js/current_date_time.js' %}"></script>
 
 <!-- DataTables -->
@@ -61,14 +61,20 @@
 <script src="{% static '/custom_js/tables_crud.js' %}"></script>
 <script src="{% static '/plugins/intl-tel-input-master/build/js/intlTelInput.js' %}"></script>
 
-<script src="{% static '/custom_js/pdf.js' %}"></script>
-<script src="{% static '/custom_js/html2pdf.bundle.min.js' %}"></script>
-<script src="{% static '/custom_js/excel.js' %}"></script>
+<!-- <script src="{% static '/custom_js/pdf.js' %}"></script> -->
+<!-- <script src="{% static '/custom_js/html2pdf.bundle.min.js' %}"></script> -->
+<!-- <script src="{% static '/custom_js/excel.js' %}"></script> -->
 <script src="{% static '/custom_js/table2excel.js' %}"></script>
 <script src="{% static '/custom_js/current_date_time.js' %}"></script>
 
+<script src="{% static '/plugins/toastr/toastr.min.js' %}"></script>
+<script src="{% static '/plugins/sweetalert2/sweetalert2.all.min.js' %}"></script>
+
+<script src="{% static '/plugins/jquery/jquery.bootstrap.modal.forms.js' %}"></script>
 
 
+<!--Spinner JS-->
+<script src="{% static '/custom_js/spinner.js' %}"></script>
 
 <script>
     var input = document.querySelector("#phone_number");
@@ -100,6 +106,22 @@
             "responsive": true,
             "autoWidth": false,
         });
+
+        $("#refunds_report_table").DataTable({
+            "responsive": true, 
+            "lengthChange": false, 
+            "autoWidth": false,
+            "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+        }).buttons().container().appendTo('#refunds_report_table_wrapper .col-md-6:eq(0)');
+
+
+        
+        $("#expenses-table").DataTable({
+            "responsive": true, 
+            "lengthChange": false, 
+            "autoWidth": false,
+            "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+        }).buttons().container().appendTo('#expenses-table_wrapper .col-md-6:eq(0)');
 
         $("#orders-table").DataTable({
             "responsive": true, 
@@ -136,6 +158,22 @@
             "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
         }).buttons().container().appendTo('#category-table_wrapper .col-md-6:eq(0)');
 
+
+        $('#customer-table-pos').DataTable({
+            "responsive": true, 
+            "lengthChange": false, 
+            "autoWidth": false,
+            "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+        }).buttons().container().appendTo('#customer-table-pos_wrapper .col-md-6:eq(0)');
+
+        $('#inventory_quantity_table').DataTable({
+            "responsive": true, 
+            "lengthChange": false, 
+            "autoWidth": false,
+            "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+        }).buttons().container().appendTo('#inventory_quantity_table_wrapper .col-md-6:eq(0)');
+
+  
         $("#unsettled_orders_table").DataTable({
             "responsive": true,
             "autoWidth": false,
@@ -215,157 +253,314 @@
 </script>
 <!--End Data Tables Functionality Scripts-->
 
+<script>
+  $(function() {
+    var Toast = Swal.mixin({
+      toast: true,
+      position: 'top-end',
+      showConfirmButton: false,
+      timer: 3000
+    });
+
+    $('.swalDefaultSuccess').click(function() {
+      Toast.fire({
+        icon: 'success',
+        title: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr.'
+      })
+    });
+    $('.swalDefaultInfo').click(function() {
+      Toast.fire({
+        icon: 'info',
+        title: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr.'
+      })
+    });
+    $('.swalDefaultError').click(function() {
+      Toast.fire({
+        icon: 'error',
+        title: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr.'
+      })
+    });
+    $('.swalDefaultWarning').click(function() {
+      Toast.fire({
+        icon: 'warning',
+        title: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr.'
+      })
+    });
+    $('.swalDefaultQuestion').click(function() {
+      Toast.fire({
+        icon: 'question',
+        title: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr.'
+      })
+    });
+
+    $('.toastrDefaultSuccess').click(function() {
+      toastr.success('Lorem ipsum dolor sit amet, consetetur sadipscing elitr.')
+    });
+    $('.toastrDefaultInfo').click(function() {
+      toastr.info('Lorem ipsum dolor sit amet, consetetur sadipscing elitr.')
+    });
+    $('.toastrDefaultError').click(function() {
+      toastr.error('Lorem ipsum dolor sit amet, consetetur sadipscing elitr.')
+    });
+    $('.toastrDefaultWarning').click(function() {
+      toastr.warning('Lorem ipsum dolor sit amet, consetetur sadipscing elitr.')
+    });
+
+    $('.toastsDefaultDefault').click(function() {
+      $(document).Toasts('create', {
+        title: 'Toast Title',
+        body: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr.'
+      })
+    });
+    $('.toastsDefaultTopLeft').click(function() {
+      $(document).Toasts('create', {
+        title: 'Toast Title',
+        position: 'topLeft',
+        body: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr.'
+      })
+    });
+    $('.toastsDefaultBottomRight').click(function() {
+      $(document).Toasts('create', {
+        title: 'Toast Title',
+        position: 'bottomRight',
+        body: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr.'
+      })
+    });
+    $('.toastsDefaultBottomLeft').click(function() {
+      $(document).Toasts('create', {
+        title: 'Toast Title',
+        position: 'bottomLeft',
+        body: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr.'
+      })
+    });
+    $('.toastsDefaultAutohide').click(function() {
+      $(document).Toasts('create', {
+        title: 'Toast Title',
+        autohide: true,
+        delay: 750,
+        body: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr.'
+      })
+    });
+    $('.toastsDefaultNotFixed').click(function() {
+      $(document).Toasts('create', {
+        title: 'Toast Title',
+        fixed: false,
+        body: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr.'
+      })
+    });
+    $('.toastsDefaultFull').click(function() {
+      $(document).Toasts('create', {
+        body: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr.',
+        title: 'Toast Title',
+        subtitle: 'Subtitle',
+        icon: 'fas fa-envelope fa-lg',
+      })
+    });
+    $('.toastsDefaultFullImage').click(function() {
+      $(document).Toasts('create', {
+        body: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr.',
+        title: 'Toast Title',
+        subtitle: 'Subtitle',
+        image: '../../dist/img/user3-128x128.jpg',
+        imageAlt: 'User Picture',
+      })
+    });
+    $('.toastsDefaultSuccess').click(function() {
+      $(document).Toasts('create', {
+        class: 'bg-success',
+        title: 'Toast Title',
+        subtitle: 'Subtitle',
+        body: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr.'
+      })
+    });
+    $('.toastsDefaultInfo').click(function() {
+      $(document).Toasts('create', {
+        class: 'bg-info',
+        title: 'Toast Title',
+        subtitle: 'Subtitle',
+        body: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr.'
+      })
+    });
+    $('.toastsDefaultWarning').click(function() {
+      $(document).Toasts('create', {
+        class: 'bg-warning',
+        title: 'Toast Title',
+        subtitle: 'Subtitle',
+        body: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr.'
+      })
+    });
+    $('.toastsDefaultDanger').click(function() {
+      $(document).Toasts('create', {
+        class: 'bg-danger',
+        title: 'Toast Title',
+        subtitle: 'Subtitle',
+        body: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr.'
+      })
+    });
+    $('.toastsDefaultMaroon').click(function() {
+      $(document).Toasts('create', {
+        class: 'bg-maroon',
+        title: 'Toast Title',
+        subtitle: 'Subtitle',
+        body: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr.'
+      })
+    });
+  });
+</script>
+
+{% block chart_js %}
 <!--Bar Charts Scripts-->
 <script>
-    // Bar Chart for sales
-    $(function () {
-    'use strict'
+  // Bar Chart for sales
+  $(function () {
+  'use strict'
 
-    var ticksStyle = {
-      fontColor: '#495057',
-      fontStyle: 'bold'
-    }
+  var ticksStyle = {
+    fontColor: '#495057',
+    fontStyle: 'bold'
+  }
 
-    var mode      = 'index'
-    var intersect = true
+  var mode      = 'index'
+  var intersect = true
 
-    var $salesChart = $('#sales-chart')
-    var salesChart  = new Chart($salesChart, {
-      type   : 'bar',
-      data   : {
-        labels  : ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'],
-        datasets: [
-          {
-            backgroundColor: '#28a745',
-            borderColor    : '#28a745',
-            data           :  [{{monday_total_sales.amount}}, {{tuesday_total_sales.amount}}, {{wednesday_total_sales.amount}}, {{thursday_total_sales.amount}}, {{friday_total_sales.amount}}, {{saturday_total_sales.amount}}, {{sunday_total_sales.amount}}]
+  var $salesChart = $('#sales-chart')
+  var salesChart  = new Chart($salesChart, {
+    type   : 'bar',
+    data   : {
+      labels  : ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'],
+      datasets: [
+        {
+          backgroundColor: '#28a745',
+          borderColor    : '#28a745',
+          data           :  [{{monday_total_sales.amount}}, {{tuesday_total_sales.amount}}, {{wednesday_total_sales.amount}}, {{thursday_total_sales.amount}}, {{friday_total_sales.amount}}, {{saturday_total_sales.amount}}, {{sunday_total_sales.amount}}]
+        },
+        {
+          backgroundColor: '#6c757d',
+          borderColor    : '#6c757d',
+          data           : [{{lw_monday_total_sales.amount}}, {{lw_tuesday_total_sales.amount}}, {{lw_wednesday_total_sales.amount}}, {{lw_thursday_total_sales.amount}}, {{lw_friday_total_sales.amount}}, {{lw_saturday_total_sales.amount}}, {{lw_sunday_total_sales.amount}}]
+        }
+      ]
+    },
+    options: {
+      maintainAspectRatio: false,
+      tooltips           : {
+        mode     : mode,
+        intersect: intersect
+      },
+      hover              : {
+        mode     : mode,
+        intersect: intersect
+      },
+      legend             : {
+        display: false
+      },
+      scales             : {
+        yAxes: [{
+          // display: false,
+          gridLines: {
+            display      : true,
+            lineWidth    : '4px',
+            color        : 'rgba(0, 0, 0, .2)',
+            zeroLineColor: 'transparent'
           },
-          {
-            backgroundColor: '#6c757d',
-            borderColor    : '#6c757d',
-            data           : [{{lw_monday_total_sales.amount}}, {{lw_tuesday_total_sales.amount}}, {{lw_wednesday_total_sales.amount}}, {{lw_thursday_total_sales.amount}}, {{lw_friday_total_sales.amount}}, {{lw_saturday_total_sales.amount}}, {{lw_sunday_total_sales.amount}}]
-          }
-        ]
-      },
-      options: {
-        maintainAspectRatio: false,
-        tooltips           : {
-          mode     : mode,
-          intersect: intersect
-        },
-        hover              : {
-          mode     : mode,
-          intersect: intersect
-        },
-        legend             : {
-          display: false
-        },
-        scales             : {
-          yAxes: [{
-            // display: false,
-            gridLines: {
-              display      : true,
-              lineWidth    : '4px',
-              color        : 'rgba(0, 0, 0, .2)',
-              zeroLineColor: 'transparent'
-            },
-            ticks    : $.extend({
-              beginAtZero: true,
+          ticks    : $.extend({
+            beginAtZero: true,
 
-              // Include a dollar sign in the ticks
-              callback: function (value, index, values) {
-                // if (value >= 1000) {
-                //   value /= 1000
-                //   value += 'k'
-                // }
-                return 'MWK ' + value
-              }
-            }, ticksStyle)
-          }],
-          xAxes: [{
-            display  : true,
-            gridLines: {
-              display: false
-            },
-            ticks    : ticksStyle
-          }]
-        }
+            // Include a dollar sign in the ticks
+            callback: function (value, index, values) {
+              // if (value >= 1000) {
+              //   value /= 1000
+              //   value += 'k'
+              // }
+              return 'MWK ' + value
+            }
+          }, ticksStyle)
+        }],
+        xAxes: [{
+          display  : true,
+          gridLines: {
+            display: false
+          },
+          ticks    : ticksStyle
+        }]
       }
-    })
-
-    var $visitorsChart = $('#visitors-chart')
-    var visitorsChart  = new Chart($visitorsChart, {
-      data   : {
-        labels  : ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'],
-        datasets: [{
-          type                : 'line',
-          data                : [{{monday_total_sales.amount}}, {{tuesday_total_sales.amount}}, {{wednesday_total_sales.amount}}, {{thursday_total_sales.amount}}, {{friday_total_sales.amount}}, {{saturday_total_sales.amount}}, {{sunday_total_sales.amount}}],
-          backgroundColor     : 'transparent',
-          borderColor         : '#28a745',
-          pointBorderColor    : '#28a745',
-          pointBackgroundColor: '#28a745',
-          fill                : false
-          // pointHoverBackgroundColor: '#007bff',
-          // pointHoverBorderColor    : '#007bff'
-        },
-          {
-            type                : 'line',
-            data                : [{{lw_monday_total_sales.amount}}, {{lw_tuesday_total_sales.amount}}, {{lw_wednesday_total_sales.amount}}, {{lw_thursday_total_sales.amount}}, {{lw_friday_total_sales.amount}}, {{lw_saturday_total_sales.amount}}, {{lw_sunday_total_sales.amount}}],
-            backgroundColor     : 'tansparent',
-            borderColor         : '#6c757d',
-            pointBorderColor    : '#6c757d',
-            pointBackgroundColor: '#6c757d',
-            fill                : false
-            // pointHoverBackgroundColor: '#ced4da',
-            // pointHoverBorderColor    : '#ced4da'
-          }]
-      },
-      options: {
-        maintainAspectRatio: false,
-        tooltips           : {
-          mode     : mode,
-          intersect: intersect
-        },
-        hover              : {
-          mode     : mode,
-          intersect: intersect
-        },
-        legend             : {
-          display: false
-        },
-        scales             : {
-          yAxes: [{
-            // display: false,
-            gridLines: {
-              display      : true,
-              lineWidth    : '4px',
-              color        : 'rgba(0, 0, 0, .2)',
-              zeroLineColor: 'transparent'
-            },
-            ticks    : $.extend({
-              beginAtZero : true,
-              suggestedMax: 200,
-              callback: function (value, index, values) {
-                // if (value >= 1000) {
-                //   value /= 1000
-                //   value += 'k'
-                // }
-                return 'MWK ' + value
-              }
-            }, ticksStyle)
-          }],
-          xAxes: [{
-            display  : true,
-            gridLines: {
-              display: false
-            },
-            ticks    : ticksStyle
-          }]
-        }
-      }
-    })
+    }
   })
 
+  var $visitorsChart = $('#visitors-chart')
+  var visitorsChart  = new Chart($visitorsChart, {
+    data   : {
+      labels  : ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'],
+      datasets: [{
+        type                : 'line',
+        data                : [{{monday_total_sales.amount}}, {{tuesday_total_sales.amount}}, {{wednesday_total_sales.amount}}, {{thursday_total_sales.amount}}, {{friday_total_sales.amount}}, {{saturday_total_sales.amount}}, {{sunday_total_sales.amount}}],
+        backgroundColor     : 'transparent',
+        borderColor         : '#28a745',
+        pointBorderColor    : '#28a745',
+        pointBackgroundColor: '#28a745',
+        fill                : false
+        // pointHoverBackgroundColor: '#007bff',
+        // pointHoverBorderColor    : '#007bff'
+      },
+        {
+          type                : 'line',
+          data                : [{{lw_monday_total_sales.amount}}, {{lw_tuesday_total_sales.amount}}, {{lw_wednesday_total_sales.amount}}, {{lw_thursday_total_sales.amount}}, {{lw_friday_total_sales.amount}}, {{lw_saturday_total_sales.amount}}, {{lw_sunday_total_sales.amount}}],
+          backgroundColor     : 'tansparent',
+          borderColor         : '#6c757d',
+          pointBorderColor    : '#6c757d',
+          pointBackgroundColor: '#6c757d',
+          fill                : false
+          // pointHoverBackgroundColor: '#ced4da',
+          // pointHoverBorderColor    : '#ced4da'
+        }]
+    },
+    options: {
+      maintainAspectRatio: false,
+      tooltips           : {
+        mode     : mode,
+        intersect: intersect
+      },
+      hover              : {
+        mode     : mode,
+        intersect: intersect
+      },
+      legend             : {
+        display: false
+      },
+      scales             : {
+        yAxes: [{
+          // display: false,
+          gridLines: {
+            display      : true,
+            lineWidth    : '4px',
+            color        : 'rgba(0, 0, 0, .2)',
+            zeroLineColor: 'transparent'
+          },
+          ticks    : $.extend({
+            beginAtZero : true,
+            suggestedMax: 200,
+            callback: function (value, index, values) {
+              // if (value >= 1000) {
+              //   value /= 1000
+              //   value += 'k'
+              // }
+              return 'MWK ' + value
+            }
+          }, ticksStyle)
+        }],
+        xAxes: [{
+          display  : true,
+          gridLines: {
+            display: false
+          },
+          ticks    : ticksStyle
+        }]
+      }
+    }
+  })
+})
+
 </script>
+{% endblock chart_js %}
 <!--End Bar Charts Scripts-->
 {% endblock js %}

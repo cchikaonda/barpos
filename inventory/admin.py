@@ -63,7 +63,7 @@ admin.site.register(Item, ItemAdmin)
 class StockAdmin(admin.ModelAdmin):
     list_display = (
         'batch','item', 'supplier_name', 'ordered_price', 'previous_quantity',
-        'stock_in','new_quantity','total_cost_of_items','created_at','updated_at')
+        'stock_in','unit_quantity','get_total_stock','new_quantity','total_cost_of_items','created_at','updated_at')
     search_fields = ['item__item_name', ]
     class Meta:
         model = Stock

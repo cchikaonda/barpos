@@ -1,0 +1,50 @@
+{% extends 'base_inventory.html' %}
+
+{% block content %}    
+<!-- Main content -->
+<section class="content">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-12">
+
+        <div class="card-body">
+            <div class="card">
+              <div class="card-header">
+                <div class="block-header row">
+
+                  <div class="col-2 mb-2">
+                    <button class="btn btn-primary show-form" data-url="{% url 'expense_create' %}"> <span class="fa fa-plus fa-1x"></span> Add New Expense</button>
+                  </div>
+    
+              </div>
+            <table class="table table-bordered table-striped" id="expenses-table">
+              <thead >
+                <tr>
+                    <th>#</th>
+                    <th>Expense Name</th>
+                    <th>Description</th>
+                    <th>Amount</th>
+                    <th>User</th>
+                    <th>Date Created</th>
+                    <th>Action</th>
+    
+                </tr>
+              </thead>
+              <tbody>
+                {% include "expenses/expense_list_2.html" %}
+              </tbody>
+            </table>
+              </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="modal fade" id="modal-expense">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content"></div>
+  </div>
+</div>
+{% endblock %}

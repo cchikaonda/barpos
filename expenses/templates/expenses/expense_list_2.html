@@ -1,0 +1,19 @@
+{%for expense in expenses%}
+<tr>
+    <td>{{ forloop.counter }}</td>
+    <td>{{expense.expense_name}}</td>
+    <td>{{expense.expense_description}}</td>
+    <td>{{expense.amount}}</td>
+    <td>{{expense.paid_by}}</td>
+    <td>{{expense.created_at}}</td>
+    <td>
+        <button type="button" class="btn btn-sm btn-light show-form-update" data-url="{% url 'expense_update' expense.id %}" data-toggle="tooltip" title="Edit {{ items.item_name }} ">
+            <a class="fa fa-fw fa-pencil-alt"></a>
+        </button>
+       
+        <button type="button"  class="btn btn-sm btn-light show-form-delete" data-url="{% url 'expense_delete' expense.id %}" data-toggle="tooltip" title="Delete {{ items.item_name }}">
+            <a class="fa fa-fw fa-times"> </a>
+        </button>
+    </td>
+</tr>
+{% endfor %}

@@ -26,9 +26,9 @@
                   <div class="small-box bg-light dashboard_menu_item">
                   
                       <div class="inner text-secondary">
-                      <h3>Customers</h3>
+                          <h3>Customers</h3>
 
-                      <p class="ml-4">{{count_customers}}</p>
+                          <p class="ml-4">{{count_customers}}</p>
                       </div>
                       <div class="icon">
                       <i class="fas fa-users"></i>
@@ -92,7 +92,7 @@
             <!-- ./col -->
         </div>
         <!-- ./col -->
-        
+        {% if request.user.is_admin == True %}
         <div class="row">
           <div class="col-lg-3 col-6">
             
@@ -109,6 +109,7 @@
             </a>
         </div>
         <!-- ./col -->
+        {% endif %}
 
         <div class="col-lg-3 col-6">
            
@@ -129,7 +130,7 @@
         {% if request.user.admin == True %}
           <div class="col-lg-3 col-6">
             
-            <a href="{% url 'supplier_list_pos' %}">
+            <a href="{% url 'refunds_list' %}">
               <div class="small-box bg-light dashboard_menu_item">
                   <div class="inner text-secondary">
                   <h3>Refunds</h3>
@@ -162,27 +163,14 @@
             <!-- ./col -->
             <!-- ./col -->
         {%endif%}
-
-
         
       </div>
-
     <!-- /.row -->
     <!-- Small Box (Stat card) -->
 
-<script type="text/javascript">
-  $(window).on('load',function(){
-      setTimeout(function(){
-          if(!Cookies.get('modalShown')) {
-              $('#welcome_message').modal('show');
-            Cookies.set('modalShown', true);
-          } else {
-
-          }
-
-  },0.10);
-  });
-</script>
-
-
 {% endblock %}
+
+
+
+
+

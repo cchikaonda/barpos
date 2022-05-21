@@ -115,7 +115,6 @@ class Order(models.Model):
     payments = models.ManyToManyField(Payment)
     order_total_cost = MoneyField(max_digits=14, decimal_places=2, default_currency='MWK', default= 0.0)
     vat_p = models.FloatField(default=config.TAX_NAME)
-    vat_cost = MoneyField(max_digits=14, decimal_places=2, default_currency='MWK', default= 0.0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     payment_reference = models.CharField(max_length=50, null=True)
@@ -124,7 +123,9 @@ class Order(models.Model):
     #     super(Order, self).__init__(*args, **kwargs)
     #     self.original_paid_amount = self.paid_amount
 
-    
+    @property
+    def vat_cost(self):
+        return self.get_vat_value
 
     def __str__(self):
         return '{1} {0}'.format(self.created_at, self.customer)
@@ -229,7 +230,6 @@ class RefundPayment(models.Model):
     refund_amount = MoneyField(max_digits=14, decimal_places=2, default_currency='MWK', null = True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    reference = models.CharField(max_length = 30, null= True,)
 
 
 
@@ -240,11 +240,11 @@ class RefundOrderItem(models.Model):
     order_id = models.CharField(default="", max_length=30)
     user = models.ForeignKey(CustomUser, on_delete = models.SET_NULL, null = True)
     item = models.ForeignKey(OrderItem, on_delete = models.CASCADE)
-    returned = models.BooleanField(default=False)
     return_quantity = models.IntegerField(default=0)
     initial_quantity = models.IntegerField(default=0)
     return_items_total_cost = MoneyField(max_digits=14, decimal_places=2, default_currency='MWK', default= 0.0)
     returned_time = models.DateTimeField(auto_now_add=True, null = True)
+    restock_to_inventory = models.BooleanField(default=True)
 
     
     @property
@@ -277,6 +277,8 @@ class RefundOrder(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     payments = models.ManyToManyField(RefundPayment)
+    reason_for_refund = models.CharField(max_length = 30, null= True,)
+
 
    
     def __str__(self):
@@ -310,7 +312,15 @@ class RefundOrder(models.Model):
         total = Money('0.0', 'MWK')
         for order_item in self.refunded_items.all():
             total += order_item.return_amount
-        return total 
+        return total
+    
+    def balance_to_refund(self):
+        total = Money('0.0', 'MWK')
+        for order_item in self.refunded_items.all():
+            total += order_item.return_amount
+        return total - self.total_refunded_amount
+       
+
 
 
 

@@ -104,21 +104,17 @@ def add_customer_to_order(request):
 @login_required
 def add_new_customer_from_pos_dash(request):
     form = AddCustomerForm(request.POST or None)
-
     if request.method == "POST":
         try:
             if form.is_valid():
                 form.save()
-                messages.info(request, "New Customer is Added!")
-            return redirect("pos_dashboard")
+                messages.success(request, "New Customer is Added!")
+            return HttpResponseRedirect("pos_dashboard")
         except ObjectDoesNotExist:
-            messages.info(request, "You do not have an active order")
+            messages.warning(request, "You do not have an active order")
             return redirect("pos_dashboard")
         return None
 
-# def cash_payment(request):
-#     form = CashPaymantForm(request.POST or None)
-#     complete_payment(form)
 
 @login_required
 def add_payment(request):
@@ -130,7 +126,7 @@ def add_payment(request):
             if form.is_valid():
                 paid_amount = form.cleaned_data.get('paid_amount')
                 payment_mode = request.POST.get('payment_mode')
-                print(paid_amount)
+                
                 customer = order.customer
                 order_type = order.order_type
                 payment = Payment()
@@ -161,6 +157,7 @@ def add_payment(request):
                 order.save()
                 order = Order.objects.get(id = order_id)
                 request.session['opened_order'] = order.id
+                messages.info(request, "Payment Added! " + str(paid_amount))
             return redirect('/pos/personal_order_list/'+ str(order.id))
         except ObjectDoesNotExist:
             messages.info(request, "You do not have an active order")
@@ -233,7 +230,6 @@ def complete_order(request):
         order_item.save()
     order.ordered = True
     order.vat_p = order.vat_rate
-    order.vat_cost = order.get_vat_value
     order.save()
     return redirect("pos_dashboard")
 
@@ -345,7 +341,6 @@ def personal_order_list(request, id):
 @login_required
 def save_order(order, request):
     order.order_total_cost = order.order_total_due()
-    order.vat_cost = order.get_vat_value
     order.save()
     return order
 

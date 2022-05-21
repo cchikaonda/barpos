@@ -9,6 +9,8 @@ from django.shortcuts import reverse
 from constance import config
 from datetime import date
 
+from pymysql import NULL
+
 from accounts.models import CustomUser
 from phonenumber_field.modelfields import PhoneNumberField
 from django.db.models.signals import post_save, pre_save
@@ -111,10 +113,21 @@ class Item(models.Model):
         return reverse('remove_from_cart_quotation', kwargs={'slug': self.slug})
 
 
+class BatchNumber(models.Model):
+    batch_number = models.CharField(max_length=50)
+    description = models.CharField(max_length=100)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
+    def __str__(self):
+        return '{0}'.format(self.batch_number)
+
+
+
 class Stock(models.Model):
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
-    batch = models.CharField(max_length=50)
-    supplier_name = models.ForeignKey(Supplier, on_delete=models.CASCADE, blank=True)
+    batch = models.ForeignKey(BatchNumber, on_delete=models.SET_NULL, null=True, default=1)
+    supplier_name = models.ForeignKey(Supplier, on_delete=models.SET_NULL, null=True)
     ordered_price = MoneyField(max_digits=14, decimal_places=2, default_currency='MWK')
     previous_quantity = models.IntegerField(default=0)
     stock_in = models.IntegerField(default=0)
@@ -134,6 +147,9 @@ class Stock(models.Model):
 
     def __str__(self):
         return self.item.item_name
+
+    def get_total_stock(self):
+        return self.stock_in * self.unit_quantity
     
     def get_item_quantity_at_hand(self):
         return self.item.quantity_at_hand
@@ -145,6 +161,17 @@ class Stock(models.Model):
     @property
     def get_total_cost_of_items(self):
         return self.stock_in * self.ordered_price
+
+    @staticmethod
+    def get_all_stocks():
+        return Stock.objects.all()
+        
+    @staticmethod
+    def get_all_stocks_with_batch_id(batch_id):
+        if batch_id:
+            return Stock.objects.filter(batch=batch_id)
+        else:
+            return Stock.get_all_stocks()
         
 
     
@@ -159,7 +186,7 @@ def update_quantity_at_hand_in_inventory(sender, instance, **kwargs):
 def update_quantities_in_stock(sender, instance, **kwargs):
     if instance.previous_quantity == 0:
         old_stock = Stock.objects.get(id=instance.id)
-        new_quantity = old_stock.previous_quantity + old_stock.stock_in
+        new_quantity = old_stock.previous_quantity + old_stock.get_total_stock()
         Stock.objects.filter(id=instance.id).update(new_quantity=new_quantity, total_cost_of_items = instance.get_total_cost_of_items)
         instance.item.quantity_at_hand = new_quantity
         instance.item.ordered_price = instance.ordered_price
@@ -167,7 +194,7 @@ def update_quantities_in_stock(sender, instance, **kwargs):
     else:
         instance.previous_quantity = get_item_quantity_at_hand(instance)
         previous_quantity = get_item_quantity_at_hand(instance)
-        new_quantity = previous_quantity + instance.stock_in
+        new_quantity = previous_quantity + instance.get_total_stock()
         Stock.objects.filter(id=instance.id).update(new_quantity=new_quantity, previous_quantity = previous_quantity, total_cost_of_items = instance.get_total_cost_of_items)
         instance.item.ordered_price = instance.ordered_price
         instance.item.quantity_at_hand = new_quantity

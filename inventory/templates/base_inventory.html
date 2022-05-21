@@ -2,6 +2,7 @@
 {% load inventory_template_tags %}
 {% get_media_prefix as MEDIA_URL %}
 {% load crispy_forms_tags %}
+{{form.media}}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -19,7 +20,7 @@
     </style>
 
 </head>
-<body class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed layout-footer-fixed" onload="realtimeClock()">
+<body class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed layout-footer-fixed">
 <!--Wrapper-->
   <div class="wrapper">
      {% include 'navigation_bar.html' %}
@@ -76,19 +77,19 @@
                   <li class="nav-item">
                     <a href="{% url 'category_list' %}" class="nav-link">
                       <i class="far fa-circle nav-icon"></i>
-                      <p>Item Categories <span class="badge badge-info right">{{request.user|item_category_count}}</span> </p>
+                      <p>Item Categories <span class="badge badge-primary right">{{request.user|item_category_count}}</span> </p>
                     </a>
                   </li>
                   <li class="nav-item">
                     <a href="{% url 'items_list' %}" class="nav-link">
                       <i class="far fa-circle nav-icon"></i>
-                      <p>Items <span class="badge badge-info right">{{request.user|item_count}}</span> </p>
+                      <p>Items <span class="badge badge-primary right">{{request.user|item_count}}</span> </p>
                     </a>
                   </li>
                   <li class="nav-item">
                     <a href="{% url 'unit_list' %}" class="nav-link">
                       <i class="far fa-circle nav-icon"></i>
-                      <p>Item Units <span class="badge badge-info right">{{request.user|unit_count}}</span> </p>
+                      <p>Item Units <span class="badge badge-primary right">{{request.user|unit_count}}</span> </p>
                     </a>
                   </li>
                 </ul>
@@ -105,7 +106,7 @@
                   <li class="nav-item">
                     <a href="{% url 'customer_list' %}" class="nav-link">
                       <i class="far fa-circle nav-icon"></i>
-                      <p>Customer list <span class="badge badge-info right">{{request.user|stock_count}}</span> </p>
+                      <p>Customer list <span class="badge badge-light right">{{request.user|stock_count}}</span> </p>
                     </a>
                   </li>
                 </ul>
@@ -120,16 +121,45 @@
                 </a>
                 <ul class="nav nav-treeview">
                   <li class="nav-item">
+                    <a href="{% url 'batch_list' %}" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Batch Numbers<span class="badge badge-warning right">{{request.user|batch_number_count}}</span> </p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
                     <a href="{% url 'stock_list' %}" class="nav-link">
                       <i class="far fa-circle nav-icon"></i>
-                      <p>Stock list <span class="badge badge-info right">{{request.user|stock_count}}</span> </p>
+                      <p>Stock list <span class="badge badge-warning right">{{request.user|stock_count}}</span> </p>
                     </a>
                   </li>
 
                   <li class="nav-item">
                     <a href="{% url 'supplier_list' %}" class="nav-link">
                       <i class="far fa-circle nav-icon"></i>
-                      <p>Supplier list <span class="badge badge-info right">{{request.user|supplier_count}}</span> </p>
+                      <p>Supplier list <span class="badge badge-warning right">{{request.user|supplier_count}}</span> </p>
+                    </a>
+                  </li>
+                </ul>
+              </li>
+              <li class="nav-item has-treeview menu-open">
+                <a href="#" class="nav-link" id="link-options" >
+                  <i class="nav-icon fas fa-th"></i>
+                  <p>
+                   EXPENSES
+                    <i class="right fas fa-angle-left"></i>
+                  </p>
+                </a>
+                <ul class="nav nav-treeview">
+                  <li class="nav-item">
+                    <a href="{% url 'expense_categories' %}" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Expense Categories <span class="badge badge-success right">{{request.user|expense_category_count}}</span> </p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="{% url 'expense_list' %}" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Expenses List<span class="badge badge-success right">{{request.user|expenses_count}}</span> </p>
                     </a>
                   </li>
                 </ul>
@@ -140,7 +170,7 @@
                   <i class="nav-icon fas fa-calendar-alt"></i>
                   <p>
                     Manage Users
-                    <span class="badge badge-info right">{{request.user|user_count}}</span>
+                    <span class="badge badge-danger right">{{request.user|user_count}}</span>
                   </p>
                 </a>
               </li>
@@ -193,15 +223,19 @@
       <!-- /.content-wrapper -->
   </div>
 <!-- ./wrapper -->
+
 <!--Footer-->
 {% include 'footer.html' %}
-<!--./Footer-->   
+<!--./Footer-->  
+
 <!--All Javascript Imports-->
 {% include 'all_js_imports.html' %}
 <!--End all Javascript imports-->
+
 <!--Inventory Modals Module-->
 {% include 'inventory_modals.html' %}
 <!--End inventory Modals-->
 </body>
+
 
 </html>

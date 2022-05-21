@@ -1,43 +1,40 @@
 {% extends 'base_pos.html' %}
 {% block body %}
 <div id="page-container">
-  <div class="content">
-    <div class="row">
-      <div class="col-12">
-
-        <div class="card-body">
-            <div class="card">
-              <div class="card-header">
-                <div class="block-header row">
-                  <div class="col-md-6 mb-2">
-                    <button class="btn btn-primary show-form mt-2 mb-2" data-url="{% url 'customer_create_pos' %}"> <span class="fa fa-plus fa-1x"></span> New Customer</button>
-                  </div>
-                  <div class="col-md-6 mb-2">
-                   {{header}}
-                  </div>
-                <!-- DataTables init on table by adding .js-dataTable-buttons class, functionality is initialized in js/pages/be_tables_datatables.min.js which was auto compiled from _es6/pages/be_tables_datatables.js -->
-                <table class="table table-bordered table-striped table-vcenter js-dataTable-buttons" id="customer-table-pos">
-                  <thead >
-                      <tr>
-                          <th class="text-center" style="width: 5%;">ID</th>
-                          <th class="d-none d-sm-table-cell" style="width: 20%;">Customer Name</th>
-                          <th class="d-none d-sm-table-cell" style="width: 25%;">Address</th>
-                          <th class="d-none d-sm-table-cell" style="width: 15%;">Phone#</th>
-                          <th class="d-none d-sm-table-cell" style="width: 10%;">Total Invoices</th>
-                          <th style="width: 10%;">Actions</th>
-                      </tr>
-                  </thead>
-                  <tbody>
-                    {% include "customers/customer_list_2_pos.html" %}
-                  </tbody>
-              </table>
-        </div>
-    </div>
+    <div class="content">
+      <div class="card">
+        <div class="card-header">
+            <div class="col-md-6 mb-2">
+              <button class="btn btn-primary show-form mt-2 mb-2" data-url="{% url 'customer_create_pos' %}"> <span class="fa fa-plus fa-1x"></span> New Customer</button>
             </div>
-
-  <div class="modal fade" id="modal-customer-pos">
-    <div class="modal-dialog">
-      <div class="modal-content"></div>
+            <div class="col-md-6 mb-2">
+              {{header}}
+            </div>
+          <!-- DataTables init on table by adding .js-dataTable-buttons class, functionality is initialized in js/pages/be_tables_datatables.min.js which was auto compiled from _es6/pages/be_tables_datatables.js -->
+          <table class="table table-bordered table-striped" id="customer-table-pos">
+            <thead >
+                <tr>
+                    <th class="text-center" style="width: 5%;">ID</th>
+                    <th class="d-none d-sm-table-cell" style="width: 20%;">Customer Name</th>
+                    <th class="d-none d-sm-table-cell" style="width: 25%;">Address</th>
+                    <th class="d-none d-sm-table-cell" style="width: 15%;">Phone#</th>
+                    <th class="d-none d-sm-table-cell" style="width: 10%;">Total Invoices</th>
+                    <th style="width: 10%;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+              {% include "customers/customer_list_2_pos.html" %}
+            </tbody>
+          </table>
     </div>
+    </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="modal-customer-pos">
+  <div class="modal-dialog">
+    <div class="modal-content"></div>
   </div>
+</div>
 {% endblock %}

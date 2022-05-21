@@ -42,10 +42,10 @@ def inventory_dashboard(request):
     ordered_items = OrderItem.objects.filter(ordered = True)
 
     for ordered_item in ordered_items:
-        stock_o = Stock.objects.filter(item = ordered_item.item).order_by('-created_at')[0].ordered_price 
+        stock_o = Stock.objects.filter(item = ordered_item.item).order_by('-updated_at')[0].ordered_price 
 
     for ordered_item in ordered_items:
-       total_cog_sold += Stock.objects.filter(item = ordered_item.item).order_by('-created_at')[0].ordered_price * ordered_item.quantity
+       total_cog_sold += Stock.objects.filter(item = ordered_item.item).order_by('-updated_at')[0].ordered_price * ordered_item.quantity
     
     total_tax = 0
     sales_overtime = 0
@@ -117,15 +117,15 @@ def get_total_sales_this_week(this_day):
     week_start -= timedelta(days=week_start.weekday())
     week_end = week_start + timedelta(days=6)
 
-    total_sales = Payment.objects.filter(created_at__gte=week_start, created_at__lt=week_end).filter(
-        created_at__week_day=this_day)
+    total_sales = Payment.objects.filter(updated_at__gte=week_start, updated_at__lt=week_end).filter(
+        updated_at__week_day=this_day)
     sum_total_cost = 0
     for total_sales in total_sales:
         sum_total_cost += total_sales.paid_amount
 
     orders_r = Order.objects.filter(ordered = False)
     lay_by_orders = LayByOrders.objects.filter(order_id__in = orders_r)
-    lay_b_payments = Payment.objects.filter(laybyorders__in = lay_by_orders, created_at__gte=week_start, created_at__lt=week_end, created_at__week_day=this_day)
+    lay_b_payments = Payment.objects.filter(laybyorders__in = lay_by_orders, updated_at__gte=week_start, updated_at__lt=week_end, updated_at__week_day=this_day)
     sum_layby_paid_amount = Money(0.0, 'MWK')
     for lay_b_payments in lay_b_payments:
         if str(lay_b_payments.paid_amount) != "None":
@@ -137,14 +137,14 @@ def get_total_lastwk_sale(this_day_lw):
     some_day_last_week = date.today() - timedelta(days=7)
     monday_of_last_week = some_day_last_week - timedelta(days=(some_day_last_week.isocalendar()[2] - 1))
     monday_of_this_week = monday_of_last_week + timedelta(days=7)
-    total_sales = Payment.objects.filter(created_at__gte=monday_of_last_week,created_at__lt=monday_of_this_week).filter(created_at__week_day = this_day_lw)
+    total_sales = Payment.objects.filter(updated_at__gte=monday_of_last_week,updated_at__lt=monday_of_this_week).filter(updated_at__week_day = this_day_lw)
     sum_total_cost = 0
     for total_sales in total_sales:
         sum_total_cost += total_sales.paid_amount
     
     orders_r = Order.objects.filter(ordered = False)
     lay_by_orders = LayByOrders.objects.filter(order_id__in = orders_r)
-    lay_b_payments = Payment.objects.filter(laybyorders__in = lay_by_orders, created_at__gte=monday_of_last_week, created_at__lt=monday_of_this_week, created_at__week_day=this_day_lw)
+    lay_b_payments = Payment.objects.filter(laybyorders__in = lay_by_orders, updated_at__gte=monday_of_last_week, updated_at__lt=monday_of_this_week, updated_at__week_day=this_day_lw)
     sum_layby_paid_amount = Money(0.0, 'MWK')
     for lay_b_payments in lay_b_payments:
         if str(lay_b_payments.paid_amount) != "None":
@@ -166,7 +166,7 @@ def item_list(request):
 
     item_cats = ItemCategory.get_all_item_categories()
     item_cat_id = request.GET.get('category')
-    # print(item_cat_id)
+    
     if item_cat_id != None:
         items = Item.get_all_items_by_category_id(item_cat_id)
     context = {
@@ -187,7 +187,7 @@ def save_all_items(request, form, template_name):
             data['form_is_valid'] = True
             items =  Item.objects.all()
             data['item_list'] = render_to_string('items/items_list_2.html',{'items': items,})
-            print(data)
+    
         else:
             data['form_is_valid'] = False
     context = {
@@ -466,7 +466,6 @@ def user_delete(request,id):
 @login_required
 def user_profile(request):
     user = request.user
-    # print(user.full_name)
     form = EditProfileForm(instance = user)
     if request.method == 'POST':
         form = EditProfileForm(request.POST, request.FILES, instance = user)
@@ -556,26 +555,38 @@ def customer_delete(request, id):
 
 
 @login_required
+def batch_list(request):
+    batch_numbers = BatchNumber.objects.all()
+    stocks = Stock.objects.all()
+    context = {
+        'stocks':stocks,
+        'batch_numbers': batch_numbers,
+        'header': 'Manage Batch Numbers',
+        'config':config,
+    }
+    return render(request, 'stocks/batch_list.html', context)
+
+def view_batch_details(request, batch_id):
+    stock_items = Stock.objects.filter(batch=batch_id)
+    pass
+
+
+@login_required
 def stock_list(request):
     ordered_items = OrderItem.objects.filter(ordered = True)
 
     for ordered_item in ordered_items:
-        stock_o = Stock.objects.filter(item = ordered_item.item).order_by('-created_at')[0].ordered_price 
+        stock_o = Stock.objects.filter(item = ordered_item.item).order_by('-updated_at')[0].ordered_price 
 
-    stocks = Stock.objects.order_by('-created_at')
+    stocks = Stock.objects.order_by('-updated_at')
     stock_summery = Item.objects.prefetch_related('item_name').values('item_name','quantity_at_hand').annotate(sum_stock_in = Sum(F('stock__stock_in'))).annotate(total_ordered_price = Sum('stock__total_cost_of_items')).annotate(sum_sold = F('sum_stock_in')-F('quantity_at_hand'))    
     queryset = Item.objects.prefetch_related('item_name').values('item_name','quantity_at_hand').annotate(stock_in_sum = Sum(F('stock__stock_in'))).annotate(sum_sold = F('stock_in_sum')-F('quantity_at_hand'))
-    print(queryset)
 
-    # sold_items_total = Item.objects.filter(orderitem__ordered = True).values('item_name').annotate(total_quantity=Sum('orderitem__quantity'))
-    # .annotate(sales_total = Sum('orderitem__ordered_items_total', output_field = FloatField() ))
-
-    # print(sold_items_total)
 
     item_cats = ItemCategory.get_all_item_categories()
     item_cat_id = request.GET.get('category')
     if item_cat_id != None:
-        stocks = Stock.objects.order_by('-created_at').filter(item__category = item_cat_id)
+        stocks = Stock.objects.order_by('-updated_at').filter(item__category = item_cat_id)
     context = {
         'stocks': stocks,
         'header': 'Manage Stocks',

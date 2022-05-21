@@ -1,9 +1,10 @@
 {% extends 'base_pos.html' %}
-{% load crispy_forms_tags %}
 
 {% block body %}
 <div class="row">
+      
       <div class="card col-6 ml-2 mr-2">
+        {% if refund_order %}
               <div class="card-body">
                   <div class="form-group">
                     <div class="mb-4">
@@ -18,7 +19,6 @@
                             <th class="text-center">Qty to return</th>
                             <th></th>
                             <th class="text-center">Total</th>
-                            <th class="text-right">Restock Inventory</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -37,16 +37,14 @@
                             <td></td>
                             {% endif %}
                             <td class="text-right">{{ordered_item.return_amount}}</td>
-                            <td class="text-center"> <input type="checkbox" name="active" class="checkboxinput" id="id_active" > </td>
+
                           </tr>
                           {% endfor %}
                           
                         <tr>
                             <td colspan="6" class="font-w700 text-uppercase text-right bg-body-light">Total Due</td>
-                            <td class="font-w700 text-right bg-body-dark" >{{refund_order2.refund_order_total}}</td>
-                            <td></td>
+                            <td class="font-w700 text-right bg-body-dark" >{{refund_order.refund_order_total}}</td>
                         </tr>
-                          
                         </tbody>
                         {% else %}
                         <div class="card-body text-center">
@@ -62,17 +60,29 @@
                     </div>
                   </div>
               {% if refund_order_items %}
-              <div class="modal-footer justify-content-between">
-                <button type="button" class="btn btn-lg btn-default" data-dismiss="modal">Close</button>
-                <a data-toggle="modal" data-target="#refundModal"><button type="button" class="btn btn-lg btn-warning" data-dismiss="modal">Refund</button> </a>
+              <div class="modal-footer">
+                <div class="row">
+                  <div class="col-12">
+                    {% if refund_order.refunded == False and refund_order.total_refunded_amount > refund_order.default_amount_paid %}
+                    <a href="{% url 'complete_refund' %}"><button type="button" class="btn btn-lg btn-primary" data-dismiss="modal">Complete Refund</button> </a>
+                    {% endif %}
+                  </div>
+                  <div class="col-6 mr-1">
+                    {% if refund_order.refunded == False and refund_order.balance_to_refund > refund_order.default_amount_paid %}
+                    <a data-toggle="modal" data-target="#refundModal"><button type="button" class="btn btn-lg btn-warning" data-dismiss="modal">Refund</button> </a>
+                    {% endif %}
+                  </div>
+                  
+                </div>
               </div>
               {% else %}
               {% endif %}
               </div>
+              {% endif %}
       </div>
+      
 
       <div class="card col-4 ml-2">
-       
         <div class="card-body">
             <div class="form-group">
               <div class="mb-4">
@@ -89,14 +99,16 @@
                   </thead>
                   <tbody>
                     {% for ordered_item in paid_order.items.all %}
-                    <tr >
-                      
+                    <tr>
                       <td>{{forloop.counter}}</td>
+                      {% if refund_order %}
                       <td><a href="{% url 'add_to_refund' ordered_item.id %}">{{ordered_item.item}}</a></td>
+                      {% else %}
+                      <td>{{ordered_item.item}}</td>
+                      {% endif %}
                       <td>{{ordered_item.ordered_item_price}}</td>
                       <td class="text-center">{{ordered_item.quantity}}</td>
                       <td class="text-right">{{ordered_item.ordered_items_total}}</td>
-                
                     </tr>
                     {% endfor %}
                     
@@ -117,14 +129,28 @@
             <div class="modal-footer justify-content-between">
               <h4 class="modal-title">{{paid_order.get_code}} : {{paid_order.customer}} </h4> 
               {% if refund_order %}
-              <a href="{% url 'cancel_refund_order' refund_order2.id %}"><button class="btn btn-lg btn-default">Cancel Refund</button> </a>
+              <a href="{% url 'cancel_refund_order' refund_order.id %}"><button class="btn btn-lg btn-default">Cancel Refund</button> </a>
               {% else %}
               <a href="{% url 'create_refund_order' %}"><button class="btn btn-lg btn-warning">Open Refund Order</button> </a>
               {% endif%}
             </div>
             
         </div>
-      
       </div>
 </div>
+
+
+<script>
+  $('#restock').change(function() {
+  if ($(this).is(':checked')) {
+    console.log("Checkbox is checked..")
+  } else {
+    console.log("Checkbox is not checked..")
+  }
+});
+
+</script>
+
 {% endblock %}
+
+

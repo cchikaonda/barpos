@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+
+{% block title %}
+
+{% endblock title %}
+
+{% block content %}
+
+<div id="spinner-box" class="text-center mt-3"> 
+    <div class="fa fa-spinner fa-spin fa-fw" role="status">
+    </div>
+    <span v-if="progress">Loading...</span>
+</div>
+
+<!-- /.card-header -->
+
+<div id="page-content" class="card-body not-visible">
+  <div class="card-body">
+    <table class="table table-bordered table-striped" id="inventory_quantity_table">
+      <thead >
+        <tr>
+            <th>ID</th>
+            <th >Item</th>
+            <th>Description</th>
+            <th>Unit</th>
+            <th class="text-right">Price</th>
+            <th>Category</th>
+            <th class="text-center">Qty at Hand</th>
+            <th class="text-right">Expected Revenue</th>
+        </tr>
+      </thead>
+      <tbody>
+          {% for items in items %}
+          <tr>
+              <td>{{ forloop.counter }}</td>
+              <td>{{ items.item_name }}</td>
+              <td>{{ items.item_description }}</td>
+              <td>{{ items.unit }}</td>
+              <td class="text-right">{{ items.price }}</td>
+              <td>{{ items.category }}</td>
+              <td class="text-center">{{ items.quantity_at_hand }}</td>
+              <td class="text-right">{{items.get_expected_revenue}}</td>
+          </tr>
+          {% endfor %}
+          <tr>
+              <td colspan="7" class="text-right">TOTAL EXPECTED REVENUE</td>
+              <td class="text-right">{{expected_sum_items_cost}}</td>
+          </tr>
+          
+      </tbody>
+    </table>  
+  </div> 
+  <!-- /.card-body -->
+</div>
+
+{% endblock content %}
