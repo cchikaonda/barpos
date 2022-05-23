@@ -525,6 +525,7 @@ $(document).ready(function(){
 				if(data.form_is_valid){
 					$('#expenses-table tbody').html(data.expense_list);
 					$('#modal-expense').modal('hide');
+					location.reload();
 				} else {
 					$('#modal-expense .modal-content').html(data.html_form)
 				}
@@ -539,7 +540,7 @@ $(document).ready(function(){
 
 	//update
 	$('#expenses-table').on("click",".show-form-update",ShowForm);
-	$('#modal-quotation').on("submit",".update-form",SaveForm)
+	$('#modal-expense').on("submit",".update-form",SaveForm)
 
 	//delete
 	$('#expenses-table').on("click",".show-form-delete",ShowForm);

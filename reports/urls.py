@@ -16,6 +16,7 @@ urlpatterns = [
     path('custom_range_refund_report', custom_range_refund_report, name = 'custom_range_refund_report'),
 
     path('profit_report', profit_report, name='profit_report'),
+    path('custom_range_profit_report',custom_range_profit_report, name = 'custom_range_profit_report'),
     
 
     

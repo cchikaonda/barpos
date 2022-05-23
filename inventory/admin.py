@@ -49,7 +49,7 @@ admin.site.register(Unit, UnitAdmin)
 
 class ItemAdmin(admin.ModelAdmin):
     list_display = (
-        'barcode','item_name', 'price', 'selling_price', 'discount_price',
+        'barcode','item_name','get_cost_price','cost_price', 'get_total_cost_price','total_cost_price','price', 'selling_price', 'discount_price',
         'category',
         'item_description', 'slug','quantity_at_hand', 'active', 'unit','image'
         )

@@ -49,8 +49,8 @@ def save_all_expenses(request, form, template_name):
             form.save()
             data['form_is_valid'] = True
             expenses =  Expense.objects.all()
-            data['expense_list'] = render_to_string('expenses/expense_list_2.html',{'expenses': expenses,})
             messages.success(request, "Expense Processed!")
+            data['expense_list'] = render_to_string('expenses/expense_list_2.html',{'expenses': expenses,})
         else:
             data['form_is_valid'] = False
     context = {
@@ -62,31 +62,32 @@ def save_all_expenses(request, form, template_name):
 @login_required
 def expense_create(request):
     if request.method == 'POST':
-        form = AddExpenseForm(request.POST, initial={"paid_by": request.user.full_name})
+        form = AddExpenseForm(request.POST, initial={"paid_by": request.user,})
     else:
-        form = AddExpenseForm(initial={"paid_by": request.user.full_name})
+        form = AddExpenseForm(initial={"paid_by": request.user})
     return save_all_expenses(request, form, 'expenses/expense_create.html')
 
 @login_required
 def expense_update(request, id):
     expense = get_object_or_404(Expense, id=id)
     if request.method == 'POST':
-        form = AddExpenseForm(request.POST, instance=expense, initial={"paid_by": expense.paid_by.full_name})
+        form = AddExpenseForm(request.POST, instance=expense)
     else:
-        form = AddExpenseForm(instance=expense, initial={"paid_by": expense.paid_by.full_name})
+        form = AddExpenseForm(instance=expense)
     return save_all_expenses(request, form, 'expenses/expense_update.html')
 
 @login_required
 def expense_delete(request, id):
     data = dict()
-    item = get_object_or_404(Expense, id=id)
+    expense = get_object_or_404(Expense, id=id)
     if request.method == "POST":
-        item.delete()
+        expense.delete()
         data['form_is_valid'] = True
         expenses = Expense.objects.all()
+        messages.success(request, str(expense) + ' ' +  "Expense Deleted Successfully!")
         data['expense_list'] = render_to_string('expenses/expense_list_2.html', {'expenses': expenses})
     else:
-        context = {'item': item}
-        data['html_form'] = render_to_string('expenses/item_delete.html', context, request=request)
+        context = {'expense': expense}
+        data['html_form'] = render_to_string('expenses/expense_delete.html', context, request=request)
     return JsonResponse(data)
 

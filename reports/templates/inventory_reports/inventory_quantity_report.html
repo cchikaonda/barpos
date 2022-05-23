@@ -47,6 +47,26 @@
               <td colspan="7" class="text-right">TOTAL EXPECTED REVENUE</td>
               <td class="text-right">{{expected_sum_items_cost}}</td>
           </tr>
+          <tr>
+            <td colspan="7" class="text-right">COST OF GOODS(COG)</td>
+            <td class="text-right">{{sum_cost_of_goods}}</td>
+          </tr>
+          <tr>
+            <td colspan="7" class="text-right">EXPECTED PROFIT/LOSS</td>
+            {% if expected_profit.amount > 0.0 %}
+            <td class="text-right">
+              <span class="text-success">
+                <i class="fas fa-arrow-up"></i> {{expected_profit}}
+              </span>
+            </td>
+            {% else %}
+            <td class="text-right">
+              <span class="text-danger">
+                <i class="fas fa-arrow-down"></i> {{expected_profit}}
+              </span>
+            </td>
+            {% endif %}
+          </tr>
           
       </tbody>
     </table>  

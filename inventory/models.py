@@ -61,13 +61,14 @@ class ItemCategory(models.Model):
     def get_all_item_categories():
         return ItemCategory.objects.all()
 
-
 class Item(models.Model):
     item_name = models.CharField(max_length=100)
     item_description = models.CharField(max_length=100)
     unit = models.ForeignKey(Unit, on_delete=models.CASCADE)
     barcode = models.IntegerField(null=False, unique=True)
     image = models.ImageField(default="ecom_product6_b.png", upload_to='items/', null=True, blank=True)
+    cost_price = MoneyField(max_digits=14, decimal_places=2, default_currency='MWK', default=0)
+    total_cost_price = MoneyField(max_digits=14, decimal_places=2, default_currency='MWK', default=0)
     price = MoneyField(max_digits=14, decimal_places=2, default_currency='MWK')
     discount_price = MoneyField(max_digits=14, null=True, blank=True, decimal_places=2, default_currency='MWK')
     category = models.ForeignKey(ItemCategory, on_delete=models.CASCADE)
@@ -84,9 +85,23 @@ class Item(models.Model):
             return self.discount_price
         else:
             return self.price
+
+    def get_total_cost_of_items(self):
+        return self.get_cost_price * self.quantity_at_hand
             
     def get_expected_revenue(self):
         return self.selling_price() * self.quantity_at_hand
+    
+    @property
+    def get_cost_price(self):
+        stock = Stock.objects.filter(item = self.id)
+        return stock.last().ordered_price
+    
+    @property
+    def get_total_cost_price(self):
+        return self.get_cost_price * self.quantity_at_hand
+    
+
 
     
     @staticmethod
@@ -179,6 +194,9 @@ class Stock(models.Model):
 @receiver(post_save, sender=Stock)
 def update_quantity_at_hand_in_inventory(sender, instance, **kwargs):
     instance.previous_quantity = get_item_quantity_at_hand(instance)
+    instance.item.cost_price = instance.item.get_cost_price
+    instance.item.total_cost_price = instance.item.get_total_cost_price
+    instance.item.save()
 
 
 

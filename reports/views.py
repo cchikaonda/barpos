@@ -1,9 +1,11 @@
 from enum import unique
+from unicodedata import category
 from django.db.models.functions.datetime import TruncWeek
 from django.shortcuts import render,redirect, get_object_or_404
 from rest_framework.serializers import Serializer
+from expenses.models import Expense, ExpenseCategory
 from inventory.models import ItemCategory, Unit, Item, Stock
-from pos.models import Customer, OrderItem, Order, Payment
+from pos.models import Customer, OrderItem, Order, Payment, MoneyOutput
 from django.contrib import messages
 from constance import config
 from django.utils import timezone
@@ -32,10 +34,12 @@ from rest_framework import viewsets
 from rest_framework import permissions
 from accounts.templatetags import get_key_from_dictionary
 from djmoney.contrib.django_rest_framework import MoneyField
-from django.db.models import AutoField,IntegerField,FloatField,ExpressionWrapper, F, DecimalField, Count, Sum
+from django.db.models import AutoField,IntegerField,FloatField,ExpressionWrapper, F, DecimalField, Count, Sum, Max
 
 from djmoney.models.managers import understands_money
 from inventory import views as inventory_views
+
+from django.db.models.functions import Greatest
 
 @login_required
 def reports_dashboard(request):
@@ -242,11 +246,6 @@ def is_valid_item_category(param):
 def is_valid_queryparam(param):
     return param != '' and param is not None
 
-# def get_todays_total_sales():
-#     today_date = timezone.now().date()
-#     todays_sales = Order.objects.filter(ordered=True).filter(order_date__gte=today_date)
-#     todays_ordered_items = OrderItem.objects.filter(ordered = True).filter(ordered_time__gte = today_date).order_by('ordered_time')
-#     return todays_ordered_items
 
 def get_todays_total_sales():
     today_date = timezone.now().date()
@@ -390,12 +389,8 @@ def sales_report(request):
 
             sum_total_vat = Money(0.0, 'MWK')
             orders = Order.objects.filter(ordered = True, updated_at__range = [seven_days_b4, date_today])
-            print(orders.count())
             for order in orders:
-                print(order.get_code())
                 sum_total_vat += order.vat_cost
-                print(order.vat_cost)
-                print(sum_total_vat)
             
         elif report_period == 4:
             ordered_items= last_30_days_ordered_items(item_cat)
@@ -822,21 +817,30 @@ def sales_report_data(request):
 def inventory_quantity_report(request):
     items = Item.get_all_items()
 
-    expected_sum_items_cost = 0
+    expected_sum_items_cost = Money(0.0, 'MWK')
+    sum_cost_of_goods = Money(0.0, 'MWK')
     for item in items:
         expected_sum_items_cost += item.get_expected_revenue()
+        sum_cost_of_goods += item.get_total_cost_of_items()
+
+    expected_profit = expected_sum_items_cost - sum_cost_of_goods
+
 
     item_cats = ItemCategory.get_all_item_categories()
     item_cat_id = request.GET.get('category')
   
     if item_cat_id != None:
         items = Item.get_all_items_by_category_id(item_cat_id)
+    
+
     context = {
         'items': items,
         'header': 'Inventory quantity report',
         'item_cats': item_cats,
         'config':config,
         'expected_sum_items_cost':expected_sum_items_cost,
+        'sum_cost_of_goods':sum_cost_of_goods,
+        'expected_profit':expected_profit,
     }
     return render(request, 'inventory_reports/inventory_quantity_report.html', context)
 
@@ -958,7 +962,6 @@ def refund_report(request):
         "sum_refunded_items_count":sum_refunded_items_count,
         "net_total_sales":net_total_sales,
         "report_time":report_time,
-        # "refund_payment_options":refund_payment_options,
         "total_cash_refund":total_cash_refund,
         "total_bank_refund":total_bank_refund,
         "total_airtel_refund":total_airtel_refund,
@@ -1121,10 +1124,277 @@ def last_month_refunded_items(category):
 
 
 def profit_report(request):
+    today_start_day = datetime.now()
+    item_cat = "All Categories"
+    report_period = "All Days"
+    ordered_items = all_days_sales(report_period)
+
+    total_cost_items_ordered = Money('0.0', 'MWK')
+
+    item_categories = ItemCategory.objects.all().order_by('category_name')
+
+    today = timezone.now().date()
+    report_time = timezone.now()
+    yesterday = today-timedelta(days=1)
+
+    if request.method == "POST":
+        item_cat = request.POST.get('item_categories_option')
+        report_period = request.POST.get('report_period')
+        report_period = int(report_period)
+        if report_period == 777:
+            ordered_items = all_days_sales(item_cat)
+            report_period = "All Days"
+            expenses = Expense.objects.all()
+            total_item_sold = get_summery_item_sales_all_days(today_start_day, item_cat)
+
+        elif report_period == 1:
+            total_item_sold = get_summery_item_sales_today(item_cat)
+            ordered_items = todays_ordered_items(item_cat)
+            report_period = "Today"
+            expenses = Expense.objects.filter(created_at__gte = today)
+            
+        elif report_period == 2:
+            total_item_sold = get_summery_item_sales_yesterday(item_cat)
+            ordered_items = yesterday_ordered_items(item_cat)
+            report_period = "Yesterday"
+            date_today = datetime.now().date()
+            expenses = Expense.objects.filter(created_at__gte = yesterday,created_at__lt = date_today)
+        
+        elif report_period == 3:
+            total_item_sold = get_summery_item_sales_last_7_days(item_cat)
+            ordered_items = last_7_days_ordered_items(item_cat)
+            report_period = "Last 7 Days"
+            date_today = datetime.now().date()
+            seven_days_b4 = date_today-timedelta(days=7)
+            expenses = Expense.objects.filter(created_at__range = [seven_days_b4, date_today])
+            
+        elif report_period == 4:
+            total_item_sold = get_summery_item_sales_last_30_days(item_cat)
+            ordered_items= last_30_days_ordered_items(item_cat)
+            report_period = "Last 30 Days"
+            date_today = datetime.now().date()
+            thirty_days_b4 = date_today-timedelta(days=30)
+            expenses = Expense.objects.filter(created_at__range = [thirty_days_b4, date_today])
+        
+        elif report_period == 5:
+            total_item_sold = get_summery_item_sales_this_month(item_cat)
+            ordered_items = this_month_ordered_items(item_cat)
+            report_period = "This Month"
+            today = datetime.now()
+            this_month_firstday = datetime.now().date().replace(day=1)
+            expenses = Expense.objects.filter(created_at__range = [this_month_firstday, today])
+    
+        elif report_period == 6:
+            total_item_sold = get_summery_item_sales_last_month(item_cat)
+            ordered_items = last_month_ordered_items(item_cat)
+            report_period = "Last Month"
+
+            today = datetime.now().date()
+            this_month_firstday = today.replace(day=1)
+            last_monthlastday = this_month_firstday - timedelta(days=1)
+            last_monthlastday2 = last_monthlastday
+            last_monthfirstday = last_monthlastday2.replace(day=1)
+
+            expenses = Expense.objects.filter(created_at__range = [last_monthfirstday, last_monthlastday])
+            
+    else:
+        expenses = Expense.objects.all()
+        total_item_sold = get_summery_item_sales_all_days(today_start_day, item_cat)
+        
+    sum_expenses = Money(0.0, 'MWK')
+    for expense in expenses:
+        sum_expenses += expense.amount
+
+    sum_ordered_items_count = 0
+    total_cost_items_ordered = Money(0.0, 'MWK')
+    total_value_items_ordered = Money(0.0, 'MWK') 
+    for ordered_items_count in ordered_items:
+        sum_ordered_items_count += ordered_items_count.quantity
+        total_cost_items_ordered += ordered_items_count.ordered_items_total
+        total_value_items_ordered += ordered_items_count.quantity * ordered_items_count.item.cost_price
+    
+    
+    gross_profit = get_profit(sum_expenses, total_cost_items_ordered, total_value_items_ordered )
+    total_value_items_ordered += sum_expenses
+
     context = {
         "header":"Profit report",
+        "item_cat":item_cat,
+        "report_period":report_period,
+        "item_categories":item_categories,
+        "ordered_items":ordered_items,
+        "total_item_sold":total_item_sold,
+        "total_value_items_ordered":total_value_items_ordered,
+        "expenses":expenses,
+        "gross_profit":gross_profit,
+        "total_cost_items_ordered":total_cost_items_ordered,
+        "report_time":report_time,
+        "sum_ordered_items_count":sum_ordered_items_count,
     }
-    return render(request, 'profit_report.html', context)
+    return render(request, 'profit_reports/profit_report.html', context)
+
+def get_summery_item_sales_all_days(todays_date, item_cat):
+    category = item_cat
+    todays_date = todays_date
+    category_id = str(category)
+    get_item_cat = ItemCategory.objects.filter(category_name = category_id)
+    if get_item_cat.exists():
+        item_cat_id = ItemCategory.objects.get(category_name = category_id)
+        sales = Item.objects.filter(orderitem__ordered_time__lte = todays_date).filter(category = item_cat_id.id).values('item_name').annotate(total_quantity=Sum('orderitem__quantity')).annotate(sales_total = Sum('orderitem__ordered_items_total', output_field = MoneyOutput() )).annotate(cost_of_items = (Sum(F('orderitem__quantity') * F('cost_price'), output_field = MoneyOutput()))).annotate(profit = F('sales_total') - F('cost_of_items')) 
+    else:
+        sales = Item.objects.filter(orderitem__ordered_time__lte = todays_date).values('item_name').annotate(total_quantity=Sum('orderitem__quantity')).annotate(sales_total = Sum('orderitem__ordered_items_total', output_field = MoneyOutput() )).annotate(cost_of_items = (Sum(F('orderitem__quantity') * F('cost_price'), output_field = MoneyOutput()))).annotate(profit = F('sales_total') - F('cost_of_items')) 
+    return sales
+
+def get_summery_item_sales_today(category):
+    today = timezone.now().date()
+    category_id = str(category)
+    get_item_cat = ItemCategory.objects.filter(category_name = category_id)
+    if get_item_cat.exists():
+        item_cat_id = ItemCategory.objects.get(category_name = category_id)
+        return Item.objects.filter(category = item_cat_id.id, orderitem__ordered_time__gte = today).values('item_name').annotate(total_quantity=Sum('orderitem__quantity')).annotate(sales_total = Sum('orderitem__ordered_items_total', output_field = MoneyOutput() )).annotate(cost_of_items = (Sum(F('orderitem__quantity') * F('cost_price'), output_field = MoneyOutput()))).annotate(profit = F('sales_total') - F('cost_of_items')) 
+    else:
+        return Item.objects.filter(orderitem__ordered_time__gte = today).values('item_name').annotate(total_quantity=Sum('orderitem__quantity')).annotate(sales_total = Sum('orderitem__ordered_items_total', output_field = MoneyOutput() )).annotate(cost_of_items = (Sum(F('orderitem__quantity') * F('cost_price'), output_field = MoneyOutput()))).annotate(profit = F('sales_total') - F('cost_of_items'))
+
+def get_summery_item_sales_yesterday(category):
+    today = timezone.now().date()
+    yesterday = today -timedelta(days=1)
+    category_id = str(category)
+    get_item_cat = ItemCategory.objects.filter(category_name = category_id)
+    if get_item_cat.exists():
+        item_cat_id = ItemCategory.objects.get(category_name = category_id)
+        return Item.objects.filter(category = item_cat_id.id, orderitem__ordered_time__range = [yesterday, today]).values('item_name').annotate(total_quantity=Sum('orderitem__quantity')).annotate(sales_total = Sum('orderitem__ordered_items_total', output_field = MoneyOutput() )).annotate(cost_of_items = (Sum(F('orderitem__quantity') * F('cost_price'), output_field = MoneyOutput()))).annotate(profit = F('sales_total') - F('cost_of_items')) 
+    else:
+        return Item.objects.filter(orderitem__ordered_time__range = [yesterday, today]).values('item_name').annotate(total_quantity=Sum('orderitem__quantity')).annotate(sales_total = Sum('orderitem__ordered_items_total', output_field = MoneyOutput() )).annotate(cost_of_items = (Sum(F('orderitem__quantity') * F('cost_price'), output_field = MoneyOutput()))).annotate(profit = F('sales_total') - F('cost_of_items'))
+
+def get_summery_item_sales_last_7_days(category):
+    date_today = datetime.now().date()
+    seven_days_b4 = date_today-timedelta(days=7)
+    category_id = str(category)
+    get_item_cat = ItemCategory.objects.filter(category_name = category_id)
+    if get_item_cat.exists():
+        item_cat_id = ItemCategory.objects.get(category_name = category_id)
+        return Item.objects.filter(category = item_cat_id.id, orderitem__ordered_time__range = [seven_days_b4, date_today]).values('item_name').annotate(total_quantity=Sum('orderitem__quantity')).annotate(sales_total = Sum('orderitem__ordered_items_total', output_field = MoneyOutput() )).annotate(cost_of_items = (Sum(F('orderitem__quantity') * F('cost_price'), output_field = MoneyOutput()))).annotate(profit = F('sales_total') - F('cost_of_items')) 
+    else:
+        return Item.objects.filter(orderitem__ordered_time__range = [seven_days_b4, date_today]).values('item_name').annotate(total_quantity=Sum('orderitem__quantity')).annotate(sales_total = Sum('orderitem__ordered_items_total', output_field = MoneyOutput() )).annotate(cost_of_items = (Sum(F('orderitem__quantity') * F('cost_price'), output_field = MoneyOutput()))).annotate(profit = F('sales_total') - F('cost_of_items'))
+
+def get_summery_item_sales_last_30_days(category):
+    date_today = datetime.now().date()
+    thirty_days_b4 = date_today-timedelta(days=30)
+    category_id = str(category)
+    get_item_cat = ItemCategory.objects.filter(category_name = category_id)
+    if get_item_cat.exists():
+        item_cat_id = ItemCategory.objects.get(category_name = category_id)
+        return Item.objects.filter(category = item_cat_id.id, orderitem__ordered_time__range = [thirty_days_b4, date_today]).values('item_name').annotate(total_quantity=Sum('orderitem__quantity')).annotate(sales_total = Sum('orderitem__ordered_items_total', output_field = MoneyOutput() )).annotate(cost_of_items = (Sum(F('orderitem__quantity') * F('cost_price'), output_field = MoneyOutput()))).annotate(profit = F('sales_total') - F('cost_of_items')) 
+    else:
+        return Item.objects.filter(orderitem__ordered_time__range = [thirty_days_b4, date_today]).values('item_name').annotate(total_quantity=Sum('orderitem__quantity')).annotate(sales_total = Sum('orderitem__ordered_items_total', output_field = MoneyOutput() )).annotate(cost_of_items = (Sum(F('orderitem__quantity') * F('cost_price'), output_field = MoneyOutput()))).annotate(profit = F('sales_total') - F('cost_of_items'))
+
+def get_summery_item_sales_this_month(category):
+    today = datetime.now()
+    this_month_firstday = datetime.now().date().replace(day=1)
+    category_id = str(category)
+    get_item_cat = ItemCategory.objects.filter(category_name = category_id)
+    if get_item_cat.exists():
+        item_cat_id = ItemCategory.objects.get(category_name = category_id)
+        return Item.objects.filter(category = item_cat_id.id, orderitem__ordered_time__range = [this_month_firstday, today]).values('item_name').annotate(total_quantity=Sum('orderitem__quantity')).annotate(sales_total = Sum('orderitem__ordered_items_total', output_field = MoneyOutput() )).annotate(cost_of_items = (Sum(F('orderitem__quantity') * F('cost_price'), output_field = MoneyOutput()))).annotate(profit = F('sales_total') - F('cost_of_items')) 
+    else:
+        return Item.objects.filter(orderitem__ordered_time__range = [this_month_firstday, today]).values('item_name').annotate(total_quantity=Sum('orderitem__quantity')).annotate(sales_total = Sum('orderitem__ordered_items_total', output_field = MoneyOutput() )).annotate(cost_of_items = (Sum(F('orderitem__quantity') * F('cost_price'), output_field = MoneyOutput()))).annotate(profit = F('sales_total') - F('cost_of_items'))
+
+def get_summery_item_sales_last_month(category):
+    today = datetime.now().date()
+    this_month_firstday = today.replace(day=1)
+    last_monthlastday = this_month_firstday - timedelta(days=1)
+    last_monthlastday2 = last_monthlastday
+    last_monthfirstday = last_monthlastday2.replace(day=1)
+    category_id = str(category)
+    get_item_cat = ItemCategory.objects.filter(category_name = category_id)
+    if get_item_cat.exists():
+        item_cat_id = ItemCategory.objects.get(category_name = category_id)
+        return Item.objects.filter(category = item_cat_id.id, orderitem__ordered_time__range = [last_monthfirstday, last_monthlastday]).values('item_name').annotate(total_quantity=Sum('orderitem__quantity')).annotate(sales_total = Sum('orderitem__ordered_items_total', output_field = MoneyOutput() )).annotate(cost_of_items = (Sum(F('orderitem__quantity') * F('cost_price'), output_field = MoneyOutput()))).annotate(profit = F('sales_total') - F('cost_of_items')) 
+    else:
+        return Item.objects.filter(orderitem__ordered_time__range = [last_monthfirstday, last_monthlastday]).values('item_name').annotate(total_quantity=Sum('orderitem__quantity')).annotate(sales_total = Sum('orderitem__ordered_items_total', output_field = MoneyOutput() )).annotate(cost_of_items = (Sum(F('orderitem__quantity') * F('cost_price'), output_field = MoneyOutput()))).annotate(profit = F('sales_total') - F('cost_of_items'))
+
+def get_summery_item_sales_custom_dates(from_date, to_date, item_cat):
+    from_date = from_date
+    to_date = to_date
+    category = item_cat
+    category_id = str(category)
+    get_item_cat = ItemCategory.objects.filter(category_name = category_id)
+    if get_item_cat.exists():
+        item_cat_id = ItemCategory.objects.get(category_name = category_id)
+        sales = Item.objects.filter(orderitem__ordered_time__gte = from_date, orderitem__ordered_time__lte = to_date, category = item_cat_id.id).values('item_name').annotate(total_quantity=Sum('orderitem__quantity')).annotate(sales_total = Sum('orderitem__ordered_items_total', output_field = MoneyOutput() )).annotate(cost_of_items = (Sum(F('orderitem__quantity') * F('cost_price'), output_field = MoneyOutput()))).annotate(profit = F('sales_total') - F('cost_of_items')) 
+    else:
+        sales = Item.objects.filter(orderitem__ordered_time__gte = from_date, orderitem__ordered_time__lte = to_date).values('item_name').annotate(total_quantity=Sum('orderitem__quantity')).annotate(sales_total = Sum('orderitem__ordered_items_total', output_field = MoneyOutput() )).annotate(cost_of_items = (Sum(F('orderitem__quantity') * F('cost_price'), output_field = MoneyOutput()))).annotate(profit = F('sales_total') - F('cost_of_items')) 
+    return sales
+
+def custom_range_profit_report(request):
+    form = SearchBetweenTwoDatesForm()
+    item_cat = "All Categories"
+    report_period = "All Days"
+    report_time = timezone.now()
+
+    item_categories = ItemCategory.objects.all().order_by('category_name')
+
+    ordered_items = all_days_sales(0)
+    today_start_day = datetime.now()
+    
+    total_item_sold = all_days_sales(0)
+
+    if request.method == "POST":
+        if form.is_valid:
+            from_date = request.POST.get('start_date_time')
+            to_date = request.POST.get('end_date_time')
+            item_cat = request.POST.get('item_categories_option')
+
+        if is_valid_queryparam(from_date) and is_valid_queryparam(to_date):
+            category_id = item_cat
+            get_item_cat = ItemCategory.objects.filter(category_name = category_id)
+            if get_item_cat.exists():
+                total_item_sold = get_summery_item_sales_custom_dates(from_date, to_date, item_cat)
+                ordered_items = OrderItem.objects.filter(ordered_time__gte = from_date, ordered_time__lte = to_date, item__category__in = get_item_cat)
+                expenses = Expense.objects.filter(created_at__gte = from_date, created_at__lte = to_date)
+            else:
+                ordered_items = OrderItem.objects.filter(ordered_time__gte = from_date, ordered_time__lte = to_date)
+                expenses = Expense.objects.filter(created_at__gte = from_date, created_at__lte = to_date)
+                total_item_sold = get_summery_item_sales_custom_dates(from_date, to_date, item_cat)
+    else:
+        expenses = Expense.objects.all()
+        total_item_sold = get_summery_item_sales_all_days(today_start_day, item_cat)
+        
+    sum_expenses = Money(0.0, 'MWK')
+    for expense in expenses:
+        sum_expenses += expense.amount
+
+    sum_ordered_items_count = 0
+    total_cost_items_ordered = Money(0.0, 'MWK')
+    total_value_items_ordered = Money(0.0, 'MWK') 
+    for ordered_items_count in ordered_items:
+        sum_ordered_items_count += ordered_items_count.quantity
+        total_cost_items_ordered += ordered_items_count.ordered_items_total
+        total_value_items_ordered += ordered_items_count.quantity * ordered_items_count.item.cost_price
+    
+    gross_profit = get_profit(sum_expenses, total_cost_items_ordered, total_value_items_ordered )
+    total_value_items_ordered += sum_expenses
+    context = {
+        "header":"Profit report",
+        "item_cat":item_cat,
+        "report_period":report_period,
+        "item_categories":item_categories,
+        "ordered_items":ordered_items,
+        "total_item_sold":total_item_sold,
+        "total_value_items_ordered":total_value_items_ordered,
+        "expenses":expenses,
+        "gross_profit":gross_profit,
+        "total_cost_items_ordered":total_cost_items_ordered,
+        "report_time":report_time,
+        "sum_ordered_items_count":sum_ordered_items_count,
+        "form":form,
+    }
+    return render(request, 'profit_reports/custom_range_profit_report.html', context)
+
+def get_profit(expenses, sales_total, cost_of_sales):
+    profit = Money(0.0, 'MWK')
+    profit = sales_total - (expenses + cost_of_sales)
+    return profit
 
 
 

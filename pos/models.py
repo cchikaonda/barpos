@@ -409,6 +409,11 @@ class LayByOrders(models.Model):
     @property
     def get_order_balance(self):
         return self.get_order_price - self.get_sum_paid
+
+
+class MoneyOutput(MoneyField):
+    def from_db_value(self, value, expression, connection):
+        return Money(value, 'MWK')
     
     
 

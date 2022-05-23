@@ -232,6 +232,16 @@
 {% include 'all_js_imports.html' %}
 <!--End all Javascript imports-->
 
+<script>
+  {% for msg in messages %}
+      Swal.fire(
+      '{{msg}}',
+      '',
+      'success'
+    );
+  {% endfor %}
+</script>
+
 <!--Inventory Modals Module-->
 {% include 'inventory_modals.html' %}
 <!--End inventory Modals-->
