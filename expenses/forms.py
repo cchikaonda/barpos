@@ -9,7 +9,7 @@ from django.db import models
 
 from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.contrib.auth.models import Group, User
-from .models import *
+from .models import ExpenseCategory, Expense
 
 from bootstrap_datepicker_plus.widgets import DatePickerInput, TimePickerInput, DateTimePickerInput, MonthPickerInput, YearPickerInput
 
@@ -26,8 +26,9 @@ class AddExpenseForm(forms.ModelForm):
             'paid_by': forms.TextInput(attrs={'class': 'form-control', 'readonly':'readonly'})
         }
 
-class AddExpenseCategory(forms.ModelForm):
+class AddExpenseCategoryForm(forms.ModelForm):
     class Meta:
+        model = ExpenseCategory
         fields = ('category_name', 'category_description')
         widgets = {
             'category_description': forms.TextInput(attrs={'class': 'js-max-length form-control','max-length': '70', 'id': 'example-max-length4','placeholder': '50 chars limit..', 'data-always-show': 'True',

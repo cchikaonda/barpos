@@ -18,7 +18,6 @@ from django.dispatch import receiver
 from inventory.models import BatchNumber
 
 
-
 class ExpenseCategory(models.Model):
     category_name = models.CharField(max_length=50)
     category_description = models.CharField(max_length=100)
@@ -46,6 +45,21 @@ class Expense(models.Model):
     category = models.ForeignKey(ExpenseCategory, on_delete=models.CASCADE)
     paid_by = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     created_at = models.DateTimeField()
+    
 
     def __str__(self):
         return self.expense_name
+    
+    @staticmethod
+    def get_all_expense():
+        return Expense.objects.all().order_by('expense_name')
+
+    @staticmethod
+    def get_all_items_by_category_id(category_id):
+        if category_id:
+            return Expense.objects.filter(category=category_id).order_by('expense_name')
+        else:
+            return Expense.get_all_expense()
+    
+
+    

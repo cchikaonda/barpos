@@ -8,7 +8,14 @@
       {{expense_cat.category_description}}
     </td>
     <td>
-    </td>
+      <button type="button" class="btn btn-sm btn-light show-form-update" data-url="{% url 'expense_category_update' expense_cat.id %}" data-toggle="tooltip" title="Edit {{ expense_cat.category_name }} ">
+          <a class="fa fa-fw fa-pencil-alt"></a>
+      </button>
+     
+      <button type="button"  class="btn btn-sm btn-light show-form-delete" data-url="{% url 'expense_category_delete' expense_cat.id %}" data-toggle="tooltip" title="Delete {{ expense_cat.category_name }}">
+          <a class="fa fa-fw fa-times"> </a>
+      </button>
+  </td>
 </tr>
 
 {% endfor %}

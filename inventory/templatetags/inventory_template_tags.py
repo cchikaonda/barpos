@@ -69,3 +69,11 @@ def expense_category_count(user):
     if user.is_authenticated:
         qs = ExpenseCategory.objects.all().count()
     return qs
+
+
+@register.filter
+def get_all_items_by_category_id(category_id):
+    if category_id:
+        return Expense.objects.filter(category=category_id).order_by('expense_name')
+    else:
+        return Expense.get_all_expense()

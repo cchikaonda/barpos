@@ -127,16 +127,78 @@
         {% endif %}
       </tr>
       {% endfor %}
-      {% for expense in expenses %}
+      {% for expense in summery_expenses %}
       <tr class="text-bold">
-        <td>{{expense.expense_name}}</td>
+        <td>{{expense.category__category_name}} 
+          <a  class="btn btn-sm" data-toggle="modal" data-target="#expense_details{{expense.category__id}}">
+            <i class="fas fa-eye"> </i>
+          </a>
+
+
+                        <!--View Expenses Modal-->
+              <div class="modal fade" id="expense_details{{expense.category__id}}" >
+                <div class="modal-dialog modal-dialog-centered modal-xl">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h4 class="modal-title">{{expense.category__category_name}} Expense(s) </h4> 
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                      </button>
+                    </div>
+                    <div class="modal-body">  
+                        <div class="form-group">
+                          <div class="mb-4">
+                            <table class="table table-striped" >
+                              <thead>
+                                <tr>
+                                  <th>Expense Name</th>
+                                  <th>Description</th>
+                                  <th class="text-center">Date Created</th>
+                                  <th class="text-right">Payment Mode</th>
+                                  <th class="text-right">Amount</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                              {% for expense_list in expense_list %} 
+                                  {% for expense in summery_expenses %}
+                                  {% endfor %}
+                                  {% if expense_list.category__id == expense.category__id %}
+                                  <tr>
+                                    <td>{{expense_list.expense_name}}</td>
+                                    <td>{{expense_list.expense_description}}</td>
+                                    <td class="text-center">{{expense_list.created_at}}</td>
+                                    <td class="text-center">{{expense_list.payment_mode}}</td>
+                                    <td class="text-right">{{expense_list.amount}}</td>
+                                  {% endif %}
+                                 
+                              {% endfor %}
+                                <tr>
+                                    <td  colspan="4" class="font-w700 text-uppercase text-right bg-body-light">Total</td>
+                                    <td class="font-w700 text-right bg-body-dark" >{{expense.total_expense}}</td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                    <div class="modal-footer justify-content-between">
+                      <button type="button" class="btn btn-lg btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                  </div>
+                
+                  <!-- /.modal-content -->
+                </div>
+              </div>
+              <!--End View Bill Modal-->
+
+        </td>
         <td class="text-center bg-secondary"></td>
-        <td class="text-right">{{expense.amount}}</td>
+        <td class="text-right">{{expense.total_expense}}</td>
         <td class="text-right">MWK 0.00</td>
         <td class="text-right">
             <span >
-                -{{expense.amount}} <i class="fas fa-arrow-down"></i>
-            </span></td>
+                -{{expense.total_expense}} <i class="fas fa-arrow-down"></i>
+            </span>
+        </td>
       </tr>
       {% endfor %}
       <tr class="text-bold">
@@ -179,5 +241,7 @@
     </div>
   <!-- /.card-body -->
 </div>
+
+
 
 {% endblock content %}

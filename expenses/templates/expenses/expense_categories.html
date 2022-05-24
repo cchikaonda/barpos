@@ -12,12 +12,12 @@
               <div class="card-header">
                 <div class="block-header row">
 
-                  <div class="col-6">
-                    <button class="btn btn-primary show-form" data-url="{% url 'stock_create' %}"> <span class="fa fa-plus fa-1x"></span> Add New Expense Category</button>
+                  <div class="col-6 mb-4">
+                    <button class="btn btn-primary show-form" data-url="{% url 'expense_category_create' %}"> <span class="fa fa-plus fa-1x"></span> Add New Expense Category</button>
                   </div>
     
               </div>
-            <table class="table table-bordered table-striped" id="stock-table">
+            <table class="table table-bordered table-striped" id="expenses-category-table">
               <thead >
                 <tr>
                     <th>#</th>
@@ -39,7 +39,7 @@
   </div>
 </section>
 
-<div class="modal fade" id="modal-stock">
+<div class="modal fade" id="modal-expense-category">
   <div class="modal-dialog modal-lg">
     <div class="modal-content"></div>
   </div>

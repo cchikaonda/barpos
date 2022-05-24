@@ -2,9 +2,8 @@
 {% load crispy_forms_tags %}
 
 {% block body %}
-
 <!-- Content Wrapper. Contains page content -->
-<div class="content ml-2 mr-2 mt-2 mb-4">   
+<div class="row">   
   {% if unpaid_orders %}
   <div class="card mb-4 col-12">
     <div class="card-header bg-secondary">
@@ -330,10 +329,9 @@
         </tbody>
         </table>
     <div>
+    </div>
         
   </div>
     </div>
-  </div>
 </div>
-
 {% endblock %}

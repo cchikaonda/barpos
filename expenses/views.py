@@ -33,6 +33,57 @@ def expense_categories(request):
     return render(request, 'expenses/expense_categories.html', context)
 
 @login_required
+def save_all_expense_categories(request, form, template_name):
+    data = dict()
+    if request.method == 'POST':
+        if form.is_valid():
+            form.save()
+            data['form_is_valid'] = True
+            expense_categories =  ExpenseCategory.objects.all()
+            messages.success(request, "Expense Category Processed!")
+            data['expense_category_list'] = render_to_string('expenses/expense_categories_2.html',{'expense_categories': expense_categories,})
+        else:
+            data['form_is_valid'] = False
+    context = {
+        'form': form
+    }
+    data['html_form'] = render_to_string(template_name, context, request=request)
+    return JsonResponse(data)
+
+@login_required
+def expense_category_create(request):
+    if request.method == 'POST':
+        form = AddExpenseCategoryForm(request.POST)
+    else:
+        form = AddExpenseCategoryForm()
+    return save_all_expense_categories(request, form, 'expenses/expense_category_create.html')
+
+@login_required
+def expense_category_update(request, id):
+    expense_category = get_object_or_404(ExpenseCategory, id=id)
+    if request.method == 'POST':
+        form = AddExpenseCategoryForm(request.POST, instance=expense_category)
+    else:
+        form = AddExpenseCategoryForm(instance=expense_category)
+    return save_all_expense_categories(request, form, 'expenses/expense_category_update.html')
+
+@login_required
+def expense_category_delete(request, id):
+    data = dict()
+    expense_category = get_object_or_404(ExpenseCategory, id=id)
+    if request.method == "POST":
+        expense_category.delete()
+        data['form_is_valid'] = True
+        expense_categories = ExpenseCategory.objects.all()
+        messages.success(request, str(expense_category) + ' ' +  "Expense Category Deleted Successfully!")
+        data['expense_category_list'] = render_to_string('expenses/expense_categories_2.html', {'expense_categories': expense_categories})
+    else:
+        context = {'expense_category': expense_category}
+        data['html_form'] = render_to_string('expenses/expense_category_delete.html', context, request=request)
+    return JsonResponse(data)
+
+
+@login_required
 def expense_list(request):
     expenses = Expense.objects.all()
     context = {

@@ -1,9 +1,8 @@
 {% extends 'base_pos.html' %}
 
 {% block body %}
-<div class="row">
-      
-      <div class="card col-6 ml-2 mr-2">
+<div class="row ml-2">
+      <div class="card col-5">
         {% if refund_order %}
               <div class="card-body">
                   <div class="form-group">
@@ -64,12 +63,12 @@
                 <div class="row">
                   <div class="col-12">
                     {% if refund_order.refunded == False and refund_order.total_refunded_amount > refund_order.default_amount_paid %}
-                    <a href="{% url 'complete_refund' %}"><button type="button" class="btn btn-lg btn-primary" data-dismiss="modal">Complete Refund</button> </a>
+                    <a href="{% url 'complete_refund' %}"><button type="button" class="btn btn-lg btn-success" data-dismiss="modal">Complete Refund</button> </a>
                     {% endif %}
                   </div>
                   <div class="col-6 mr-1">
                     {% if refund_order.refunded == False and refund_order.balance_to_refund > refund_order.default_amount_paid %}
-                    <a data-toggle="modal" data-target="#refundModal"><button type="button" class="btn btn-lg btn-warning" data-dismiss="modal">Refund</button> </a>
+                    <a data-toggle="modal" data-target="#refundModal"><button type="button" class="btn btn-lg btn-primary" data-dismiss="modal">Pay</button> </a>
                     {% endif %}
                   </div>
                   
@@ -80,9 +79,21 @@
               </div>
               {% endif %}
       </div>
-      
+      <div class="card col-6 ml-2">
+        <div class="card-header">
+          <div class="row">
 
-      <div class="card col-4 ml-2">
+            <div class="col-6 text-left">
+              <h5>{{paid_order.get_code}} : {{paid_order.customer}} </h5> 
+            </div>
+
+            <div class="col-6 text-right">
+              <h5>Cashier: {{paid_order.user}}</h5> 
+            </div>
+            
+          </div>
+          
+        </div>
         <div class="card-body">
             <div class="form-group">
               <div class="mb-4">
@@ -126,12 +137,11 @@
               </div>
             </div>
                   
-            <div class="modal-footer justify-content-between">
-              <h4 class="modal-title">{{paid_order.get_code}} : {{paid_order.customer}} </h4> 
+            <div class="modal-footer justify-content-right">
               {% if refund_order %}
               <a href="{% url 'cancel_refund_order' refund_order.id %}"><button class="btn btn-lg btn-default">Cancel Refund</button> </a>
               {% else %}
-              <a href="{% url 'create_refund_order' %}"><button class="btn btn-lg btn-warning">Open Refund Order</button> </a>
+              <a href="{% url 'create_refund_order' %}"><button class="btn btn-lg btn-warning">Refund</button> </a>
               {% endif%}
             </div>
             

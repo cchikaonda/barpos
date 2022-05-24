@@ -1,0 +1,23 @@
+{% load crispy_forms_tags %}
+{{form.media}}
+<form method="post" data-url="{% url 'expense_category_create' %}" class="create-form">
+	{% csrf_token %}
+    <div class="modal-header bg-success">
+        <h4 class="modal-title ">ADD NEW EXPENSE CATEGORY</h4>
+    </div>
+	<div class="modal-body">
+		<div class="form-row">
+            <div class="form-group col-md-6 mb-0">
+                {{form.category_name|as_crispy_field}}
+            </div>
+            <div class="form-group col-md-6 mb-0">
+                {{form.category_description|as_crispy_field}}
+            </div>
+        </div>
+	</div>
+		
+    <div class="modal-footer block-content block-content-full text-right border-top">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-primary">add expense</button>
+    </div>
+</form>

@@ -1205,6 +1205,10 @@ def profit_report(request):
     for expense in expenses:
         sum_expenses += expense.amount
 
+    summery_expenses = get_sum_of_expenses_by_category(expenses)
+    expense_list = view_expense_cat_list(expenses)
+    print(expense_list)
+
     sum_ordered_items_count = 0
     total_cost_items_ordered = Money(0.0, 'MWK')
     total_value_items_ordered = Money(0.0, 'MWK') 
@@ -1225,11 +1229,12 @@ def profit_report(request):
         "ordered_items":ordered_items,
         "total_item_sold":total_item_sold,
         "total_value_items_ordered":total_value_items_ordered,
-        "expenses":expenses,
+        "summery_expenses":summery_expenses,
         "gross_profit":gross_profit,
         "total_cost_items_ordered":total_cost_items_ordered,
         "report_time":report_time,
         "sum_ordered_items_count":sum_ordered_items_count,
+        "expense_list":expense_list,
     }
     return render(request, 'profit_reports/profit_report.html', context)
 
@@ -1359,10 +1364,14 @@ def custom_range_profit_report(request):
     else:
         expenses = Expense.objects.all()
         total_item_sold = get_summery_item_sales_all_days(today_start_day, item_cat)
-        
+
+    expenses_by_cat = get_sum_of_expenses_by_category(expenses)
+
     sum_expenses = Money(0.0, 'MWK')
     for expense in expenses:
         sum_expenses += expense.amount
+    
+    
 
     sum_ordered_items_count = 0
     total_cost_items_ordered = Money(0.0, 'MWK')
@@ -1382,7 +1391,7 @@ def custom_range_profit_report(request):
         "ordered_items":ordered_items,
         "total_item_sold":total_item_sold,
         "total_value_items_ordered":total_value_items_ordered,
-        "expenses":expenses,
+        "expenses_by_cat":expenses_by_cat,
         "gross_profit":gross_profit,
         "total_cost_items_ordered":total_cost_items_ordered,
         "report_time":report_time,
@@ -1390,6 +1399,15 @@ def custom_range_profit_report(request):
         "form":form,
     }
     return render(request, 'profit_reports/custom_range_profit_report.html', context)
+
+def get_sum_of_expenses_by_category(expenses):
+    expenses_summery =  expenses.values('category__category_name','category__id').annotate(total_expense=Sum('amount', output_field = MoneyOutput()))
+    return expenses_summery
+
+def view_expense_cat_list(expenses):
+    expenses_summery =  expenses.values('category__id','expense_description','amount','expense_name','created_at','payment_mode')
+    return expenses_summery
+
 
 def get_profit(expenses, sales_total, cost_of_sales):
     profit = Money(0.0, 'MWK')

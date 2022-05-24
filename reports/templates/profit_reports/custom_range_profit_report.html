@@ -111,15 +111,15 @@
         {% endif %}
       </tr>
       {% endfor %}
-      {% for expense in expenses %}
+      {% for expense in expenses_by_cat %}
       <tr class="text-bold">
-        <td>{{expense.expense_name}}</td>
+        <td>{{expense.category__category_name}}</td>
         <td class="text-center bg-secondary"></td>
-        <td class="text-right">{{expense.amount}}</td>
+        <td class="text-right">{{expense.total_expense}}</td>
         <td class="text-right">MWK 0.00</td>
         <td class="text-right">
             <span >
-                -{{expense.amount}} <i class="fas fa-arrow-down"></i>
+                -{{expense.total_expense}} <i class="fas fa-arrow-down"></i>
             </span></td>
       </tr>
       {% endfor %}
