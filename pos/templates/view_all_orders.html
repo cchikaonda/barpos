@@ -149,6 +149,9 @@
           <th>Order ID</th>
           <th>Customer Name</th>
           <th>Total Bill</th>
+          <th>Amount Paid</th>
+          <th>Amount Refunded</th>
+          <th>Balance</th>
           <th>Date</th>
           <th>Cashier</th>
           <th>Action</th>
@@ -160,6 +163,9 @@
           <td>{{paid_order.get_code}}</td>
           <td tabindex="0" class="sorting_1">{{paid_order.customer}}</td>
           <td>{{paid_order.order_total_cost}}</td>
+          <td>{{paid_order.total_paid_amount}}</td>
+          <td>{{paid_order.amount_refunded}}</td>
+          <td>{{paid_order.get_balance_after_refund}}</td>
           <td>{{paid_order.created_at| date:"d/m/Y"}}, {{paid_order.created_at| date:"H:m:s"}}</td>
           <td>{{paid_order.user.full_name}}</td>
           <td class="project-actions text-left">
@@ -168,13 +174,6 @@
                 </i>
                 Order Items
             </a>
-            {% if request.user.is_admin == True %}
-            <a class="btn btn-warning btn-sm" href="{% url 'refund_order' paid_order.id %}">
-              <i class="fa fa-wallet">
-              </i>
-              Refund
-            </a>
-            {% endif %}
 
             <!--View Bill Modal-->
             <div class="modal fade" id="order_details{{paid_order.id}}">
@@ -187,10 +186,7 @@
                     </button>
                   </div>
                   <div class="modal-body">
-                    
-                    <form action="{% url 'add_payment' %}" method="post" >
-                      {% csrf_token %}
-                        
+                  
                       <div class="form-group">
                         <div class="mb-4">
                           <table class="table table-striped">
@@ -242,86 +238,15 @@
                   </div>
                   <div class="modal-footer justify-content-between">
                     <button type="button" class="btn btn-lg btn-default" data-dismiss="modal">Close</button>
+                    <a href="{% url 'refund_order' paid_order.id %}"><button type="button" class="btn btn-lg btn-warning"><i class="fa fa-undo-alt"></i> Refund</button> </a>
+                    <a href="{% url 'print_receipt_from_modal' paid_order.id %}"><button type="button" class="btn btn-lg btn-secondary"><i class="fa fa-print"></i> Receipt</button></a>
                   </div>
                 </div>
-              </form>
+        
                 <!-- /.modal-content -->
               </div>
             </div>
             <!--End View Bill Modal-->
-
-            <!--Refund Modal-->
-            <div class="modal fade" id="refund_order_details{{paid_order.id}}">
-              <div class="modal-dialog modal-dialog-centered modal-lg">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <h4 class="modal-title">{{paid_order.get_code}} : {{paid_order.customer}} </h4> 
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                      <span aria-hidden="true">&times;</span>
-                    </button>
-                  </div>
-                  <div class="modal-body">
-                    
-                    <form action="{% url 'add_payment' %}" method="post" >
-                      {% csrf_token %}
-                        
-                      <div class="form-group">
-                        <div class="mb-4">
-                          <table class="table table-striped">
-                            {% if paid_order.items.all %}
-                            <thead>
-                              <tr>
-                                <th>#</th>
-                                <th>Item</th>
-                                <th>Price</th>
-                                <th class="text-center">Ordered Qty</th>
-                                <th class="text-center">Qty to return</th>
-                                <th class="text-right">Total</th>
-                                <th class="text-right">Refund</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {% for ordered_item in paid_order.items.all %}
-                              <tr>
-                                <td>{{forloop.counter}}</td>
-                                <td>{{ordered_item.item}}</td>
-                                <td>{{ordered_item.price}}</td>
-                                <td class="text-center">{{ordered_item.quantity}}</td>
-                                <td class="text-center">{{ordered_item.quantity}}</td>
-                                <td class="text-right">{{ordered_item.get_total_amount}}</td>
-                                <td class="text-right"> <input type="checkbox" name="active" class="checkboxinput" id="id_active" > </td>
-                              </tr>
-                              {% endfor %}
-                              
-                            <tr>
-                                <td colspan="5" class="font-w700 text-uppercase text-right bg-body-light">Total Due</td>
-                                <td class="font-w700 text-right bg-body-dark" >{{paid_order.order_total_due}}</td>
-                            </tr>
-                              
-                            </tbody>
-                            {% else %}
-                            <div>No Items in Order!</div>
-                            {% endif %}
-                      
-                          </table>
-                          
-                        
-                        </div>
-                      </div>
-                      
-                  
-                  </div>
-                  <div class="modal-footer justify-content-between">
-                    <button type="button" class="btn btn-lg btn-default" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-lg btn-warning" data-dismiss="modal">Refund</button>
-                  </div>
-                </div>
-              </form>
-                <!-- /.modal-content -->
-              </div>
-            </div>
-            <!--End Refund Modal-->
-
           </td>
           
         </tr>

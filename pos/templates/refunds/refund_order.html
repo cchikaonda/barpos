@@ -17,6 +17,8 @@
                             <th></th>
                             <th class="text-center">Qty to return</th>
                             <th></th>
+                            <th></th>
+                            <th></th>
                             <th class="text-center">Total</th>
                           </tr>
                         </thead>
@@ -26,22 +28,29 @@
                             <td>{{forloop.counter}}</td>
                             <td>{{ordered_item.item.item.item_name}}</td>
                             <td>{{ordered_item.item.ordered_item_price}}</td>
-                            
-                            <td class="text-right"><a href="{% url 'remove_single_item_refund_order' ordered_item.item.id %}"><button class="btn btn-outline-info"><i class="fas fa-minus"></i></button></a></td>
-                            
-                            <td class="text-center">{{ordered_item.return_quantity}}</td>
-                            {% if ordered_item.initial_quantity > ordered_item.return_quantity %}
-                            <td class="text-left"><a href="{% url 'add_to_refund' ordered_item.item.id %}"><button class="btn btn-outline-info"><i class="fas fa-plus"></i></button></a></td>
+                            {% if refund_order.refunded == False and refund_order.total_refunded_amount == refund_order.default_amount_paid %}
+                              <td class="text-right"><a href="{% url 'remove_single_item_refund_order' ordered_item.item.id %}"><button class="btn btn-outline-info"><i class="fas fa-minus"></i></button></a></td>
+                              
+                              <td class="text-center">{{ordered_item.return_quantity}}</td>
+                              {% if ordered_item.initial_quantity > ordered_item.return_quantity %}
+                              <td class="text-left"><a href="{% url 'add_to_refund' ordered_item.item.id %}"><button class="btn btn-outline-info"><i class="fas fa-plus"></i></button></a></td>
+                              {% else %}
+                              <td></td>
+                              {% endif %}
                             {% else %}
                             <td></td>
+                            <td class="text-center">{{ordered_item.return_quantity}}</td>
+                            {% endif %}
+                            <td></td>
+                            <td></td>
+                            {% if refund_order.total_refunded_amount > refund_order.default_amount_paid  %}
+                              <td></td>
                             {% endif %}
                             <td class="text-right">{{ordered_item.return_amount}}</td>
-
                           </tr>
                           {% endfor %}
-                          
                         <tr>
-                            <td colspan="6" class="font-w700 text-uppercase text-right bg-body-light">Total Due</td>
+                            <td colspan="8" class="font-w700 text-uppercase text-right bg-body-light">Total Due</td>
                             <td class="font-w700 text-right bg-body-dark" >{{refund_order.refund_order_total}}</td>
                         </tr>
                         </tbody>
@@ -59,24 +68,53 @@
                     </div>
                   </div>
               {% if refund_order_items %}
-              <div class="modal-footer">
+              <div class="card-footer text-muted">
+                {% if refund_order %}
                 <div class="row">
-                  <div class="col-12">
+                  <div class="col-6" >
+                    {% if refund_order.total_refunded_amount > refund_order.default_amount_paid %}
+                    <p> <strong> REFUND INFORMATION</strong></p>
+                    <table class="table bordered">
+                      <tr>
+                        {% for payment in refund_order.payments.all %}
+                        <td>
+                          {{payment.payment_mode}}
+                        </td>
+                        <td class="text-right">
+                           {{payment.refund_amount}}
+                        </td>
+                        {% endfor %}
+                      </tr>
+                      <tr class="bg-info">
+                        <td>
+                          TOTAL REFUNDED
+                        </td>
+                        <td colspan="4" class="font-w700 text-uppercase text-right bg-body-light text-right">
+                          {{refund_order.total_refunded_amount}}
+                        </td>
+                      </tr>
+                    </table>
+                    {% endif %}
+                  </div>
+                  <div class="col-6">
                     {% if refund_order.refunded == False and refund_order.total_refunded_amount > refund_order.default_amount_paid %}
-                    <a href="{% url 'complete_refund' %}"><button type="button" class="btn btn-lg btn-success" data-dismiss="modal">Complete Refund</button> </a>
+                    <a href="{% url 'complete_refund' %}"><button type="button" class="btn btn-lg btn-success" data-dismiss="modal" style="float: right;">Complete Refund</button> </a>
                     {% endif %}
-                  </div>
-                  <div class="col-6 mr-1">
                     {% if refund_order.refunded == False and refund_order.balance_to_refund > refund_order.default_amount_paid %}
-                    <a data-toggle="modal" data-target="#refundModal"><button type="button" class="btn btn-lg btn-primary" data-dismiss="modal">Pay</button> </a>
+                    <a data-toggle="modal" data-target="#refundModal"><button type="button" class="btn btn-lg btn-primary" data-dismiss="modal" style="width: 150px; float: right;">Pay</button> </a>
                     {% endif %}
                   </div>
-                  
                 </div>
+                {% endif %}
               </div>
+              
               {% else %}
               {% endif %}
               </div>
+              {% else %}
+                <div>
+                
+                </div>
               {% endif %}
       </div>
       <div class="card col-6 ml-2">
@@ -122,12 +160,6 @@
                       <td class="text-right">{{ordered_item.ordered_items_total}}</td>
                     </tr>
                     {% endfor %}
-                    
-                  <tr>
-                      <td colspan="4" class="font-w700 text-uppercase text-right bg-body-light">Total Due</td>
-                      <td class="font-w700 text-right bg-body-dark" >{{paid_order.order_total_cost}}</td>
-                  </tr>
-                    
                   </tbody>
                   {% else %}
                   <div>No Items in Order!</div>
@@ -136,14 +168,45 @@
                 </table>
               </div>
             </div>
+
+            <div class="card-footer text-muted">
+              <div class="row">
+                <div class="col-6" >
+                  <p> <strong> PAYMENT INFORMATION</strong></p>
+                  <table class="table bordered">
+                    {% for payment in paid_order.payments.all %}
+                    <tr>
+                      <td>
+                        {{payment.payment_mode}}
+                      </td>
+                      <td class="text-right">
+                         {{payment.paid_amount}}
+                      </td>
+                    </tr>
+                    {% endfor %}
+                    <tr class="bg-dark">
+                      <td>
+                        TOTAL PAID
+                      </td>
+                      <td colspan="4" class="font-w700 text-uppercase text-right bg-body-light text-right">
+                        {{paid_order.total_paid_amount}}
+                      </td>
+                    </tr>
+                  </table>
+                </div>
+                <div class="col-6">
+                  {% if refund_order %}
+                    <a href="{% url 'cancel_refund_order' refund_order.id %}"><button class="btn btn-lg btn-warning" style="float: right;"> <i class="fa fa-times"></i> Cancel Refund</button> </a>
+                  {% else %}
+                    <a href="{% url 'create_refund_order' %}"><button class="btn btn-lg btn-secondary ml-2" style="float: right;"><i class="fa fa-print"></i> Receipt</button> </a>
+                    <a href="{% url 'create_refund_order' %}"><button class="btn btn-lg btn-warning" style="float: right;"><i class="fa fa-undo-alt"></i> Refund</button> </a>
+                  {% endif%}
                   
-            <div class="modal-footer justify-content-right">
-              {% if refund_order %}
-              <a href="{% url 'cancel_refund_order' refund_order.id %}"><button class="btn btn-lg btn-default">Cancel Refund</button> </a>
-              {% else %}
-              <a href="{% url 'create_refund_order' %}"><button class="btn btn-lg btn-warning">Refund</button> </a>
-              {% endif%}
+                </div>
+              </div>
             </div>
+                  
+            
             
         </div>
       </div>

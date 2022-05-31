@@ -18,6 +18,8 @@ urlpatterns = [
     path('receipt/', receipt, name='receipt'),
     path('final_receipt/', final_receipt, name='final_receipt'),
     path('print_receipt_only/', print_receipt_only, name='print_receipt_only'),
+    path('print_receipt_from_modal/<int:id>/', print_receipt_from_modal, name='print_receipt_from_modal'),
+
     
     path('add_payment', add_payment, name = 'add_payment'),
     path('change_order_type', change_order_type, name = 'change_order_type'),

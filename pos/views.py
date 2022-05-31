@@ -544,6 +544,29 @@ def print_receipt_only(request):
     return render(request, 'receipt.html', context)
 
 @login_required
+def print_receipt_from_modal(request, id):
+    now = datetime.now()
+
+    order_id = id
+    order = Order.objects.get(id = order_id)
+
+    q = {" Order Number: " + str(order_id), " Customer:" + str(order.customer) + " Cel: " + str(order.customer.phone_number)}
+
+    factory = qrcode.image.svg.SvgImage
+    img = qrcode.make(q, image_factory=factory, box_size=5)
+    stream = BytesIO()
+    img.save(stream)
+    svg = stream.getvalue().decode()
+    request.session['opened_order'] = order.id
+    context = {
+        'config':config,
+        'order':order,
+        'svg':svg,
+        'now':now,
+    }
+    return render(request, 'receipt.html', context)
+
+@login_required
 def load_orders(request):
     unpaid_orders = Order.objects.filter(ordered=False)
     context = {
@@ -615,11 +638,12 @@ def view_my_orders(request):
 
 @login_required
 def view_all_orders(request):
-    customers = Customer.objects.all()
     paid_orders = Order.objects.filter(ordered = True)
-    refund_order = RefundOrder.objects.all()
+    refund_orders = RefundOrder.objects.all()
     unpaid_orders = Order.objects.filter(ordered = False)
-    count_my_customers = Order.objects.filter(ordered = False).count()
+    # count_my_customers = Order.objects.filter(ordered = False).count()
+
+    # orders_with_refunds = Order.objects.filter(refundorder__in = refund_orders)
 
     
     sum_unpaid_orders = 0.0
@@ -631,15 +655,12 @@ def view_all_orders(request):
         sum_unpaid_orders += unpaid_order.order_total_due()
 
     context = {
-        'refund_order':refund_order,
-        'customers':customers,
+        'refund_orders':refund_orders,
         'config':config,
         'paid_orders':paid_orders,
         'unpaid_orders':unpaid_orders,
         'sum_unpaid_orders':sum_unpaid_orders,
         'sum_paid_orders':sum_paid_orders,
-        'count_my_customers':count_my_customers,
-
     }
     return render(request, "view_all_orders.html", context)
 

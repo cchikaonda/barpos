@@ -56,35 +56,7 @@
     color: #666;
     line-height: 1em;
   }
-  /* #invoice-POS #top,
-  #invoice-POS #mid, */
-  /* #invoice-POS #bot { */
-    /* Targets all id with 'col-' */
-    /* border-bottom: 1px solid #eee; */
-  /* } */
-  /* #invoice-POS #top {
-    min-height: 40px;
-  } */
-  /* #invoice-POS #mid {
-    min-height: 80px;
-  } */
-  /* #invoice-POS #bot {
-    min-height: 50px;
-  } */
-  /* #invoice-POS #top .logo {
-    height: 60px;
-    width: 60px;
-    background: url({{config.LOGO_IMAGE}}) no-repeat;
-    background-size: 60px 60px;
-  } */
-  /* #invoice-POS .clientlogo {
-    float: left;
-    height: 60px;
-    width: 60px;
-    background: url(http://michaeltruong.ca/images/client.jpg) no-repeat;
-    background-size: 60px 60px;
-    border-radius: 50px;
-  } */
+
   #invoice-POS .info {
     display: block;
     margin-left: 0;
@@ -118,11 +90,7 @@
     text-align: center;
     
   }
-  /* tr {
-   line-height: 5px;
-   min-height: 5px;
-   height: 5px;
-} */
+
 </style>
 
 <script>
@@ -148,10 +116,6 @@
             {{config.SHOP_NAME|title}}
         </span>
         {% endif %}
-        <!-- <div class="info"> 
-          <h2>{{config.SHOP_NAME}}</h2>
-        </div> -->
-        <!--End Info-->
       </div>
       <!--End InvoiceTop-->
       <div style="font-size: xx-small;" class="text-center info border-bottom" >
@@ -161,11 +125,7 @@
               Phone   : {{config.CEL}}</br>
               <a>{{ now|date:'d-m-Y H:i' }}</a>
           </p>
-          <!--current time-->
-          <!-- <p id="real_time"></p> -->
-          <!-- <p>{% now "jS F Y H:i" %}</p> -->
-          
-          <!--end current time--> 
+
       </div>
       <!--End Invoice Mid-->
       <div id="bot" >
@@ -202,7 +162,7 @@
                   <td></td>
                   <td></td>
                   <td class="itemtext"> <strong > Paid: </strong></td>
-                  <td class="itemtext text-right"> <strong> {{order.paid_amount.paid_amount}} </strong></td>
+                  <td class="itemtext text-right"> <strong> {{order.total_paid_amount}} </strong></td>
                 </tr>
                 {% if order.paid_amount.paid_amount > order.order_total_due %}
                 <tr class="service">
@@ -258,14 +218,14 @@
           {% csrf_token %}
           
           <div class="form-group" >
-              <input id="topay" class="form-control text-right payment_form" name="" value="{{order.order_mpamba_total_due}}" style="background-color: rgb(62, 74, 89); font-size: 200%; font-family: monospace; color: chartreuse;" disabled/>
+              <input id="topay" class="form-control text-right payment_form" name="" value="{{order.order_total_due}}" style="background-color: rgb(62, 74, 89); font-size: 200%; font-family: monospace; color: chartreuse;" disabled/>
           </div>
           <br>
 
       </div>
       <div class="modal-footer justify-content-between">
        <a href="#"><button type="button" class="btn btn-default" data-dismiss="modal" onclick="window.location.reload();" >REPRINT</button> </a>
-       <a href="{% url 'view_my_orders' %}"> <button type="button" class="btn btn-primary" >OK</button> </a>
+       <a href="{% url 'pos_dashboard' %}"> <button type="button" class="btn btn-primary" >OK</button> </a>
       </div>
     </div>
   </form>

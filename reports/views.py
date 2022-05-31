@@ -330,7 +330,8 @@ def sales_report(request):
 
             orders_r = Order.objects.all()
             today_payments = Payment.objects.filter(order__id__in = orders_r, updated_at__gte = today)
-
+            
+            payments = today_payments
 
             sum_total_vat = Money(0.0, 'MWK')
             orders = Order.objects.filter(ordered = True, updated_at__gte = today)
@@ -358,6 +359,8 @@ def sales_report(request):
             report_period = "Yesterday"
             date_today = datetime.now().date()
 
+            payments = Payment.objects.filter(updated_at__gte = yesterday,updated_at__lt = date_today)
+
             orders_r = Order.objects.filter(ordered = False)
             lay_by_orders = LayByOrders.objects.filter(order_id__in = orders_r)
             lay_b_payments = Payment.objects.filter(laybyorders__in = lay_by_orders, updated_at__gte = yesterday,updated_at__lt = date_today)
@@ -379,6 +382,8 @@ def sales_report(request):
             date_today = datetime.now().date()
             seven_days_b4 = date_today-timedelta(days=7)
 
+            payments = Payment.objects.filter(updated_at__range = [seven_days_b4, date_today])
+
             orders_r = Order.objects.filter(ordered = False)
             lay_by_orders = LayByOrders.objects.filter(order_id__in = orders_r)
             lay_b_payments = Payment.objects.filter(laybyorders__in = lay_by_orders, updated_at__range = [seven_days_b4, date_today])
@@ -399,6 +404,8 @@ def sales_report(request):
             date_today = datetime.now().date()
             thirty_days_b4 = date_today-timedelta(days=30)
 
+            payments = Payment.objects.filter(updated_at__range = [thirty_days_b4, date_today])
+
             orders_r = Order.objects.filter(ordered = False)
             lay_by_orders = LayByOrders.objects.filter(order_id__in = orders_r)
             lay_b_payments = Payment.objects.filter(laybyorders__in = lay_by_orders, updated_at__range = [thirty_days_b4, date_today])
@@ -418,6 +425,8 @@ def sales_report(request):
             
             today = datetime.now()
             this_month_firstday = datetime.now().date().replace(day=1)
+        
+            payments = Payment.objects.filter(updated_at__range = [this_month_firstday, today])
 
             orders_r = Order.objects.filter(ordered = False)
             lay_by_orders = LayByOrders.objects.filter(order_id__in = orders_r)
@@ -442,6 +451,8 @@ def sales_report(request):
             last_monthlastday2 = last_monthlastday
             last_monthfirstday = last_monthlastday2.replace(day=1)
 
+            payments = Payment.objects.filter(updated_at__range = [last_monthfirstday, last_monthlastday])
+
             orders_r = Order.objects.filter(ordered = False)
             lay_by_orders = LayByOrders.objects.filter(order_id__in = orders_r)
             lay_b_payments = Payment.objects.filter(laybyorders__in = lay_by_orders, updated_at__range = [last_monthfirstday, last_monthlastday])
@@ -462,9 +473,31 @@ def sales_report(request):
         for lay_b_payments in lay_b_payments:
             if str(lay_b_payments.paid_amount) != "None":
                 sum_layby_paid_amount += lay_b_payments.paid_amount
+
+        payments = Payment.objects.all()
     
 
+    cash_payments = payments.filter(payment_mode = 'Cash')
+    total_cash_payments = Money(0.0, 'MWK')
+    for cash_payemnt in cash_payments:
+        total_cash_payments += cash_payemnt.paid_amount
     
+    bank_payments = payments.filter(payment_mode = 'Bank')
+    total_bank_payments = Money(0.0, 'MWK')
+    for bank_payment in bank_payments:
+        total_bank_payments += bank_payment.paid_amount
+
+    
+    airtel_money_payments = payments.filter(payment_mode = 'Airtel Money')
+    total_airtel_payments = Money(0.0, 'MWK')
+    for airtel_money_payment in airtel_money_payments:
+        total_airtel_payments += airtel_money_payment.paid_amount
+
+
+    mpamba_payments = payments.filter(payment_mode = 'Mpamba')
+    total_mpamba_payments = Money(0.0, 'MWK')
+    for mpamba_payment in mpamba_payments:
+        total_mpamba_payments += mpamba_payment.paid_amount
     
     sum_ordered_items_count = 0
     total_cost_items_ordered = Money(0.0, 'MWK') 
@@ -494,6 +527,11 @@ def sales_report(request):
         "report_time":report_time,
         "sum_layby_paid_amount":sum_layby_paid_amount,
         "other_payments":other_payments,
+
+        "total_mpamba_payments":total_mpamba_payments,
+        "total_cash_payments":total_cash_payments,
+        "total_airtel_payments":total_airtel_payments,
+        "total_bank_payments":total_bank_payments,
     }
     return render(request, 'sales_report.html',context)
 
@@ -527,29 +565,54 @@ def sales_report_custom_range(request):
             get_item_cat = ItemCategory.objects.filter(category_name = category_id)
             if get_item_cat.exists():
                 ordered_items = ordered_items.filter(ordered_time__gte = from_date, ordered_time__lte = to_date, item__category__in = get_item_cat)
+            payments = Payment.objects.filter(updated_at__gte = from_date, updated_at__lte = to_date)
             ordered_items = ordered_items.filter(ordered_time__gte = from_date, ordered_time__lte = to_date)
+
 
             sum_total_vat = Money(0.0, 'MWK')
             orders = Order.objects.filter(ordered = True, updated_at__gte = from_date, updated_at__lte = to_date)
             for order in orders:
                 sum_total_vat += order.vat_cost
         
-        orders_r = Order.objects.filter(ordered = False)
+            orders_r = Order.objects.filter(ordered = False, updated_at__gte = from_date, updated_at__lte = to_date)
+            print(orders_r)
 
-        lay_by_orders = LayByOrders.objects.filter(order_id__in = orders_r)
-        lay_b_payments = Payment.objects.filter(laybyorders__in = lay_by_orders, updated_at__gte = from_date, updated_at__lte = to_date)
+        lay_b_payments = Payment.objects.filter(order_type = 'Lay By', updated_at__gte = from_date, updated_at__lte = to_date)
+
         sum_layby_paid_amount = Money(0.0, 'MWK')
         for lay_b_payments in lay_b_payments:
             if str(lay_b_payments.paid_amount) != "None":
                 sum_layby_paid_amount += lay_b_payments.paid_amount
     else:
-        orders_r = Order.objects.filter(ordered = False)
-        lay_by_orders = LayByOrders.objects.filter(order_id__in = orders_r)
-        lay_b_payments = Payment.objects.filter(laybyorders__in = lay_by_orders)
+        lay_b_payments = Payment.objects.filter(order_type = 'Lay By')
         sum_layby_paid_amount = Money(0.0, 'MWK')
         for lay_b_payments in lay_b_payments:
             if str(lay_b_payments.paid_amount) != "None":
                 sum_layby_paid_amount += lay_b_payments.paid_amount
+        payments = Payment.objects.all()
+    
+
+    cash_payments = payments.filter(payment_mode = 'Cash')
+    total_cash_payments = Money(0.0, 'MWK')
+    for cash_payemnt in cash_payments:
+        total_cash_payments += cash_payemnt.paid_amount
+    
+    bank_payments = payments.filter(payment_mode = 'Bank')
+    total_bank_payments = Money(0.0, 'MWK')
+    for bank_payment in bank_payments:
+        total_bank_payments += bank_payment.paid_amount
+
+    
+    airtel_money_payments = payments.filter(payment_mode = 'Airtel Money')
+    total_airtel_payments = Money(0.0, 'MWK')
+    for airtel_money_payment in airtel_money_payments:
+        total_airtel_payments += airtel_money_payment.paid_amount
+
+
+    mpamba_payments = payments.filter(payment_mode = 'Mpamba')
+    total_mpamba_payments = Money(0.0, 'MWK')
+    for mpamba_payment in mpamba_payments:
+        total_mpamba_payments += mpamba_payment.paid_amount
 
  
     sum_ordered_items_count = 0
@@ -574,6 +637,11 @@ def sales_report_custom_range(request):
         "net_total_sales":net_total_sales,
         "sum_layby_paid_amount":sum_layby_paid_amount,
         "total_cash_in_hand":total_cash_in_hand,
+
+        "total_mpamba_payments":total_mpamba_payments,
+        "total_cash_payments":total_cash_payments,
+        "total_airtel_payments":total_airtel_payments,
+        "total_bank_payments":total_bank_payments,
     }
     return render(request, 'sales_report_custom_range.html',context)
 
@@ -859,8 +927,6 @@ def refund_report(request):
     report_time = timezone.now()
     yesterday = today-timedelta(days=1)
 
-    refunded_payments_r = RefundPayment.objects.all()
-
 
     if request.method == "POST":
         item_cat = request.POST.get('item_categories_option')
@@ -874,28 +940,29 @@ def refund_report(request):
             refunded_items = todays_refunded_items(item_cat)
             report_period = "Today"
 
-            refunded_payments_r = RefundPayment.objects.filter(updated_at__gte = today)
+            refunded_payments_r = RefundPayment.objects.filter(updated_at__gte = today, refundorder__refunded = True)
 
            
         elif report_period == 2:
             refunded_items = yesterday_refunded_items(item_cat)
             report_period = "Yesterday"
 
-            refunded_payments_r = RefundPayment.objects.filter(updated_at__gte = yesterday,updated_at__lt = today)
+            refunded_payments_r = RefundPayment.objects.filter(created_at__gte = yesterday,created_at__lt = today, refundorder__refunded = True)
+            print(refunded_payments_r)
   
         elif report_period == 3:
             refunded_items = last_7_days_refunded_items(item_cat)
             report_period = "Last 7 Days"
             date_today = datetime.now().date()
             seven_days_b4 = date_today-timedelta(days=7)
-            refunded_payments_r = RefundPayment.objects.filter(updated_at__range = [seven_days_b4, date_today])
+            refunded_payments_r = RefundPayment.objects.filter(updated_at__range = [seven_days_b4, date_today], refundorder__refunded = True)
            
         elif report_period == 4:
             refunded_items= last_30_days_refunded_items(item_cat)
             report_period = "Last 30 Days"
             date_today = datetime.now().date()
             thirty_days_b4 = date_today-timedelta(days=30)
-            refunded_payments_r = RefundPayment.objects.filter(updated_at__range = [thirty_days_b4, date_today])
+            refunded_payments_r = RefundPayment.objects.filter(updated_at__range = [thirty_days_b4, date_today], refundorder__refunded = True)
            
 
         elif report_period == 5:
@@ -903,7 +970,7 @@ def refund_report(request):
             report_period = "This Month"
             today = datetime.now()
             this_month_firstday = datetime.now().date().replace(day=1)
-            refunded_payments_r = RefundPayment.objects.filter(updated_at__range = [this_month_firstday, today])
+            refunded_payments_r = RefundPayment.objects.filter(updated_at__range = [this_month_firstday, today], refundorder__refunded = True)
         
 
         elif report_period == 6:
@@ -914,13 +981,13 @@ def refund_report(request):
             last_monthlastday = this_month_firstday - timedelta(days=1)
             last_monthlastday2 = last_monthlastday
             last_monthfirstday = last_monthlastday2.replace(day=1)
-            refunded_payments_r = RefundPayment.objects.filter(updated_at__range = [last_monthfirstday, last_monthlastday])
+            refunded_payments_r = RefundPayment.objects.filter(updated_at__range = [last_monthfirstday, last_monthlastday], refundorder__refunded = True)
     else:
-        refunded_payments_r = RefundPayment.objects.all()
+        refunded_payments_r = RefundPayment.objects.filter(refundorder__refunded = True)
     
-    cash_refund_payemnts = refunded_payments_r.filter(payment_mode = 'Cash')
+    cash_refund_payments = refunded_payments_r.filter(payment_mode = 'Cash')
     total_cash_refund = Money(0.0, 'MWK')
-    for cash_refund_payemnt in cash_refund_payemnts:
+    for cash_refund_payemnt in cash_refund_payments:
         total_cash_refund += cash_refund_payemnt.refund_amount
     
     bank_refund_payments = refunded_payments_r.filter(payment_mode = 'Bank')
@@ -946,7 +1013,7 @@ def refund_report(request):
         sum_refunded_items_count += refunded_items_count.return_quantity
         total_cost_items_refunded += refunded_items_count.return_items_total_cost
 
-    net_total_sales = total_cost_items_refunded
+    total_refund_amount = total_cash_refund + total_bank_refund + total_airtel_refund + total_mpamba_refund
 
     
 
@@ -960,7 +1027,7 @@ def refund_report(request):
         "total_cost_items_refunded":total_cost_items_refunded,
         "config":config,
         "sum_refunded_items_count":sum_refunded_items_count,
-        "net_total_sales":net_total_sales,
+        "total_refund_amount":total_refund_amount,
         "report_time":report_time,
         "total_cash_refund":total_cash_refund,
         "total_bank_refund":total_bank_refund,

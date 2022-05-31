@@ -50,6 +50,7 @@ def refund_order(request, id):
         refund_order = RefundOrder.objects.get(code = order.code)
         refund_total_amount = refund_order.balance_to_refund
         refund_order_items = get_items_in_refund_order(order)
+        
         refund_order = RefundOrder.objects.get(code = code)
 
         refund_payment_form = AddRefundPaymentForm(initial={'refund_amount': refund_total_amount})
@@ -121,6 +122,11 @@ def get_items_in_refund_order(order):
     items_in_order = RefundOrderItem.objects.filter(order_id = order_id)
     return items_in_order
 
+def get_payments_in_refund_order(order):
+    order_id = order.get_code
+    payments_in_order = RefundPayment.objects.filter(order_id=order_id)
+    return payments_in_order
+
 @login_required
 def cancel_refund_order(request, id):
     refund_id = id
@@ -132,6 +138,10 @@ def cancel_refund_order(request, id):
         refund_order_items = get_items_in_refund_order(order)
         for each_item in refund_order_items:
             each_item.delete()
+
+        refund_order_payments = get_payments_in_refund_order(order)
+        for each_payment in refund_order_payments:
+            each_payment.delete()
         order.save()
         Order_qs.delete()
         messages.info(request, "Refund order Cancelled Successfully")

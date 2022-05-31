@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
+from tkinter.tix import Tree
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -25,7 +26,18 @@ SECRET_KEY = '_+($v8+m9z94kh4*dpz-xc%nd#11^gf9xp$rb^=@g7#l8_k46+'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+DEBUG_TOOLBAR_CONFIG = {
+    'SHOW_TOOLBAR_CALLBACK': lambda r: False,  # disables it
+    # '...
+}
+
 ALLOWED_HOSTS = ['0.0.0.0','localhost','127.0.0.1']
+
+INTERNAL_IPS = [
+    # ...
+    "127.0.0.1",
+    # ...
+]
 
 
 # Application definition
@@ -57,11 +69,12 @@ INSTALLED_APPS = [
     'sweetify',
     'django_countries',
     'django_filters',
-    'dynamic_fields',
+    # 'dynamic_fields',
     'constance',
     'qrcode',
-    'barcode',
+    # 'barcode',
     'phonenumber_field',
+    'debug_toolbar',
 
     
 ]
@@ -74,6 +87,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 ROOT_URLCONF = 'barpos.urls'

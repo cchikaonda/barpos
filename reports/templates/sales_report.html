@@ -88,22 +88,6 @@
         </td>
         
       </tr>
-      <tr >
-        <td colspan="6" class="text-center">
-          REVENUE COLLECTED
-        </td>
-      </tr>
-      <tr class="text-bold">
-        
-        <td class="text-right " colspan="5">
-         ORDERED ITEMS TOTAL
-        </td >
-       
-        <td class="text-right">
-          {{total_cost_items_ordered}}
-        </td>
-        
-      </tr>
       <tr class="text-bold">
         
         <td class="text-right " colspan="5">
@@ -115,21 +99,70 @@
         </td>
         
       </tr>
-      <tr class="text-bold">
+      <tr >
+        <td colspan="6" class="text-center">
+          REVENUE COLLECTED
+        </td>
+      </tr>
+      <!-- <tr class="text-bold">
         
         <td class="text-right " colspan="5">
-         OTHER PAYMENTS
+         ORDERED ITEMS TOTAL
         </td >
        
         <td class="text-right">
-          {{other_payments}}
+          {{total_cost_items_ordered}}
         </td>
+        
+      </tr> -->
+      <tr class="text-bold">
+        
+        <th class="text-right " colspan="5">
+          CASH
+        </th >
+       
+        <th class="text-right">
+          {{total_cash_payments}}
+        </th>
+        
+      </tr>
+      <tr class="text-bold">
+        
+        <th class="text-right " colspan="5">
+          BANK
+        </th >
+       
+        <th class="text-right">
+          {{total_bank_payments}}
+        </th>
+        
+      </tr>
+      <tr class="text-bold">
+        
+        <th class="text-right " colspan="5">
+          MPAMBA
+        </th >
+       
+        <th class="text-right">
+          {{total_mpamba_payments}}
+        </th>
+        
+      </tr>
+      <tr class="text-bold">
+        
+        <th class="text-right " colspan="5">
+          AIRTEL MONEY
+        </th >
+       
+        <th class="text-right">
+          {{total_airtel_payments}}
+        </th>
         
       </tr>
       <tr class="text-bold">
         
         <td class="text-right " colspan="5">
-         TOTAL CASH IN HAND
+         TOTAL REVENUE COLLECTED
         </td >
        
         <td class="text-right" bgcolor="grey">

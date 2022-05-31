@@ -1,3 +1,4 @@
+from pickle import FALSE
 from django.db import models
 from django.conf import settings
 from djmoney.models.fields import MoneyField
@@ -66,13 +67,18 @@ class OrderItem(models.Model):
     @property
     def get_ordered_item_category(self):
         return self.item.category
+    
+    def check_if_ordered_item_is_in_refund_order(self):
+        refund_order_item = RefundOrderItem.objects.get(order_id = self.order_id)  
+        if refund_order_item != None:
+            return True
+        else:
+            return False
 
-        
-
+    
 @receiver(post_save, sender=OrderItem)
 def update_orderitem_quantities(sender, instance, **kwargs):
     OrderItem.objects.filter(id=instance.id).update(ordered_item_price=instance.price, ordered_items_total = instance.amount)
-
 
 
 class Payment(models.Model):
@@ -216,6 +222,25 @@ class Order(models.Model):
     # @property()
     def get_customer(self):
         return self.items.customer
+    
+    def check_if_refunded(self):
+        refund_order = RefundOrder.objects.get(order_id = self.id)  
+        if refund_order != None:
+            return True
+        else:
+            return FALSE
+    
+    def amount_refunded(self):
+        amount_refunded = Money(0.0, 'MWK')
+        refund_order = RefundOrder.objects.get(order_id = self.id)
+        if refund_order:
+            return refund_order.total_refunded_amount
+        else:
+            return amount_refunded
+    
+    def get_balance_after_refund(self):
+        return self.total_paid_amount() - self.amount_refunded()
+
 
 class RefundPayment(models.Model):
     payment_options =(
@@ -277,7 +302,7 @@ class RefundOrder(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     payments = models.ManyToManyField(RefundPayment)
-    reason_for_refund = models.CharField(max_length = 30, null= True,)
+    reason_for_refund = models.CharField(max_length = 100, null= True,)
 
 
    
@@ -319,6 +344,7 @@ class RefundOrder(models.Model):
         for order_item in self.refunded_items.all():
             total += order_item.return_amount
         return total - self.total_refunded_amount
+    
        
 
 
