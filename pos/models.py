@@ -96,7 +96,7 @@ class Payment(models.Model):
     paid_amount = MoneyField(max_digits=14, decimal_places=2, default_currency='MWK', default= 0.0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    reference = models.CharField(max_length = 30, null= True,)
+
 
 
 
@@ -148,6 +148,16 @@ class Order(models.Model):
     @property
     def get_code(self):
         return self.gen_code
+    
+
+    def get_mpamba_bill(self):
+        return "Mpamba"
+
+    def get_airtel_money_service_fee(self):
+        return "Airtel Money"
+
+    def get_mpamba_service_fee(self):
+        pass
     
    
     @property

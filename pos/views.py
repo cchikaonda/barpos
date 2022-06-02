@@ -17,7 +17,7 @@ import json
 from django.db.models import Count
 from django.contrib.auth.decorators import login_required
 from accounts.admin import CustomConfigForm
-from barpos import settings
+from epsilonpos import settings
 import time
 from djmoney.money import Money
 from django.template.loader import render_to_string
@@ -127,6 +127,8 @@ def add_payment(request):
                 paid_amount = form.cleaned_data.get('paid_amount')
                 payment_mode = request.POST.get('payment_mode')
                 
+                
+
                 customer = order.customer
                 order_type = order.order_type
                 payment = Payment()
@@ -137,23 +139,13 @@ def add_payment(request):
                 payment.order_id = order.get_code()
                 
                 
-                if str(payment_mode).lower() == str('Cash').lower():
-                    reference = 'CASH'
-                    # payment.payment_mode = reference
-                    payment.reference = reference
-                    print(reference)
-                elif str(payment_mode).lower() == str('Bank').lower():
-                    reference = form.cleaned_data.get('reference') 
-                    # payment.payment_mode = reference
-                    payment.reference = reference
-                else:
-                    reference = form.cleaned_data.get('reference') 
-                    payment.reference = reference
-                   
-                    
+                
+                
+                reference2 = form.cleaned_data.get('reference')
+                payment_mode_here = get_bill_based_on_payment_mode(reference2)
+                print(payment_mode_here)
                 payment.save()
                 order.payments.add(payment)
-                order.payment_reference = reference
                 order.save()
                 order = Order.objects.get(id = order_id)
                 request.session['opened_order'] = order.id
@@ -337,6 +329,18 @@ def personal_order_list(request, id):
 
     }
     return render(request, 'personal_order_list.html',context )
+
+def get_bill_based_on_payment_mode(payment_mode):
+        payment_mode = payment_mode
+        if payment_mode == 'Airtel Money':
+            return get_airtel_money_bill()
+        elif payment_mode == 'Mpamba':
+            return get_mpamba_bill()
+def get_mpamba_bill():
+    pass
+def get_airtel_money_bill():
+    pass
+    
 
 @login_required
 def save_order(order, request):

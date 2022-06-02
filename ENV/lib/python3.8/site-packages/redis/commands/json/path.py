@@ -1,10 +1,10 @@
-class Path(object):
+class Path:
     """This class represents a path in a JSON value."""
 
     strPath = ""
 
     @staticmethod
-    def rootPath():
+    def root_path():
         """Return the root path's string representation."""
         return "."
 

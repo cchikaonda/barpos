@@ -1,4 +1,4 @@
-#!/var/www/barpos/ENV/bin/python3.8
+#!/var/www/epsilon_systems/epsilonpos/ENV/bin/python3.8
 # -*- coding: utf-8 -*-
 import re
 import sys

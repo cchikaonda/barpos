@@ -508,7 +508,7 @@ def sales_report(request):
     net_total_sales = total_cost_items_ordered - sum_total_vat
 
     
-    total_cash_in_hand = sum_layby_paid_amount + total_cost_items_ordered
+    total_cash_in_hand = total_mpamba_payments + total_airtel_payments + total_bank_payments + total_cash_payments
     other_payments = total_cash_in_hand - sum_layby_paid_amount - total_cost_items_ordered
 
     context = {
@@ -552,6 +552,8 @@ def sales_report_custom_range(request):
     for order in orders:
         sum_total_vat += order.vat_cost
 
+    report_time = timezone.now()
+
     if request.method == "POST":
         if form.is_valid:
             from_date = request.POST.get('start_date_time')
@@ -575,9 +577,8 @@ def sales_report_custom_range(request):
                 sum_total_vat += order.vat_cost
         
             orders_r = Order.objects.filter(ordered = False, updated_at__gte = from_date, updated_at__lte = to_date)
-            print(orders_r)
 
-        lay_b_payments = Payment.objects.filter(order_type = 'Lay By', updated_at__gte = from_date, updated_at__lte = to_date)
+        lay_b_payments = Payment.objects.filter(order__id__in = orders_r, order_type = 'Lay By', updated_at__gte = from_date, updated_at__lte = to_date)
 
         sum_layby_paid_amount = Money(0.0, 'MWK')
         for lay_b_payments in lay_b_payments:
@@ -622,7 +623,7 @@ def sales_report_custom_range(request):
         total_cost_items_ordered += ordered_items_count.ordered_items_total
 
     net_total_sales =  total_cost_items_ordered - sum_total_vat
-    total_cash_in_hand = total_cost_items_ordered + sum_layby_paid_amount
+    total_cash_in_hand = total_mpamba_payments + total_airtel_payments + total_bank_payments + total_cash_payments
 
     context = {
         "item_cat":item_cat,
@@ -637,6 +638,7 @@ def sales_report_custom_range(request):
         "net_total_sales":net_total_sales,
         "sum_layby_paid_amount":sum_layby_paid_amount,
         "total_cash_in_hand":total_cash_in_hand,
+        "report_time":report_time,
 
         "total_mpamba_payments":total_mpamba_payments,
         "total_cash_payments":total_cash_payments,
@@ -1052,7 +1054,7 @@ def custom_range_refund_report(request):
     orders = RefundOrder.objects.filter(ordered = True)
     for order in orders:
         sum_total_vat += order.vat_cost
-
+    
     if request.method == "POST":
         if form.is_valid:
             from_date = request.POST.get('start_date_time')
@@ -1099,6 +1101,8 @@ def custom_range_refund_report(request):
 
     net_total_sales =  total_cost_items_refunded - sum_total_vat
     total_cash_in_hand = total_cost_items_refunded + sum_layby_paid_amount
+
+    report_time = timezone.now()
 
     context = {
         "item_cat":item_cat,

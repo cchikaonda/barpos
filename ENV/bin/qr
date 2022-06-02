@@ -1,4 +1,4 @@
-#!/var/www/barpos/ENV/bin/python3.8
+#!/var/www/epsilon_systems/epsilonpos/ENV/bin/python3.8
 # EASY-INSTALL-ENTRY-SCRIPT: 'qrcode==7.2','console_scripts','qr'
 import re
 import sys

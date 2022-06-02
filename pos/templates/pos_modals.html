@@ -96,7 +96,6 @@
             
             <form action="{% url 'add_payment' %}" method="post" >
             {% csrf_token %}
-                
             <label for="topay">TO PAY</label>
             <div class="form-group" >
                 <input id="topay" class="form-control text-right pos_form" name="" value="{{order.get_balance}}" style="background-color: rgb(62, 74, 89); font-size: 200%; font-family: monospace; color: chartreuse;" disabled/>
@@ -111,9 +110,6 @@
                 <label for="paid_amount">Tendered</label>
                 {{payment_form.paid_amount}}
                 </div>
-                <div class=" mt-4 mb-4 disabled">
-                {{payment_form.reference.as_hidden}}
-                <input type="hidden" name="reference" value="300">
                 </div>
                 <div class=" mt-4 mb-4 disabled">
                 <input type="hidden" name="customer" value="{{order.customer.id}}">
