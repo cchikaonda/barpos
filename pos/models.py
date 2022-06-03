@@ -18,6 +18,8 @@ from phonenumber_field.modelfields import PhoneNumberField
 from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 
+from . import mpamba_service_bill, airtel_service_bill
+
 
 class Customer(models.Model):
     name = models.CharField(unique=True, max_length=120)
@@ -26,7 +28,6 @@ class Customer(models.Model):
     total_orders = models.IntegerField(default=0)
 
     def __str__(self):
-        # return '{0} ({1})'.format(self.name, self.phone_number)
         return '{0}'.format(self.name)
     
 class OrderItem(models.Model):
@@ -40,7 +41,6 @@ class OrderItem(models.Model):
     ordered_items_total = MoneyField(max_digits=14, decimal_places=2, default_currency='MWK', default= 0.0)
     ordered_time = models.DateTimeField(auto_now_add=True, null = True)
 
-    
     @property
     def price(self):
         return self.item.selling_price()
@@ -75,11 +75,9 @@ class OrderItem(models.Model):
         else:
             return False
 
-    
 @receiver(post_save, sender=OrderItem)
 def update_orderitem_quantities(sender, instance, **kwargs):
     OrderItem.objects.filter(id=instance.id).update(ordered_item_price=instance.price, ordered_items_total = instance.amount)
-
 
 class Payment(models.Model):
     payment_options =(
@@ -93,16 +91,25 @@ class Payment(models.Model):
     payment_mode = models.CharField(max_length = 15, choices = payment_options, default='Cash')
     order_id = models.CharField(max_length=20, null=True)
     order_type = models.CharField(max_length=20, null=True)
+    service_fee = MoneyField(max_digits=14, decimal_places=2, default_currency='MWK', default= 0.0)
     paid_amount = MoneyField(max_digits=14, decimal_places=2, default_currency='MWK', default= 0.0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-
-
+    @property
+    def get_service_fee(self):
+        service_fee = Money(0.0, 'MWK')
+        if self.payment_mode == 'Mpamba':
+            service_fee = Money(mpamba_service_bill.get_service_fee(self.paid_amount), 'MWK')
+            return  service_fee
+        elif self.payment_mode == 'Airtel Money':
+            service_fee = Money(airtel_service_bill.get_service_fee(self.paid_amount), 'MWK')
+            return  service_fee
+        else:
+            return service_fee
 
     def __str__(self):
         return '{0}'.format(self.paid_amount)
-
 
 order_type_options =(
         ('Cash','Cash'),
@@ -125,10 +132,6 @@ class Order(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     payment_reference = models.CharField(max_length=50, null=True)
 
-    # def __init__(self, *args, **kwargs):
-    #     super(Order, self).__init__(*args, **kwargs)
-    #     self.original_paid_amount = self.paid_amount
-
     @property
     def vat_cost(self):
         return self.get_vat_value
@@ -144,14 +147,27 @@ class Order(models.Model):
     def vat_rate_minus_100(self):
         return 100 - self.vat_p 
     
-    
     @property
     def get_code(self):
         return self.gen_code
     
-
     def get_mpamba_bill(self):
-        return "Mpamba"
+        balance = self.get_balance()
+        if balance > Money(0.0, 'MWK') and balance >= Money(50.0, 'MWK'):
+            mpamba_bill = Money(0.0, 'MWK')
+            mpamba_bill = mpamba_service_bill.get_mpamba_bill(balance)
+            return mpamba_bill
+        else:
+            return self.get_balance()
+    
+    def get_airtel_bill(self):
+        balance = self.get_balance()
+        if balance > Money(0.0, 'MWK') and balance >= Money(50.0, 'MWK'):
+            mpamba_bill = Money(0.0, 'MWK')
+            mpamba_bill = airtel_service_bill.get_airtel_bill(balance)
+            return mpamba_bill
+        else:
+            return self.get_balance()
 
     def get_airtel_money_service_fee(self):
         return "Airtel Money"
@@ -159,7 +175,6 @@ class Order(models.Model):
     def get_mpamba_service_fee(self):
         pass
     
-   
     @property
     def get_vat_value(self):
         return self.vat_rate / 100.00 * self.order_total()
@@ -171,18 +186,6 @@ class Order(models.Model):
     def order_total_due(self):
         return self.get_taxable_value +  self.get_vat_value
     
-    def service_fee(self):
-        return float(config.SERVICE_FEE_A)
-    
-    def fee_value(self):
-        return self.service_fee() / 100.00 * self.order_total()
-
-    def order_airtel_money_total_due(self):
-        return self.order_total() +  self.get_vat_value + self.fee_value()
-    
-    def order_mpamba_total_due(self):
-        return self.order_total() +  self.get_vat_value + self.fee_value()
-
     def order_total(self):
         total = Money('0.0', 'MWK')
         for order_item in self.items.all():
@@ -208,10 +211,14 @@ class Order(models.Model):
     def total_paid_amount(self):
         sum_paid = Money(0.0, 'MWK')
         for payment in self.payments.all():
-            sum_paid += payment.paid_amount
+            if payment.payment_mode == "Mpamba":
+                sum_paid += payment.paid_amount - payment.get_service_fee
+            elif payment.payment_mode == "Airtel Money":
+                sum_paid += payment.paid_amount - payment.get_service_fee
+            else:
+                sum_paid += payment.paid_amount
         return sum_paid
 
-    
     def get_change(self):
         change = self.total_paid_amount() - self.order_total_due()
         return change
@@ -226,10 +233,9 @@ class Order(models.Model):
     
     def default_amount_paid(self):
         default_money = Money(0.0, 'MWK')
-        # default_money = ("MWK", 0.0)
         return default_money 
 
-    # @property()
+    @property
     def get_customer(self):
         return self.items.customer
     
@@ -258,15 +264,12 @@ class RefundPayment(models.Model):
         ('Mpamba', 'Mpamba'),
         ('Airtel Money', 'Airtel Money'),
         ('Bank', 'Bank'),
-        
     )
     payment_mode = models.CharField(max_length = 15, choices = payment_options, default='Cash')
     order_id = models.CharField(max_length=20, null=True)
     refund_amount = MoneyField(max_digits=14, decimal_places=2, default_currency='MWK', null = True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-
-
 
     def __str__(self):
         return '{0}'.format(self.refund_amount)
@@ -281,7 +284,6 @@ class RefundOrderItem(models.Model):
     returned_time = models.DateTimeField(auto_now_add=True, null = True)
     restock_to_inventory = models.BooleanField(default=True)
 
-    
     @property
     def price(self):
         return self.item.ordered_item_price
@@ -291,8 +293,6 @@ class RefundOrderItem(models.Model):
         amount = MoneyField()
         amount = self.return_quantity * self.price
         return amount
-
-    
 
     def __str__(self):
         return f"{self.return_quantity} {self.item.item.unit} of {self.item.item.item_name}"
@@ -314,8 +314,6 @@ class RefundOrder(models.Model):
     payments = models.ManyToManyField(RefundPayment)
     reason_for_refund = models.CharField(max_length = 100, null= True,)
 
-
-   
     def __str__(self):
         return '{1} {0}'.format(self.created_at, self.order_id.customer)
 
@@ -334,7 +332,6 @@ class RefundOrder(models.Model):
             sum_paid += payment.refund_amount
         return sum_paid
 
-    
     def default_amount_paid(self):
         default_money = Money(0.0, 'MWK')
         return default_money 
@@ -355,11 +352,6 @@ class RefundOrder(models.Model):
             total += order_item.return_amount
         return total - self.total_refunded_amount
     
-       
-
-
-
-
 
 # Update the last payment if it is more than the balance
 @receiver(post_save, sender=Order)
@@ -372,8 +364,6 @@ def update_last_payment_on_order(sender, instance, **kwargs):
         balance_required = instance.order_total_due() -  previous_paid_amount
         Payment.objects.filter(id=last_payment.id).update(paid_amount = balance_required )
 
-
-
 @receiver(post_save, sender=Order)
 def save_layby_orders(sender, instance, **kwargs):
     if instance.payment_reference == "Lay By" and instance.paid_amount != instance.original_paid_amount:
@@ -382,9 +372,6 @@ def save_layby_orders(sender, instance, **kwargs):
         layby_order, created = LayByOrders.objects.get_or_create(order_id = order)
         new_layby_order = LayByOrders.objects.get(id = layby_order.id)
 
-        # sum_paid_and_balance = order.paid_amount.paid_amount + new_layby_order.get_order_balance
-        
-        
         if order.paid_amount.paid_amount > new_layby_order.get_order_balance and order.ordered == True:
             paid = Payment()
             paid.paid_amount = new_layby_order.get_order_balance
@@ -407,11 +394,6 @@ def save_layby_orders(sender, instance, **kwargs):
         Order.objects.filter(id=instance.id).update(paid_amount=order_payment2)
 
 
-        # znew_layby_order.update(sum_paid = total)
-        # layby_order.update(get_sum_paid = payment)
-
-    # OrderItem.objects.filter(id=instance.id).update(ordered_item_price=instance.price, ordered_items_total = instance.amount)
-
 class LayByOrders(models.Model):
     order_id = models.ForeignKey(Order, on_delete=models.CASCADE)
     payments = models.ManyToManyField(Payment)
@@ -422,7 +404,6 @@ class LayByOrders(models.Model):
     def __str__(self):
         return '{1} {0}'.format(self.order_id.id, self.order_id.code)
     
-
     @property
     def get_order_id(self):
         return self.order_id.get_code
@@ -445,7 +426,6 @@ class LayByOrders(models.Model):
     @property
     def get_order_balance(self):
         return self.get_order_price - self.get_sum_paid
-
 
 class MoneyOutput(MoneyField):
     def from_db_value(self, value, expression, connection):

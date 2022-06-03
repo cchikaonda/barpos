@@ -20,6 +20,20 @@ class CustomMoneyWidget(MoneyWidget):
                 '</div>') % tuple(rendered_widgets)
 
 
+# class AddPaymentForm(forms.ModelForm):
+#     def __init__(self, *args, **kwargs):
+#         super(AddPaymentForm, self).__init__(*args, **kwargs)
+#         paid_amount, currency = self.fields['paid_amount'].fields
+#         self.fields['paid_amount'].widget = CustomMoneyWidget(amount_widget = paid_amount.widget, currency_widget = currency.widget)
+#     class Meta:
+#         model = Payment
+#         fields = ('payment_mode','paid_amount','customer')
+#         widgets = {
+#                 'paid_amount': forms.TextInput(attrs={'class': 'form-control pos_form',}),
+#                 'payment_mode': forms.Select(attrs={'class': 'form-control pos_form',}),
+#                 'paid_amount': forms.TextInput(attrs={'class': 'form-control pos_form', 'readonly':'readonly'}),
+#         }
+    
 class AddPaymentForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(AddPaymentForm, self).__init__(*args, **kwargs)
@@ -31,9 +45,9 @@ class AddPaymentForm(forms.ModelForm):
         widgets = {
                 'paid_amount': forms.TextInput(attrs={'class': 'form-control pos_form',}),
                 'payment_mode': forms.Select(attrs={'class': 'form-control pos_form',}),
-                'paid_amount': forms.TextInput(attrs={'class': 'form-control pos_form', 'readonly':'readonly'}),
+                'paid_amount': forms.TextInput(attrs={'class': 'form-control pos_form',}),
         }
-    
+
 class CashPaymentForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(AddPaymentForm, self).__init__(*args, **kwargs)

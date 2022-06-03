@@ -266,7 +266,10 @@ def customers_list(request):
 @login_required
 def personal_order_list(request, id):
     order_type_form = OrderTypeForm(initial={"order_type":'Cash'})
-    payment_form = AddPaymentForm(initial={"paid_amount":[''],})
+    cash_payment_form = AddPaymentForm(initial={"paid_amount":[''],})
+    mpamba_payment_form = AddPaymentForm(initial={"paid_amount":[''],"payment_mode":'Mpamba',})
+    airtel_payment_form = AddPaymentForm(initial={"paid_amount":[''],"payment_mode":'Airtel Money',})
+    bank_payment_form = AddPaymentForm(initial={"paid_amount":[''],"payment_mode":'Bank',})
     order = get_object_or_404(Order,id=id)
 
     total_paid_amount = order.total_paid_amount()
@@ -316,7 +319,7 @@ def personal_order_list(request, id):
         'items_in_order':items_in_order,
         'home':'Home',
         'header':'Order' + ' ' + str(order.id),
-        'payment_form':payment_form,
+        
         'category':category,
         'unsettled_orders':unsettled_orders,
         'item_search_form':item_search_form,
@@ -325,6 +328,10 @@ def personal_order_list(request, id):
         'layb_order':layb_order,
         'total_paid_amount':total_paid_amount,
         'order_total_due':order_total_due,
+        'cash_payment_form':cash_payment_form,
+        'mpamba_payment_form':mpamba_payment_form,
+        'airtel_payment_form':airtel_payment_form,
+        'bank_payment_form':bank_payment_form,
         
 
     }

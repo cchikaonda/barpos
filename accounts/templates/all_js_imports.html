@@ -117,8 +117,17 @@
             "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
         }).buttons().container().appendTo('#refunds_report_table_wrapper .col-md-6:eq(0)');
 
+        $("#sales_report_table").DataTable({
+            "responsive": true, 
+            "lengthChange": false, 
+            "autoWidth": false,
+            // "paging":false,
+            "pageLength":50,
+            "order":[],
+            "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+        }).buttons().container().appendTo('#sales_report_table_wrapper .col-md-6:eq(0)');
 
-        
+      
         $("#expenses-table").DataTable({
             "responsive": true, 
             "lengthChange": false, 

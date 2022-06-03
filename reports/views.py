@@ -512,6 +512,7 @@ def sales_report(request):
     other_payments = total_cash_in_hand - sum_layby_paid_amount - total_cost_items_ordered
 
     context = {
+        "header": 'sales report',
         "item_cat":item_cat,
         "report_period":report_period,
         "item_categories":item_categories,
@@ -626,6 +627,7 @@ def sales_report_custom_range(request):
     total_cash_in_hand = total_mpamba_payments + total_airtel_payments + total_bank_payments + total_cash_payments
 
     context = {
+        "header": 'sales report',
         "item_cat":item_cat,
         "item_categories":item_categories,
         "form":form,

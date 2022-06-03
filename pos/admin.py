@@ -36,7 +36,7 @@ class OrderAdmin(admin.ModelAdmin):
 admin.site.register(Order, OrderAdmin)
 
 class PaymentAdmin(admin.ModelAdmin):
-    list_display = ('order_id','order_type','payment_mode','paid_amount','customer','created_at', 'updated_at',)
+    list_display = ('order_id','order_type','payment_mode','paid_amount','get_service_fee','customer','created_at', 'updated_at',)
     search_fields = ['payment_mode',]
     class Meta:
         model = Payment

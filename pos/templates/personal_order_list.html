@@ -146,45 +146,31 @@
                   {% endif %}
                     </tbody>
                   </table>
-                </div>
-                <div class="mt-2">
-      
-              <table class="mb-4">
-  
-                <tr>
-                  <td>
-                  <!-- /.table-responsive -->
-      
-                  <a href="{% url 'print_receipt_only' %}"><button class="btn btn-secondary mr-2 ml-2 posoption_button" style="float: left;"><i class="fas fa-print"></i> Print Bill</button> </a>
-                  {% if total_paid_amount == order.default_amount_paid %}
-                  
-                  
-                  {% elif total_paid_amount >= order_total_due %}
-                  <a data-toggle="modal" data-target="#produceReceiptModal"><button class="btn btn-success mr-2 ml-2 posoption_button" style="float: right;"><i class="fas fa-arrow-right"></i> Checkout</button> </a> 
-                 
-                  {% endif %}
-
-  
-                  {% if order.items and order.order_total_due > order.total_paid_amount%}
-                  <!-- <a href="{% url 'save_bill' %}"><button class="btn btn-secondary mr-2 ml-2 posoption_button" style="float: right;"><i class="fas fa-save"></i> Save Bill</button> </a> -->
-                  <a data-toggle="modal" data-target="#produceReceiptSavedBillModal"><button class="btn btn-info mr-2 ml-2 posoption_button" style="float: left;"><i class="fas fa-save"></i> Save Bill</button> </a>
-                  <a data-toggle="modal" data-target="#laybyModal"><button class="btn btn-secondary mr-2 ml-2 posoption_button" style="float: right;"><i class="fas fa-money-bill-alt"></i> Lay By </button> </a>
-                  <a data-toggle="modal" data-target="#cashModal"><button class="btn btn-success mr-2 ml-2 posoption_button" style="float: right;"><i class="fas fa-money-bill-alt"></i> Pay</button> </a>
-                  {% endif %}
-                  
-                  
-                  
-                  </td>
-                </tr>
-              </table>
-              <div id="modal-div"></div>
               </div>
-            
-          </div>
-                  
+              <div class="mt-2">
+                    <a href="{% url 'print_receipt_only' %}"><button class="btn btn-secondary mr-2 ml-2 posoption_button" style="float: left;"><i class="fas fa-print"></i> Print Bill</button> </a>
+                  {% if total_paid_amount == order.default_amount_paid %}
+                  {% elif total_paid_amount >= order_total_due %}
+                    <a data-toggle="modal" data-target="#produceReceiptModal"><button class="btn btn-success mr-2 ml-2 posoption_button" style="float: right;"><i class="fas fa-arrow-right"></i> Checkout</button> </a> 
+                  {% endif %}
+                  {% if order.items and order.order_total_due > order.total_paid_amount%}
+                    <a data-toggle="modal" data-target="#produceReceiptSavedBillModal"><button class="btn btn-info mr-2 ml-2 posoption_button" style="float: left;"><i class="fas fa-save"></i> Save Bill</button> </a>
+                    <a data-toggle="modal" data-target="#laybyModal"><button class="btn btn-secondary mr-2 ml-2 posoption_button" style="float: right;"><i class="fas fa-money-bill-alt"></i> Lay By </button> </a>
+                    <a data-toggle="modal" data-target="#cashModal"><button class="btn btn-success mr-2 ml-2 posoption_button" style="float: right;"><i class="fas fa-money-bill-alt"></i> Pay Cash</button> </a>
+                  {% endif %}
+              </div>
+              {% if order.items and order.order_total_due > order.total_paid_amount%}
+              <div class="btn-group mt-2" style="float: right;">
+                <a data-toggle="modal" data-target="#airtelModal"><button class="btn btn-danger mr-2 ml-2 posoption_button"><i class="fas fa-save"></i> Airtel Money</button> </a>
+                <a data-toggle="modal" data-target="#bankModal"><button class="btn btn-primary mr-2 ml-2 posoption_button"><i class="fas fa-save"></i> Bank</button> </a>
+                <a data-toggle="modal" data-target="#mpambaModal"><button class="btn btn-success mr-2 ml-2 posoption_button"><i class="fas fa-save"></i> Mpamba</button> </a>
+              </div>
+              {% endif %}
+          </div>    
       </div> 
   </div>
   <!--END CART ITEMS-->
+  
 {% else %}
   <!--CART ITEMS-->
   <div class="col-md-6" >
