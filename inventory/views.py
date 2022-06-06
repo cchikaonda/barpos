@@ -4,8 +4,10 @@ from django.views.generic import TemplateView
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.shortcuts import render,redirect, get_object_or_404
+import expenses
 from inventory.models import ItemCategory, Unit, Item, Stock, Supplier
 from pos.models import Customer,OrderItem, Order
+from expenses.models import Expense, ExpenseCategory
 from inventory.forms import *
 from pos.forms import *
 from django.template.loader import render_to_string
@@ -52,8 +54,10 @@ def inventory_dashboard(request):
     for sales_all_time in sales_all_time:
         sales_overtime += sales_all_time.total_paid_amount()
         total_tax += sales_all_time.vat_cost
+
+    profit = get_profit_for_all_time()
     
-    profit = sales_overtime -(total_tax + total_cog_sold) 
+    # profit = sales_overtime -(total_tax + total_cog_sold) 
 
     monday_total_sales = get_total_sales_this_week(2)
     tuesday_total_sales = get_total_sales_this_week(3)
@@ -75,13 +79,14 @@ def inventory_dashboard(request):
     #Getting items running out of stock
     items_run_out_of_stock = get_items_running_out_of_stock()
    
-
+    total_expenses_overtime = sum_expenses_all_time()
     context = {
         'header':'Inventory Dashboard',
         'config':config,
         'total_item_categories':total_item_categories,
         'total_items':total_items,
         'sales_overtime':sales_overtime,
+        'total_expenses_overtime':total_expenses_overtime,
         'config':config,
 
         'lw_monday_total_sales':lw_monday_total_sales,
@@ -109,6 +114,40 @@ def inventory_dashboard(request):
 
     }
     return render(request, 'inventory_dashboard.html', context)
+
+def get_profit_for_all_time():
+    total_cog = 0
+    stocks = Stock.objects.all()
+    for stock in stocks:
+       total_cog += stock.get_total_cost_of_items
+
+    total_cog_sold = 0
+    ordered_items = OrderItem.objects.filter(ordered = True)
+
+    for ordered_item in ordered_items:
+       total_cog_sold += Stock.objects.filter(item = ordered_item.item).order_by('-updated_at')[0].ordered_price * ordered_item.quantity
+
+    total_tax = 0
+    sales_overtime = 0
+    sales_all_time = Order.objects.all()
+    for sales_all_time in sales_all_time:
+        sales_overtime += sales_all_time.total_paid_amount()
+        total_tax += sales_all_time.vat_cost
+    
+    
+    sum_expenses = sum_expenses_all_time()
+
+    profit = sales_overtime -(total_tax + total_cog_sold + sum_expenses) 
+    return profit
+
+def sum_expenses_all_time():
+    expenses = Expense.objects.all()
+    sum_expenses = Money(0.0, 'MWK')
+    for expense in expenses:
+        sum_expenses += expense.amount
+    return sum_expenses
+
+
 
 
 def get_total_sales_this_week(this_day):
@@ -363,7 +402,7 @@ def save_unit_list(request, form, template_name):
         if form.is_valid():
             form.save()
             data['form_is_valid'] = True
-            units = Unit.objects.all()
+            units = Unit.objects.all().order_by('unit_description')
             data['unit_list'] = render_to_string('units/unit_list_2.html', {'units': units})
         else:
             data['form_is_valid'] = False
@@ -564,7 +603,56 @@ def batch_list(request):
         'header': 'Manage Batch Numbers',
         'config':config,
     }
-    return render(request, 'stocks/batch_list.html', context)
+    return render(request, 'batches/batch_list.html', context)
+
+@login_required
+def save_all_batches(request, form, template_name):
+    data = dict()
+    if request.method == 'POST':
+        if form.is_valid():
+            form.save()
+            data['form_is_valid'] = True
+            batch_numbers = BatchNumber.objects.all()
+            data['batch_list'] = render_to_string('batches/batch_list_2.html',{'batch_numbers': batch_numbers})
+            print(data)
+        else:
+            data['form_is_valid'] = False
+    context = {
+        'form': form
+    }
+    data['html_form'] = render_to_string(template_name, context, request=request)
+    return JsonResponse(data)
+
+@login_required
+def batch_create(request):
+    if request.method == 'POST':
+        form = AddBatchForm(request.POST)
+    else:
+        form = AddBatchForm()
+    return save_all_categories(request, form, 'batches/batch_create.html')
+
+@login_required
+def batch_update(request, id):
+    batch = get_object_or_404(BatchNumber, id=id)
+    if request.method == 'POST':
+        form = AddBatchForm(request.POST, instance=batch)
+    else:
+        form = AddBatchForm(instance=batch)
+    return save_all_batches(request, form, 'batches/batch_update.html')
+
+@login_required
+def batch_delete(request, id):
+    data = dict()
+    batch = get_object_or_404(BatchNumber, id=id)
+    if request.method == "POST":
+        batch.delete()
+        data['form_is_valid'] = True
+        batches = BatchNumber.objects.all()
+        data['batch_list'] = render_to_string('batches/batch_list_2.html',{'batches': batches})
+    else:
+        context = {'batch': batch}
+        data['html_form'] = render_to_string('batches/batch_delete.html', context, request=request)
+    return JsonResponse(data)
 
 def view_batch_details(request, batch_id):
     stock_items = Stock.objects.filter(batch=batch_id)

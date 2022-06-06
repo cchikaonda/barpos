@@ -199,6 +199,56 @@ $('#modal-supplier').on("submit",".delete-form",SaveForm)
     });
 
 
+//batch
+$(document).ready(function(){
+	var ShowForm = function(){
+		var btn = $(this);
+		$.ajax({
+			url: btn.attr("data-url"),
+			type: 'get',
+			dataType:'json',
+			beforeSend: function(){
+				$('#modal-batch').modal('show');
+			},
+			success: function(data){
+				$('#modal-batch .modal-content').html(data.html_form);
+			}
+		});
+	};
+
+	var SaveForm =  function(){
+		var form = $(this);
+		$.ajax({
+			url: form.attr('data-url'),
+			data: form.serialize(),
+			type: form.attr('method'),
+			dataType: 'json',
+			success: function(data){
+				if(data.form_is_valid){
+					$('#batch-table tbody').html(data.batch_list);
+					$('#modal-batch').modal('hide');
+				} else {
+					$('#modal-batch .modal-content').html(data.html_form)
+				}
+			}
+		})
+		return false;
+	}
+
+	// create
+	$(".show-form").click(ShowForm);
+	$("#modal-batch").on("submit",".create-form",SaveForm);
+
+	//update
+	$('#batch-table').on("click",".show-form-update",ShowForm);
+	$('#modal-batch').on("submit",".update-form",SaveForm)
+
+	//delete
+	$('#batch-table').on("click",".show-form-delete",ShowForm);
+	$('#modal-batch').on("submit",".delete-form",SaveForm)
+	});
+
+
 //stock
 $(document).ready(function(){
 	var ShowForm = function(){
@@ -325,7 +375,7 @@ $(document).ready(function(){
 			dataType: 'json',
 			success: function(data){
 				if(data.form_is_valid){
-					$('#unit-table tbody').html(data.unit_list);
+					$('#unit-table tbody').html(data.unit_list)
 					$('#modal-unit').modal('hide');
 				} else {
 					$('#modal-unit .modal-content').html(data.html_form)
@@ -335,18 +385,18 @@ $(document).ready(function(){
 		return false;
 	}
 
-// create
-$(".show-form").click(ShowForm);
-$("#modal-unit").on("submit",".create-form",SaveForm);
+	// create
+	$(".show-form").click(ShowForm);
+	$("#modal-unit").on("submit",".create-form",SaveForm);
 
-//update
-$('#unit-table').on("click",".show-form-update",ShowForm);
-$('#modal-unit').on("submit",".update-form",SaveForm)
+	//update
+	$('#unit-table').on("click",".show-form-update",ShowForm);
+	$('#modal-unit').on("submit",".update-form",SaveForm)
 
-//delete
-$('#unit-table').on("click",".show-form-delete",ShowForm);
-$('#modal-unit').on("submit",".delete-form",SaveForm)
-});
+	//delete
+	$('#unit-table').on("click",".show-form-delete",ShowForm);
+	$('#modal-unit').on("submit",".delete-form",SaveForm)
+	});
 
 //Products/items
 $(document).ready(function(){

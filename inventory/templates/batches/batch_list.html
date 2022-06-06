@@ -1,0 +1,48 @@
+{% extends 'base_inventory.html' %}
+
+{% block content %}    
+<!-- Main content -->
+<section class="content">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-12">
+
+        <div class="card-body">
+            <div class="card">
+              <div class="card-header">
+                <div class="block-header row">
+
+                  <div class="col-2 mb-2">
+                    <button class="btn btn-primary show-form" data-url="{% url 'batch_create' %}"> <span class="fa fa-plus fa-1x"></span> Add Batch</button>
+                  </div>
+    
+              </div>
+            <table class="table table-bordered table-striped" id="batch-table">
+              <thead >
+                <tr>
+                    <th>#</th>
+                    <th>Batch Number</th>
+                    <th>Description</th>
+                    <th>Date Created</th>
+                    <th>Action</th>
+    
+                </tr>
+              </thead>
+              <tbody>
+                {% include "batches/batch_list_2.html" %}
+              </tbody>
+            </table>
+              </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="modal fade" id="modal-batch">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content"></div>
+  </div>
+</div>
+{% endblock %}

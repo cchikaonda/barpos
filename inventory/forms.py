@@ -10,6 +10,8 @@ from django.db import models
 from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.contrib.auth.models import Group, User
 
+
+
 class AddItemForm(forms.ModelForm):
     class Meta:
         model = Item
@@ -44,4 +46,10 @@ class AddStockForm(forms.ModelForm):
     class Meta:
         model = Stock
         fields = ('item', 'batch', 'supplier_name','ordered_price','stock_in','unit_quantity')
+
+class AddBatchForm(forms.ModelForm):
+    class Meta:
+        model = BatchNumber
+        fields = ('batch_number', 'description')
+
 

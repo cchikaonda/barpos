@@ -34,6 +34,10 @@ urlpatterns = [
     path('customers/customer_delete/<int:id>/', customer_delete, name = 'customer_delete'),
 
     path('batch_list/', batch_list, name = 'batch_list'),
+    path('batch_create/', batch_create, name = 'batch_create'),
+    path('batch_update/<int:id>/', batch_update, name = 'batch_update'),
+    path('batch_delete/<int:id>/', batch_delete, name = 'batch_delete'),
+
     path('stock_list/', stock_list, name = 'stock_list'),  
     path('stock_create/', stock_create, name = 'stock_create'),
     path('stock_delete/<int:id>/', stock_delete, name = 'stock_delete'),

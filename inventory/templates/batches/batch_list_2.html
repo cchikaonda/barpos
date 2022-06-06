@@ -1,0 +1,21 @@
+{%for batch_number in batch_numbers%}
+<tr>
+    <td>{{ forloop.counter }}</td>
+    <td>
+       {{ batch_number.batch_number}} 
+    </td>
+    <td>
+      {{batch_number.description}}
+    </td>
+    <td>
+      {{batch_number.created_at}}
+    </td>
+    <td>
+      <div class="btn-group">
+        <button type="button" class="btn btn-sm btn-light show-form-update" data-url="{% url 'batch_update' batch_number.id %}" data-toggle="tooltip" title="Edit {{ batch_number.batch_number }} ">
+            <a class="fa fa-fw fa-pencil-alt"></a>
+        </button>
+    </div>
+    </td>
+</tr>
+{% endfor %}

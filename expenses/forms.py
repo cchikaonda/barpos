@@ -11,7 +11,8 @@ from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.contrib.auth.models import Group, User
 from .models import ExpenseCategory, Expense
 
-from bootstrap_datepicker_plus.widgets import DatePickerInput, TimePickerInput, DateTimePickerInput, MonthPickerInput, YearPickerInput
+# from bootstrap_datepicker_plus.widgets import DatePickerInput, TimePickerInput, DateTimePickerInput, MonthPickerInput, YearPickerInput
+from .widgets import DatePickerInput, TimePickerInput, DateTimePickerInput
 
 class AddExpenseForm(forms.ModelForm):
     class Meta:
@@ -22,7 +23,7 @@ class AddExpenseForm(forms.ModelForm):
             'expense_description': forms.TextInput(attrs={'class': 'js-max-length form-control','max-length': '70', 'id': 'example-max-length4','placeholder': '70 chars limit..', 'data-always-show': 'True',
                                                   'data-pre-text': 'Used', 'data-separator': 'of',
                                                   'data-post-text': 'characters'}),
-            'created_at': DateTimePickerInput(),
+            'created_at': DatePickerInput(),
             'paid_by': forms.TextInput(attrs={'class': 'form-control', 'readonly':'readonly'})
         }
 

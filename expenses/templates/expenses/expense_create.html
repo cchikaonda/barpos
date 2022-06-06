@@ -1,5 +1,4 @@
 {% load crispy_forms_tags %}
-{{form.media}}
 <form method="post" data-url="{% url 'expense_create' %}" class="create-form">
 	{% csrf_token %}
     <div class="modal-header bg-success">
@@ -37,6 +36,6 @@
 		
     <div class="modal-footer block-content block-content-full text-right border-top">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="submit" class="btn btn-primary">add expense</button>
+        <input class="btn btn-primary" type="submit" value="Add Expense">
     </div>
 </form>
