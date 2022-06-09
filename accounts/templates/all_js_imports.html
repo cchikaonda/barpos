@@ -118,16 +118,79 @@
             "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
         }).buttons().container().appendTo('#refunds_report_table_wrapper .col-md-6:eq(0)');
 
+        $("#stock-table").DataTable({
+            "responsive": true, 
+            "lengthChange": false, 
+            "autoWidth": false,
+            "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+        }).buttons().container().appendTo('#stock-table_wrapper .col-md-6:eq(0)');
+
+        $("#stock-details").DataTable({
+            "responsive": true, 
+            "lengthChange": false, 
+            "autoWidth": false,
+            "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+        }).buttons().container().appendTo('#stock-details_wrapper .col-md-6:eq(0)');
+
+        $("#batch-table").DataTable({
+            "responsive": true, 
+            "lengthChange": false, 
+            "autoWidth": false,
+            "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+        }).buttons().container().appendTo('#batch-table_wrapper .col-md-6:eq(0)');
+
+        $("#supplier-table").DataTable({
+            "responsive": true, 
+            "lengthChange": false, 
+            "autoWidth": false,
+            "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+        }).buttons().container().appendTo('#supplier-table_wrapper .col-md-6:eq(0)');
+
+        $("#user-table").DataTable({
+            "responsive": true, 
+            "lengthChange": false, 
+            "autoWidth": false,
+        }).buttons().container().appendTo('#user-table_wrapper .col-md-6:eq(0)');
+
+        $("#quotation_items_table").DataTable({
+            "responsive": true, 
+            "lengthChange": false, 
+            "autoWidth": false,
+            "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+        }).buttons().container().appendTo('#quotation_items_table_wrapper .col-md-6:eq(0)');
+
+        $("#quotation-table").DataTable({
+            "responsive": true, 
+            "lengthChange": false, 
+            "autoWidth": false,
+            "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+        }).buttons().container().appendTo('#quotation-table_wrapper .col-md-6:eq(0)');
+
+        $("#out_of_stock_items_table").DataTable({
+            "orderCellsTop": true,
+            "responsive": true, 
+            "lengthChange": false, 
+            "autoWidth": false,
+            "pageLength":5,
+            "buttons": ["copy", "csv", "excel", "pdf",]
+        }).buttons().container().appendTo('#out_of_stock_items_table_wrapper .col-md-6:eq(0)');
+        
+
         $("#sales_report_table").DataTable({
             "responsive": true, 
             "lengthChange": false, 
             "autoWidth": false,
-            // "paging":false,
             "pageLength":50,
             "order":[],
-            "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+            "buttons": ["copy", "csv", "excel", "pdf", "print",]
         }).buttons().container().appendTo('#sales_report_table_wrapper .col-md-6:eq(0)');
 
+        $("#expenses-category-table").DataTable({
+            "responsive": true, 
+            "lengthChange": false, 
+            "autoWidth": false,
+            "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+        }).buttons().container().appendTo('#expenses-category-table_wrapper .col-md-6:eq(0)');
       
         $("#expenses-table").DataTable({
             "responsive": true, 
@@ -135,6 +198,8 @@
             "autoWidth": false,
             "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
         }).buttons().container().appendTo('#expenses-table_wrapper .col-md-6:eq(0)');
+
+        
 
         $("#orders-table").DataTable({
             "responsive": true, 
@@ -154,7 +219,22 @@
             "responsive":true,
             "lengthChange": false,
             "autoWidth": false,
-            "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+            "buttons": ["copy", "csv", "excel", "pdf",
+            {
+                              extend: 'print',
+                              messageTop: 'Inventory Items',
+                              exportOptions: {
+                                  columns: ':visible',
+                                  
+                              }
+                          },
+                          'colvis'
+                        ],
+                          columnDefs: [ {
+                              targets: -1,
+                              visible: true
+                          }
+          ]
         }).buttons().container().appendTo('#item-table_wrapper .col-md-6:eq(0)');
 
         $("#customer-table").DataTable({
@@ -183,7 +263,9 @@
             "responsive": true, 
             "lengthChange": false, 
             "autoWidth": false,
-            "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+            "pageLength":50,
+            "order":[],
+            "buttons": ["copy", "csv", "excel", "pdf", "print",]
         }).buttons().container().appendTo('#inventory_quantity_table_wrapper .col-md-6:eq(0)');
 
   
@@ -222,37 +304,9 @@
             "responsive": true,
         });
 
-        $('#user-table').DataTable({
-            "paging": true,
-            "lengthChange": false,
-            "searching": true,
-            "ordering": true,
-            "info": true,
-            "autoWidth": false,
-            "responsive": true,
-        });
+       
 
         $('#product-table').DataTable({
-            "paging": true,
-            "lengthChange": false,
-            "searching": true,
-            "ordering": true,
-            "info": true,
-            "autoWidth": false,
-            "responsive": true,
-        });
-
-        $('#stock-table').DataTable({
-            "paging": true,
-            "lengthChange": false,
-            "searching": true,
-            "ordering": true,
-            "info": true,
-            "autoWidth": false,
-            "responsive": true,
-        });
-
-        $('#supplier-table').DataTable({
             "paging": true,
             "lengthChange": false,
             "searching": true,

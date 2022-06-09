@@ -15,8 +15,37 @@
 
 <!-- /.card-header -->
 
+
 <div id="page-content" class="card-body not-visible">
   <div class="card-body">
+    <table class="table table-bordered table-striped mb-4">
+      <tbody>
+      <tr>
+          <td class="text-right">TOTAL EXPECTED REVENUE</td>
+          <td class="text-right">{{expected_sum_items_cost}}</td>
+      </tr>
+      <tr>
+        <td class="text-right">COST OF GOODS(COG)</td>
+        <td class="text-right">{{sum_cost_of_goods}}</td>
+      </tr>
+      <tr>
+        <td class="text-right">EXPECTED PROFIT/LOSS</td>
+        {% if expected_profit.amount > 0.0 %}
+        <td class="text-right">
+          <span class="text-success">
+            <i class="fas fa-arrow-up"></i> {{expected_profit}}
+          </span>
+        </td>
+        {% else %}
+        <td class="text-right">
+          <span class="text-danger">
+            <i class="fas fa-arrow-down"></i> {{expected_profit}}
+          </span>
+        </td>
+        {% endif %}
+      </tr>
+      </tbody>
+    </table>
     <table class="table table-bordered table-striped" id="inventory_quantity_table">
       <thead >
         <tr>
@@ -44,30 +73,47 @@
           </tr>
           {% endfor %}
           <tr>
-              <td colspan="7" class="text-right">TOTAL EXPECTED REVENUE</td>
-              <td class="text-right">{{expected_sum_items_cost}}</td>
-          </tr>
-          <tr>
-            <td colspan="7" class="text-right">COST OF GOODS(COG)</td>
-            <td class="text-right">{{sum_cost_of_goods}}</td>
-          </tr>
-          <tr>
-            <td colspan="7" class="text-right">EXPECTED PROFIT/LOSS</td>
-            {% if expected_profit.amount > 0.0 %}
-            <td class="text-right">
-              <span class="text-success">
-                <i class="fas fa-arrow-up"></i> {{expected_profit}}
-              </span>
-            </td>
-            {% else %}
-            <td class="text-right">
-              <span class="text-danger">
-                <i class="fas fa-arrow-down"></i> {{expected_profit}}
-              </span>
-            </td>
-            {% endif %}
-          </tr>
-          
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td class="text-right">TOTAL EXPECTED REVENUE</td>
+            <td class="text-right">{{expected_sum_items_cost}}</td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          <td class="text-right">COST OF GOODS(COG)</td>
+          <td class="text-right">{{sum_cost_of_goods}}</td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          <td class="text-right">EXPECTED PROFIT/LOSS</td>
+          {% if expected_profit.amount > 0.0 %}
+          <td class="text-right">
+            <span class="text-success">
+              <i class="fas fa-arrow-up"></i> {{expected_profit}}
+            </span>
+          </td>
+          {% else %}
+          <td class="text-right">
+            <span class="text-danger">
+              <i class="fas fa-arrow-down"></i> {{expected_profit}}
+            </span>
+          </td>
+          {% endif %}
+        </tr>
       </tbody>
     </table>  
   </div> 

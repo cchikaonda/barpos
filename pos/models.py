@@ -121,8 +121,8 @@ class Order(models.Model):
             return 'ORD%04d'%self.pk
     code = models.CharField(max_length=50, null=True, default="0000")
     order_type = models.CharField(max_length = 15, choices = order_type_options, default='Cash')
-    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, null=True)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True)
     items = models.ManyToManyField(OrderItem)
     ordered = models.BooleanField(default=False)
     payments = models.ManyToManyField(Payment)
@@ -359,10 +359,10 @@ def update_last_payment_on_order(sender, instance, **kwargs):
     if instance.ordered == True:
         last_payment = instance.payments.last()
         total_paid_amount = instance.total_paid_amount()
-        print(last_payment)
-        previous_paid_amount =  total_paid_amount - last_payment.paid_amount
-        balance_required = instance.order_total_due() -  previous_paid_amount
-        Payment.objects.filter(id=last_payment.id).update(paid_amount = balance_required )
+        if last_payment != None:
+            previous_paid_amount =  total_paid_amount - last_payment.paid_amount
+            balance_required = instance.order_total_due() -  previous_paid_amount
+            Payment.objects.filter(id=last_payment.id).update(paid_amount = balance_required )
 
 @receiver(post_save, sender=Order)
 def save_layby_orders(sender, instance, **kwargs):

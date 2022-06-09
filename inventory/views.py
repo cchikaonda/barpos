@@ -42,12 +42,12 @@ def inventory_dashboard(request):
 
     total_cog_sold = 0
     ordered_items = OrderItem.objects.filter(ordered = True)
+    if ordered_items.exists:
+        for ordered_item in ordered_items:
+            stock_o = Stock.objects.filter(item = ordered_item.item)
 
     for ordered_item in ordered_items:
-        stock_o = Stock.objects.filter(item = ordered_item.item).order_by('-updated_at')[0].ordered_price 
-
-    for ordered_item in ordered_items:
-       total_cog_sold += Stock.objects.filter(item = ordered_item.item).order_by('-updated_at')[0].ordered_price * ordered_item.quantity
+       total_cog_sold += ordered_item.item.cost_price * ordered_item.quantity
     
     total_tax = 0
     sales_overtime = 0
@@ -125,7 +125,7 @@ def get_profit_for_all_time():
     ordered_items = OrderItem.objects.filter(ordered = True)
 
     for ordered_item in ordered_items:
-       total_cog_sold += Stock.objects.filter(item = ordered_item.item).order_by('-updated_at')[0].ordered_price * ordered_item.quantity
+       total_cog_sold += ordered_item.item.cost_price * ordered_item.quantity
 
     total_tax = 0
     sales_overtime = 0

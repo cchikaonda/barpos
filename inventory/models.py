@@ -95,7 +95,11 @@ class Item(models.Model):
     @property
     def get_cost_price(self):
         stock = Stock.objects.filter(item = self.id)
-        return stock.last().ordered_price
+        print(stock)
+        if stock:
+            return stock.last().ordered_price
+        else:
+            return self.price * 0.7
     
     @property
     def get_total_cost_price(self):
@@ -143,7 +147,7 @@ class Stock(models.Model):
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
     batch = models.ForeignKey(BatchNumber, on_delete=models.SET_NULL, null=True, default=1)
     supplier_name = models.ForeignKey(Supplier, on_delete=models.SET_NULL, null=True)
-    ordered_price = MoneyField(max_digits=14, decimal_places=2, default_currency='MWK')
+    ordered_price = MoneyField(max_digits=14, decimal_places=2, default_currency='MWK', default= 1)
     previous_quantity = models.IntegerField(default=0)
     stock_in = models.IntegerField(default=0)
     new_quantity = models.IntegerField(default=0)

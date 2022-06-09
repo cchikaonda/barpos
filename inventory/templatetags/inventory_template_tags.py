@@ -3,6 +3,7 @@ from accounts.models import CustomUser
 from inventory.models import *
 from quotations.models import Quotation
 from expenses.models import Expense, ExpenseCategory
+from pos.models import Customer
 
 register = template.Library()
 
@@ -61,6 +62,12 @@ def batch_number_count(user):
 def expenses_count(user):
     if user.is_authenticated:
         qs = Expense.objects.all().count()
+    return qs
+
+@register.filter
+def customers_count(user):
+    if user.is_authenticated:
+        qs = Customer.objects.all().count()
     return qs
 
 

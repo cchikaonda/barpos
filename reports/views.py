@@ -952,7 +952,6 @@ def refund_report(request):
             report_period = "Yesterday"
 
             refunded_payments_r = RefundPayment.objects.filter(created_at__gte = yesterday,created_at__lt = today, refundorder__refunded = True)
-            print(refunded_payments_r)
   
         elif report_period == 3:
             refunded_items = last_7_days_refunded_items(item_cat)
@@ -1280,7 +1279,7 @@ def profit_report(request):
 
     summery_expenses = get_sum_of_expenses_by_category(expenses)
     expense_list = view_expense_cat_list(expenses)
-    print(expense_list)
+
 
     sum_ordered_items_count = 0
     total_cost_items_ordered = Money(0.0, 'MWK')

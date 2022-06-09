@@ -27,14 +27,9 @@
           <tbody>
         {% for paid_order in unpaid_orders %}
         <tr role="row" class="odd">
-            {% if request.user == paid_order.user %}
-                  <td class="text-left"><a href="{% url 'personal_order_list' paid_order.id %}">{{paid_order.get_code}}</a></td>
-                  <td class="text-left"><a href="{% url 'personal_order_list' paid_order.id %}">{{paid_order.customer}}</a></td>
-        {% else %}
-          <td>{{paid_order.get_code}}</td>
-          <td tabindex="0" class="sorting_1">{{paid_order.customer}}</td>
-        {% endif %}
-          
+           
+          <td class="text-left"><a href="{% url 'personal_order_list' paid_order.id %}">{{paid_order.get_code}}</a></td>
+          <td class="text-left"><a href="{% url 'personal_order_list' paid_order.id %}">{{paid_order.customer}}</a></td>
           <td>{{paid_order.order_total_cost}}</td>
           <td>{{paid_order.created_at| date:"d/m/Y"}}, {{paid_order.created_at| date:"H:m:s"}}</td>
           <td>{{paid_order.user.full_name}}</td>
