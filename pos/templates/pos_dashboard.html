@@ -54,6 +54,7 @@
                     <th >Order ID</th>
                     <th >Customer Name</th>
                     <th >Total Bill</th>
+                    <th>Order Type</th>
                     <th >Date</th>
                     <th >Cashier</th>
                     <th >Action</th>
@@ -65,6 +66,7 @@
                     <td class="text-left"><a href="{% url 'personal_order_list' unpaid_order.id %}">{{unpaid_order.get_code}}</a></td>
                     <td class="text-left"><a href="{% url 'personal_order_list' unpaid_order.id %}">{{unpaid_order.customer}}</a></td>
                     <td>{{unpaid_order.order_total_cost}}</td>
+                    <td>{{unpaid_order.order_type}}</td>
                     <td>{{unpaid_order.created_at }}</td>
                     <td>{{unpaid_order.user.full_name}}</td>
                     <td class="project-actions text-left">
