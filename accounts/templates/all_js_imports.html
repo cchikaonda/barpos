@@ -132,6 +132,16 @@
             "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
         }).buttons().container().appendTo('#stock-details_wrapper .col-md-6:eq(0)');
 
+        $("#unpaid_order_pos_dash_table").DataTable({
+            "responsive": true, 
+            "lengthChange": false, 
+            "autoWidth": false,
+            "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+        }).buttons().container().appendTo('#unpaid_order_pos_dash_table_wrapper .col-md-6:eq(0)');
+
+
+        
+
         $("#batch-table").DataTable({
             "responsive": true, 
             "lengthChange": false, 

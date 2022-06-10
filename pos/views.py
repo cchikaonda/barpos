@@ -169,7 +169,7 @@ def change_order_type(request):
                 order_type = form.cleaned_data.get('order_type')
                 print(order_type)
                 order.update(order_type = order_type)
-                order = Order.objects.get(user = request.user, ordered = False)
+                order = Order.objects.get(id = order_id, user = request.user, ordered = False)
                 order_id = order.get_code()
 
                 order_payments = Payment.objects.filter(order_id =order_id)

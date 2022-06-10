@@ -226,6 +226,7 @@ $(document).ready(function(){
 			success: function(data){
 				if(data.form_is_valid){
 					$('#batch-table tbody').html(data.batch_list);
+					location.reload();
 					$('#modal-batch').modal('hide');
 				} else {
 					$('#modal-batch .modal-content').html(data.html_form)
