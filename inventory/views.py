@@ -614,7 +614,6 @@ def save_all_batches(request, form, template_name):
             data['form_is_valid'] = True
             batch_numbers = BatchNumber.objects.all()
             data['batch_list'] = render_to_string('batches/batch_list_2.html',{'batch_numbers': batch_numbers})
-            print(data)
         else:
             data['form_is_valid'] = False
     context = {
@@ -691,8 +690,8 @@ def save_all_stocks(request, form, template_name):
         if form.is_valid():
             form.save()
             data['form_is_valid'] = True
-            stocks =  Stock.objects.all()
-            data['stock_list'] = render_to_string('stocks/stock_list_2.html',{'stocks': stocks,})
+            stock =  Stock.objects.all()
+            data['stock_list'] = render_to_string('stocks/stock_list_2.html',{'stock': stock})
         else:
             data['form_is_valid'] = False
     context = {

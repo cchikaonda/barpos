@@ -276,6 +276,7 @@ $(document).ready(function(){
 			success: function(data){
 				if(data.form_is_valid){
 					$('#stock-table tbody').html(data.stock_list);
+					location.reload();
 					$('#modal-stock').modal('hide');
 				} else {
 					$('#modal-stock .modal-content').html(data.html_form)
@@ -285,19 +286,18 @@ $(document).ready(function(){
 		return false;
 	}
 
-// create
-$(".show-form").click(ShowForm);
-$("#modal-stock").on("submit",".create-form",SaveForm);
+	// create
+	$(".show-form").click(ShowForm);
+	$("#modal-stock").on("submit",".create-form",SaveForm);
 
-//update
-$('#stock-table').on("click",".show-form-update",ShowForm);
-$('#modal-stock').on("submit",".update-form",SaveForm)
+	//update
+	$('#stock-table').on("click",".show-form-update",ShowForm);
+	$('#modal-stock').on("submit",".update-form",SaveForm)
 
-//delete
-$('#stock-table').on("click",".show-form-delete",ShowForm);
-$('#modal-stock').on("submit",".delete-form",SaveForm)
-    });
-
+	//delete
+	$('#stock-table').on("click",".show-form-delete",ShowForm);
+	$('#modal-stock').on("submit",".delete-form",SaveForm)
+	});
 
 //users
 $(document).ready(function(){

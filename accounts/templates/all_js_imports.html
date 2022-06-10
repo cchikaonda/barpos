@@ -261,11 +261,14 @@
 
         $('#inventory_quantity_table').DataTable({
             "responsive": true, 
-            "lengthChange": false, 
+            "lengthChange": true, 
             "autoWidth": false,
             "pageLength":50,
             "order":[],
-            "buttons": ["copy", "csv", "excel", "pdf", "print",]
+            "lengthMenu": [ [10, 25, 50, -1], [10, 25, 50, "All"] ],
+            "buttons": ["copy", "csv", "excel", "pdf", "print",
+            
+          ]
         }).buttons().container().appendTo('#inventory_quantity_table_wrapper .col-md-6:eq(0)');
 
   

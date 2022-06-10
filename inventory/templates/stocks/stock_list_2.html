@@ -15,7 +15,7 @@
 
     <td class="text-center">
         <div class="btn-group">
-            <button type="button"  class="btn btn-sm btn-light show-form-delete" data-url="{% url 'stock_delete' stock.id %}" data-toggle="tooltip" title="Delete {{ items.item_name }}">
+            <button type="button"  class="btn btn-sm btn-light show-form-delete" data-url="{% url 'stock_delete' stock.id %}" data-toggle="tooltip" title="Delete {{ stock.item.item_name }}">
                 <a class="fa fa-fw fa-times"> </a>
             </button>
         </div>

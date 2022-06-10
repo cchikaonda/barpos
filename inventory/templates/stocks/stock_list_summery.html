@@ -2,9 +2,21 @@
 <tr>
     <td>{{ forloop.counter }}</td>
     <td> {{stock_summery.item_name}}</td>
+    {% if stock_summery.sum_stock_in == None %}
+    <td class="text-center">0</td>
+    {% else %}
     <td class="text-center">{{stock_summery.sum_stock_in}}</td>
+    {% endif %}
     <td class="text-center">{{ stock_summery.quantity_at_hand }}</td>
-    <td class="text-center">{{ stock_summery.sum_sold }}</td>
-    <td class="text-center">{{ stock_summery.total_ordered_price }}</td>
+    {% if stock_summery.sum_stock_in == None %}
+    <td class="text-center">0</td>
+    {% else %}
+    <td class="text-center">{{stock_summery.sum_stock_in}}</td>
+    {% endif %}
+    {% if stock_summery.total_ordered_price == None %}
+    <td class="text-center">0</td>
+    {% else %}
+    <td class="text-center">{{stock_summery.total_ordered_price}}</td>
+    {% endif %}
 </tr>
 {% endfor %}
