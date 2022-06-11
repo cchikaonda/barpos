@@ -23,7 +23,7 @@ class AddExpenseForm(forms.ModelForm):
             'expense_description': forms.TextInput(attrs={'class': 'js-max-length form-control','max-length': '70', 'id': 'example-max-length4','placeholder': '70 chars limit..', 'data-always-show': 'True',
                                                   'data-pre-text': 'Used', 'data-separator': 'of',
                                                   'data-post-text': 'characters'}),
-            'created_at': DatePickerInput(),
+            'created_at': DateTimePickerInput(attrs={'class': 'form-control','type': 'datetime-local'}, format = '%Y-%m-%dT%H:%M'),
             'paid_by': forms.TextInput(attrs={'class': 'form-control', 'readonly':'readonly'})
         }
 
