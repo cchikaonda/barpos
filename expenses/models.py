@@ -44,7 +44,7 @@ class Expense(models.Model):
     amount = MoneyField(max_digits=14, decimal_places=2, default_currency='MWK', null = True)
     category = models.ForeignKey(ExpenseCategory, on_delete=models.CASCADE)
     paid_by = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    created_at = models.DateField()
+    created_at = models.DateTimeField()
     
 
     def __str__(self):
