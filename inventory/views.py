@@ -660,16 +660,9 @@ def view_batch_details(request, batch_id):
 
 @login_required
 def stock_list(request):
-    ordered_items = OrderItem.objects.filter(ordered = True)
-
-    for ordered_item in ordered_items:
-        stock_o = Stock.objects.filter(item = ordered_item.item).order_by('-updated_at')[0].ordered_price 
-
     stocks = Stock.objects.order_by('-updated_at')
     stock_summery = Item.objects.prefetch_related('item_name').values('item_name','quantity_at_hand').annotate(sum_stock_in = Sum(F('stock__stock_in'))).annotate(total_ordered_price = Sum('stock__total_cost_of_items')).annotate(sum_sold = F('sum_stock_in')-F('quantity_at_hand'))    
-    queryset = Item.objects.prefetch_related('item_name').values('item_name','quantity_at_hand').annotate(stock_in_sum = Sum(F('stock__stock_in'))).annotate(sum_sold = F('stock_in_sum')-F('quantity_at_hand'))
-
-
+    
     item_cats = ItemCategory.get_all_item_categories()
     item_cat_id = request.GET.get('category')
     if item_cat_id != None:
