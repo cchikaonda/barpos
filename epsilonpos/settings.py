@@ -138,7 +138,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql', 
         'NAME': 'pink_touch_pos',
         'USER': 'root',
-        'PASSWORD': '',
+        'PASSWORD': 'root',
         'HOST': 'localhost',   # Or an IP Address that your DB is hosted on
         'PORT': '3306',
         'OPTIONS': {  
