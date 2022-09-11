@@ -43,7 +43,7 @@
                 <div class="small-box bg-light dashboard_menu_item">
                   
                   <div class="inner text-secondary">
-                    <h3>My Invoices</h3>
+                    <h3>My Bills</h3>
     
                     <p class="ml-4">{{my_invoices_count}}</p> 
                   </div>
@@ -99,7 +99,7 @@
             <a href="{% url 'view_all_orders' %}">
             <div class="small-box bg-light dashboard_menu_item">
                 <div class="inner text-secondary">
-                <h3>Invoices</h3>
+                <h3>All Bills</h3>
                 <p class="ml-4">{{all_invoices_count}}</p>
                 </div>
                 <div class="icon">
@@ -113,10 +113,10 @@
 
         <div class="col-lg-3 col-6">
            
-            <a href="{% url 'quotation_list' %}">
+            <a href="{% url 'expense_list' %}">
             <div class="small-box bg-light dashboard_menu_item">
                 <div class="inner text-secondary">
-                <h3>Quotations</h3>
+                <h3>Expenses</h3>
                 <p class="ml-4">{{quotations_count}}</p>
                 
                 </div>
