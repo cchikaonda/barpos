@@ -179,7 +179,7 @@ class Stock(models.Model):
 
     @property
     def get_total_cost_of_items(self):
-        return self.stock_in * self.ordered_price
+        return self.stock_in * self.ordered_price * self.unit_quantity
 
     @staticmethod
     def get_all_stocks():
