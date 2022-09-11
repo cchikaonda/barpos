@@ -63,14 +63,7 @@ def reports_dashboard(request):
         sales_tax += sales_all_time.vat_cost
     
     orders_r = Order.objects.filter(ordered = False)
-    lay_by_orders = LayByOrders.objects.filter(order_id__in = orders_r)
-    lay_b_payments = Payment.objects.filter(laybyorders__in = lay_by_orders)
-    sum_layby_paid_amount = Money(0.0, 'MWK')
-    for lay_b_payments in lay_b_payments:
-        if str(lay_b_payments.paid_amount) != "None":
-            sum_layby_paid_amount += lay_b_payments.paid_amount
     
-    sales_overtime += sum_layby_paid_amount
     
     monday_total_sales = inventory_views.get_total_sales_this_week(2)
     tuesday_total_sales = inventory_views.get_total_sales_this_week(3)
@@ -305,6 +298,8 @@ def sales_report(request):
     report_time = timezone.now()
     yesterday = today-timedelta(days=1)
 
+    payments = Payment.objects.all()
+    
     sum_total_vat = Money(0.0, 'MWK')
     orders = Order.objects.filter(ordered = True)
     for order in orders:
@@ -318,12 +313,6 @@ def sales_report(request):
             ordered_items = all_days_sales(item_cat)
             report_period = "All Days"
             orders_r = Order.objects.filter(ordered = False)
-            lay_by_orders = LayByOrders.objects.filter(order_id__in = orders_r)
-            lay_b_payments = Payment.objects.filter(laybyorders__in = lay_by_orders)
-            sum_layby_paid_amount = Money(0.0, 'MWK')
-            for lay_b_payments in lay_b_payments:
-                if str(lay_b_payments.paid_amount) != "None":
-                    sum_layby_paid_amount += lay_b_payments.paid_amount
         elif report_period == 1:
             ordered_items = todays_ordered_items(item_cat)
             report_period = "Today"
@@ -348,11 +337,6 @@ def sales_report(request):
             orders_r = Order.objects.filter(order_type = 'Lay By', ordered = False)
             today_layby_payments = Payment.objects.filter(order__id__in = orders_r, order_type = 'Lay By', updated_at__gte = today)
             
-            sum_layby_paid_amount = Money(0.0, 'MWK')
-            for today_layby_payments in today_layby_payments:
-                if str(today_layby_payments.paid_amount) != "None":
-                    sum_layby_paid_amount += today_layby_payments.paid_amount
-            
          
         elif report_period == 2:
             ordered_items = yesterday_ordered_items(item_cat)
@@ -362,13 +346,6 @@ def sales_report(request):
             payments = Payment.objects.filter(updated_at__gte = yesterday,updated_at__lt = date_today)
 
             orders_r = Order.objects.filter(ordered = False)
-            lay_by_orders = LayByOrders.objects.filter(order_id__in = orders_r)
-            lay_b_payments = Payment.objects.filter(laybyorders__in = lay_by_orders, updated_at__gte = yesterday,updated_at__lt = date_today)
-            sum_layby_paid_amount = Money(0.0, 'MWK')
-            for lay_b_payments in lay_b_payments:
-                if str(lay_b_payments.paid_amount) != "None":
-                    sum_layby_paid_amount += lay_b_payments.paid_amount
-            
 
             sum_total_vat = Money(0.0, 'MWK')
             orders = Order.objects.filter(ordered = True, updated_at__gte = yesterday,updated_at__lt = date_today)
@@ -385,13 +362,6 @@ def sales_report(request):
             payments = Payment.objects.filter(updated_at__range = [seven_days_b4, date_today])
 
             orders_r = Order.objects.filter(ordered = False)
-            lay_by_orders = LayByOrders.objects.filter(order_id__in = orders_r)
-            lay_b_payments = Payment.objects.filter(laybyorders__in = lay_by_orders, updated_at__range = [seven_days_b4, date_today])
-            sum_layby_paid_amount = Money(0.0, 'MWK')
-            for lay_b_payments in lay_b_payments:
-                if str(lay_b_payments.paid_amount) != "None":
-                    sum_layby_paid_amount += lay_b_payments.paid_amount
-
             sum_total_vat = Money(0.0, 'MWK')
             orders = Order.objects.filter(ordered = True, updated_at__range = [seven_days_b4, date_today])
             for order in orders:
@@ -407,12 +377,6 @@ def sales_report(request):
             payments = Payment.objects.filter(updated_at__range = [thirty_days_b4, date_today])
 
             orders_r = Order.objects.filter(ordered = False)
-            lay_by_orders = LayByOrders.objects.filter(order_id__in = orders_r)
-            lay_b_payments = Payment.objects.filter(laybyorders__in = lay_by_orders, updated_at__range = [thirty_days_b4, date_today])
-            sum_layby_paid_amount = Money(0.0, 'MWK')
-            for lay_b_payments in lay_b_payments:
-                if str(lay_b_payments.paid_amount) != "None":
-                    sum_layby_paid_amount += lay_b_payments.paid_amount
             
             sum_total_vat = Money(0.0, 'MWK')
             orders = Order.objects.filter(ordered = True, updated_at__range = [thirty_days_b4, date_today])
@@ -429,13 +393,7 @@ def sales_report(request):
             payments = Payment.objects.filter(updated_at__range = [this_month_firstday, today])
 
             orders_r = Order.objects.filter(ordered = False)
-            lay_by_orders = LayByOrders.objects.filter(order_id__in = orders_r)
-            lay_b_payments = Payment.objects.filter(laybyorders__in = lay_by_orders, updated_at__range = [this_month_firstday, today])
-            sum_layby_paid_amount = Money(0.0, 'MWK')
-            for lay_b_payments in lay_b_payments:
-                if str(lay_b_payments.paid_amount) != "None":
-                    sum_layby_paid_amount += lay_b_payments.paid_amount
-            
+
             sum_total_vat = Money(0.0, 'MWK')
             orders = Order.objects.filter(ordered = True, updated_at__range = [this_month_firstday, today])
             for order in orders:
@@ -454,12 +412,6 @@ def sales_report(request):
             payments = Payment.objects.filter(updated_at__range = [last_monthfirstday, last_monthlastday])
 
             orders_r = Order.objects.filter(ordered = False)
-            lay_by_orders = LayByOrders.objects.filter(order_id__in = orders_r)
-            lay_b_payments = Payment.objects.filter(laybyorders__in = lay_by_orders, updated_at__range = [last_monthfirstday, last_monthlastday])
-            sum_layby_paid_amount = Money(0.0, 'MWK')
-            for lay_b_payments in lay_b_payments:
-                if str(lay_b_payments.paid_amount) != "None":
-                    sum_layby_paid_amount += lay_b_payments.paid_amount 
             
             sum_total_vat = Money(0.0, 'MWK')
             orders = Order.objects.filter(ordered = True, updated_at__range = [last_monthfirstday, last_monthlastday])
@@ -467,16 +419,7 @@ def sales_report(request):
                 sum_total_vat += order.vat_cost
     else:
         orders_r = Order.objects.filter(ordered = False)
-        lay_by_orders = LayByOrders.objects.filter(order_id__in = orders_r)
-        lay_b_payments = Payment.objects.filter(laybyorders__in = lay_by_orders)
-        sum_layby_paid_amount = Money(0.0, 'MWK')
-        for lay_b_payments in lay_b_payments:
-            if str(lay_b_payments.paid_amount) != "None":
-                sum_layby_paid_amount += lay_b_payments.paid_amount
-
-        payments = Payment.objects.all()
     
-
     cash_payments = payments.filter(payment_mode = 'Cash')
     total_cash_payments = Money(0.0, 'MWK')
     for cash_payemnt in cash_payments:
@@ -509,7 +452,7 @@ def sales_report(request):
 
     
     total_cash_in_hand = total_mpamba_payments + total_airtel_payments + total_bank_payments + total_cash_payments
-    other_payments = total_cash_in_hand - sum_layby_paid_amount - total_cost_items_ordered
+
 
     context = {
         "header": 'sales report',
@@ -523,11 +466,8 @@ def sales_report(request):
         "sum_ordered_items_count":sum_ordered_items_count,
         "sum_total_vat":sum_total_vat,
         "net_total_sales":net_total_sales,
-        # "sum_today_payments":sum_today_payments,
         "total_cash_in_hand":total_cash_in_hand,
         "report_time":report_time,
-        "sum_layby_paid_amount":sum_layby_paid_amount,
-        "other_payments":other_payments,
 
         "total_mpamba_payments":total_mpamba_payments,
         "total_cash_payments":total_cash_payments,
@@ -801,18 +741,18 @@ def all_days_sales(category):
     category_id = str(category)
     get_item_cat = ItemCategory.objects.filter(category_name = category_id)
     if get_item_cat.exists():
-        return OrderItem.objects.filter(ordered = True, item__category__in = get_item_cat)
+        return OrderItem.objects.filter(item__category__in = get_item_cat)
     else:
-        return OrderItem.objects.filter(ordered = True)
+        return OrderItem.objects.all()
 
 def todays_ordered_items(category):
     today = timezone.now().date()
     category_id = str(category)
     get_item_cat = ItemCategory.objects.filter(category_name = category_id)
     if get_item_cat.exists():
-        return OrderItem.objects.filter(ordered = True, item__category__in = get_item_cat, ordered_time__gte = today)  
+        return OrderItem.objects.filter(item__category__in = get_item_cat, ordered_time__gte = today)  
     else:
-        return OrderItem.objects.filter(ordered = True, ordered_time__gte = today)
+        return OrderItem.objects.filter(ordered_time__gte = today)
 
 def yesterday_ordered_items(category):
     today = timezone.now().date()
@@ -820,9 +760,9 @@ def yesterday_ordered_items(category):
     category_id = str(category)
     get_item_cat = ItemCategory.objects.filter(category_name = category_id)
     if get_item_cat.exists():
-        return OrderItem.objects.filter(ordered = True, item__category__in = get_item_cat, ordered_time__range = [yesterday, today])
+        return OrderItem.objects.filter(item__category__in = get_item_cat, ordered_time__range = [yesterday, today])
     else:
-        return OrderItem.objects.filter(ordered = True, ordered_time__range = [yesterday, today])
+        return OrderItem.objects.filter(ordered_time__range = [yesterday, today])
 
 def last_7_days_ordered_items(category):
     date_today = datetime.now().date()
@@ -832,27 +772,27 @@ def last_7_days_ordered_items(category):
     get_item_cat = ItemCategory.objects.filter(category_name = category_id)
 
     if get_item_cat.exists():
-        return OrderItem.objects.filter(ordered = True, item__category__in = get_item_cat, ordered_time__range = [seven_days_b4, date_today])
+        return OrderItem.objects.filter(item__category__in = get_item_cat, ordered_time__range = [seven_days_b4, date_today])
     else:
-        return OrderItem.objects.filter(ordered = True, ordered_time__range = [seven_days_b4, date_today])
+        return OrderItem.objects.filter(ordered_time__range = [seven_days_b4, date_today])
 def last_30_days_ordered_items(category):
     date_today = datetime.now().date()
     thirty_days_b4 = date_today-timedelta(days=30)
     category_id = str(category)
     get_item_cat = ItemCategory.objects.filter(category_name = category_id)
     if get_item_cat.exists():
-        return OrderItem.objects.filter(ordered = True, item__category__in = get_item_cat, ordered_time__range = [thirty_days_b4, date_today])
+        return OrderItem.objects.filter(item__category__in = get_item_cat, ordered_time__range = [thirty_days_b4, date_today])
     else:
-        return OrderItem.objects.filter(ordered = True, ordered_time__range = [thirty_days_b4, date_today])
+        return OrderItem.objects.filter(ordered_time__range = [thirty_days_b4, date_today])
 def this_month_ordered_items(category):
     today = datetime.now()
     this_month_firstday = datetime.now().date().replace(day=1)
     category_id = str(category)
     get_item_cat = ItemCategory.objects.filter(category_name = category_id)
     if get_item_cat.exists():
-        return OrderItem.objects.filter(ordered = True, item__category__in = get_item_cat, ordered_time__range = [this_month_firstday, today])
+        return OrderItem.objects.filter(item__category__in = get_item_cat, ordered_time__range = [this_month_firstday, today])
     else:
-       return OrderItem.objects.filter(ordered = True, ordered_time__range = [this_month_firstday, today])
+       return OrderItem.objects.filter(ordered_time__range = [this_month_firstday, today])
 
 def last_month_ordered_items(category):
     today = datetime.now().date()
@@ -863,9 +803,9 @@ def last_month_ordered_items(category):
     category_id = str(category)
     get_item_cat = ItemCategory.objects.filter(category_name = category_id)
     if get_item_cat.exists():
-        return OrderItem.objects.filter(ordered = True, item__category__in = get_item_cat, ordered_time__range = [last_monthfirstday, last_monthlastday])
+        return OrderItem.objects.filter(item__category__in = get_item_cat, ordered_time__range = [last_monthfirstday, last_monthlastday])
     else:
-        return OrderItem.objects.filter(ordered = True,ordered_time__range = [last_monthfirstday, last_monthlastday])
+        return OrderItem.objects.filter(ordered_time__range = [last_monthfirstday, last_monthlastday])
 
 def count_items_in_orders_by_item_using_range(from_date, to_date, category_id):
     from_d = from_date
@@ -1078,22 +1018,9 @@ def custom_range_refund_report(request):
         
         orders_r = RefundOrder.objects.filter(ordered = False)
 
-        lay_by_orders = LayByOrders.objects.filter(order_id__in = orders_r)
-        lay_b_payments = Payment.objects.filter(laybyorders__in = lay_by_orders, updated_at__gte = from_date, updated_at__lte = to_date)
-        sum_layby_paid_amount = Money(0.0, 'MWK')
-        for lay_b_payments in lay_b_payments:
-            if str(lay_b_payments.paid_amount) != "None":
-                sum_layby_paid_amount += lay_b_payments.paid_amount
     else:
         orders_r = RefundOrder.objects.filter(ordered = False)
-        lay_by_orders = LayByOrders.objects.filter(order_id__in = orders_r)
-        lay_b_payments = Payment.objects.filter(laybyorders__in = lay_by_orders)
-        sum_layby_paid_amount = Money(0.0, 'MWK')
-        for lay_b_payments in lay_b_payments:
-            if str(lay_b_payments.paid_amount) != "None":
-                sum_layby_paid_amount += lay_b_payments.paid_amount
 
- 
     sum_refunded_items_count = 0
     total_cost_items_refunded = Money(0.0, 'MWK') 
     for refunded_items_count in refunded_items:

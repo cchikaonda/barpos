@@ -154,8 +154,7 @@
                     <a data-toggle="modal" data-target="#produceReceiptModal"><button class="btn btn-success mr-2 ml-2 posoption_button" style="float: right;"><i class="fas fa-arrow-right"></i> Checkout</button> </a> 
                   {% endif %}
                   {% if order.items and order.order_total_due > order.total_paid_amount%}
-                    <a data-toggle="modal" data-target="#produceReceiptSavedBillModal"><button class="btn btn-info mr-2 ml-2 posoption_button" style="float: left;"><i class="fas fa-save"></i> Save Bill</button> </a>
-                    <a data-toggle="modal" data-target="#laybyModal"><button class="btn btn-secondary mr-2 ml-2 posoption_button" style="float: right;"><i class="fas fa-money-bill-alt"></i> Lay By </button> </a>
+                    <a data-toggle="modal" data-target="#produceReceiptSavedBillModal"><button class="btn btn-warning mr-2 ml-2 posoption_button" style="float: left;"><i class="fas fa-save"></i> Save Bill</button> </a>
                     <a data-toggle="modal" data-target="#cashModal"><button class="btn btn-success mr-2 ml-2 posoption_button" style="float: right;"><i class="fas fa-money-bill-alt"></i> Pay Cash</button> </a>
                   {% endif %}
               </div>
@@ -166,10 +165,52 @@
                 <a data-toggle="modal" data-target="#mpambaModal"><button class="btn btn-success mr-2 ml-2 posoption_button"><i class="fas fa-save"></i> Mpamba</button> </a>
               </div>
               {% endif %}
+
           </div>    
       </div> 
+
+      <div class="card" >
+        <div class="card-header">
+            <h3 class="card-title">Payments</h3>
+            <div class="card-tools">
+                <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i>
+                </button>
+                <button type="button" class="btn btn-tool" data-card-widget="remove"><i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+        <!-- /.card-header -->
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table m-0">
+                  <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Payment Mode</th>
+                    <th class="text-right">Amount</th>
+                    <th></th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                {% for payment in this_order_payments %}
+                  <tr>
+                    <td>{{forloop.counter}}</td>
+                    <td>{{payment.payment_mode}}</td>
+                    <td class="text-right">{{payment.paid_amount}}</td>
+                    <td class="text-center"> <button class="btn btn-outline-info"><i class="fas fa-times"></i></button></td>
+                    </tr>
+                  
+                  {% endfor %}
+                  </tbody>
+                </table>
+            </div>
+        </div>    
+      </div> 
+      
   </div>
+
   <!--END CART ITEMS-->
+
   
 {% else %}
   <!--CART ITEMS-->
@@ -272,6 +313,7 @@
     </div>
     <!--END ITEMS TABLE-->
 <!--END ROW-->
+</div>
 </div>
 
 {% endblock %}

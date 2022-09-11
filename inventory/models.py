@@ -173,13 +173,13 @@ class Stock(models.Model):
     def get_item_quantity_at_hand(self):
         return self.item.quantity_at_hand
     
-    def get_item_ordered_price(self):
-        return self.ordered_price
+    def get_one_item_ordered_price(self):
+        return self.ordered_price / self.unit_quantity
     
 
     @property
     def get_total_cost_of_items(self):
-        return self.stock_in * self.ordered_price *self.unit_quantity
+        return self.stock_in * self.get_one_item_ordered_price() * self.unit_quantity
 
     @staticmethod
     def get_all_stocks():

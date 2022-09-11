@@ -269,19 +269,15 @@ def personal_order_list(request, id):
     mpamba_payment_form = AddPaymentForm(initial={"paid_amount":[''],"payment_mode":'Mpamba',})
     airtel_payment_form = AddPaymentForm(initial={"paid_amount":[''],"payment_mode":'Airtel Money',})
     bank_payment_form = AddPaymentForm(initial={"paid_amount":[''],"payment_mode":'Bank',})
+
     order = get_object_or_404(Order,id=id)
 
     total_paid_amount = order.total_paid_amount()
     order_total_due = order.order_total_due()
     
-    try:
-        layb_order = LayByOrders.objects.get(order_id = order.id)
-    except ObjectDoesNotExist:
-        layb_order = ""
     request.session['opened_order'] = order.id
-    # all_order_related = Order.objects.prefetch_related('customer','items','user',).all()
+  
     unsettled_orders = Order.objects.filter(user=request.user, ordered = False, order_total_cost__gt = 0.0)
-
 
     save_order(order, request)
     items_in_order = get_items_in_order(order)
@@ -305,9 +301,10 @@ def personal_order_list(request, id):
         items = (items.filter(barcode__startswith  = query) | items.filter(item_name__startswith  = query))|items.filter(item_name__icontains = query)
     item_search_form = SearchForm()
 
-    # for payment in order.payments.all():
-    #     print(order.payments.last())
-    # last_payment = payments.last()
+   
+    this_order_payments = Payment.objects.filter(order_id = order.get_code())
+    
+
     context = {
         'order':order,
         'item_categories':item_categories,
@@ -318,23 +315,22 @@ def personal_order_list(request, id):
         'items_in_order':items_in_order,
         'home':'Home',
         'header':'Order' + ' ' + str(order.id),
+        'this_order_payments':this_order_payments,
         
         'category':category,
         'unsettled_orders':unsettled_orders,
         'item_search_form':item_search_form,
         'config':config,
         'order_type_form':order_type_form,
-        'layb_order':layb_order,
+
         'total_paid_amount':total_paid_amount,
         'order_total_due':order_total_due,
         'cash_payment_form':cash_payment_form,
         'mpamba_payment_form':mpamba_payment_form,
         'airtel_payment_form':airtel_payment_form,
         'bank_payment_form':bank_payment_form,
-        
-
     }
-    return render(request, 'personal_order_list.html',context )
+    return render(request, 'personal_order_list.html',context)
 
 def get_bill_based_on_payment_mode(payment_mode):
         payment_mode = payment_mode

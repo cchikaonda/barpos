@@ -15,16 +15,18 @@
   <!-- small card -->
   <div class="card col-12">
     <div class="card-header bg-secondary">
-      <h3 class="card-title"><i class="fa fa-money-bill"></i> UNPAID INVOICES</h3> <h5 class="text-right"><b>TOTAL: {{sum_unpaid_orders}}</b></h5>
+      <h3 class="card-title"><i class="fa fa-money-bill"></i> UNSETTLED BILLS</h3> <h5 class="text-right"><b>TOTAL: {{sum_unpaid_orders}}</b></h5>
     </div>
     <!-- /.card-header -->
     <div class="card-body">
       <table class="table table-bordered table-striped js-dataTable-buttons" id="unpaid-orders-table">
         <thead>
         <tr role="row">
-          <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Order ID</th>
+          <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Bill ID</th>
           <th class="text-left">Customer</th>
           <th class="sorting text-right" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Total</th>
+          <th class="sorting text-right" tabindex="0" rowspan="1" colspan="1">Amount Paid</th>
+          <th class="sorting text-right" tabindex="0" rowspan="1" colspan="1">Balance</th>
         
         </tr>
         </thead>
@@ -37,7 +39,9 @@
               
                   <td class="text-left"><a href="{% url 'personal_order_list' unpaid_order.id %}">{{unpaid_order.get_code}}</a></td>
                   <td class="text-left"><a href="{% url 'personal_order_list' unpaid_order.id %}">{{unpaid_order.customer}}</a></td>
-                  <td class="text-right">{{unpaid_order.order_total_due}}</td>
+                  <td class="text-right"> <span class="btn badge-secondary">{{unpaid_order.order_total_due}}</span></td>
+                  <td class="text-right"> <span class="btn badge-info"> {{unpaid_order.total_paid_amount}} </span> </td>
+                  <td class="text-right"> <span class="btn badge-warning"> {{unpaid_order.get_balance}} </span> </td>
             <tr>
               {% endfor %}
           </tr>
@@ -50,7 +54,7 @@
   {% endif %}
   <div class="card mb-4 col-12">
     <div class="card-header bg-secondary">
-      <h3 class="card-title"><i class="fa fa-money-bill-wave"></i> PAID ORDERS</h3>  <h5 class="text-right"><b>TOTAL: {{sum_paid_orders}}</b></h5>
+      <h3 class="card-title"><i class="fa fa-money-bill-wave"></i> SETTLED BILLS</h3>  <h5 class="text-right"><b>TOTAL: {{sum_paid_orders}}</b></h5>
     </div>
     <!-- /.card-header -->
     <div class="card-body">
@@ -60,9 +64,9 @@
         <table  class="table table-bordered table-striped js-dataTable-buttons" id="orders-table">
         <thead>
         <tr role="row"> 
-          <th>Order ID</th>
+          <th>Bill ID</th>
           <th class="sorting_asc" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Rendering engine: activate to sort column descending">Customer Name</th>
-          <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Total Bill</th>
+          <th class="sorting" tabindex="0" rowspan="1" colspan="1">Total Bill</th>
           <th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Date</th><th class="sorting" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" aria-label="Platform(s): activate to sort column ascending">Cashier</th>
           <th class="sorting" tabindex="0" aria-controls="example1">Action</th></tr>
         </thead>
