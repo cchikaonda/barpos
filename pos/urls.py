@@ -53,5 +53,10 @@ urlpatterns = [
     path('cancel_refund_order/<int:id>/', cancel_refund_order, name = 'cancel_refund_order'),
     path('refund_payment', refund_payment, name = 'refund_payment'),
     path('complete_refund', complete_refund, name = 'complete_refund'),
+
+    path('remove_payment/<int:id>/', remove_payment, name = 'remove_payment'),
+
+
    
+
 ]

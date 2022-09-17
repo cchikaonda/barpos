@@ -168,12 +168,13 @@
 
           </div>    
       </div> 
-
-      <div class="card" >
+      
+    {%if this_order_payments %}
+      <div class="card collapsed-card" >
         <div class="card-header">
-            <h3 class="card-title">Payments</h3>
+            <h3 class="card-title">PAYMENTS</h3>
             <div class="card-tools">
-                <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i>
+                <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-plus"></i>
                 </button>
                 <button type="button" class="btn btn-tool" data-card-widget="remove"><i class="fas fa-times"></i>
                 </button>
@@ -186,9 +187,9 @@
                   <thead>
                   <tr>
                     <th>ID</th>
-                    <th>Payment Mode</th>
-                    <th class="text-right">Amount</th>
-                    <th></th>
+                    <th>PAYMENT MODE</th>
+                    <th class="text-right">AMOUNT</th>
+                    <th class="text-center">DELETE PAYMENT</th>
                   </tr>
                   </thead>
                   <tbody>
@@ -197,7 +198,9 @@
                     <td>{{forloop.counter}}</td>
                     <td>{{payment.payment_mode}}</td>
                     <td class="text-right">{{payment.paid_amount}}</td>
-                    <td class="text-center"> <button class="btn btn-outline-info"><i class="fas fa-times"></i></button></td>
+                    <td class="text-center"> <a href="{% url 'remove_payment' payment.id %} "><button class="btn btn-outline-info"><i class="fas fa-times"></i></button></a> </td>
+                    
+                    <td><a data-toggle="modal" data-target="#deletePaymentModal"><button class="btn btn-outline-info"><i class="fas fa-times"></i></button></a></td>
                     </tr>
                   
                   {% endfor %}
@@ -205,7 +208,10 @@
                 </table>
             </div>
         </div>    
-      </div> 
+      </div>
+    {%else%} 
+
+    {%endif%}
       
   </div>
 

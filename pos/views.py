@@ -85,6 +85,7 @@ def add_customer_to_order(request):
                 return redirect('/pos/personal_order_list/'+ str(check_order.id))
         except ObjectDoesNotExist:
             order = Order.objects.create(user = request.user, customer = customer)
+            order.code = order.get_code()
             order.save()
         return redirect('/pos/personal_order_list/'+ str(order.id))
     else:
@@ -96,6 +97,7 @@ def add_customer_to_order(request):
                 return redirect('/pos/personal_order_list/'+ str(check_order.id))  
         except ObjectDoesNotExist:
             order = Order.objects.create(user = request.user, customer=customer)
+            order.code = order.get_code()
             order.save()
             return redirect('/pos/personal_order_list/'+ str(order.id))
 
@@ -460,10 +462,6 @@ def remove_single_item_from_cart(request, slug):
                 item.quantity_at_hand +=1
                 order_item.delete()
                 item.save()
-            # else:
-            #     item.quantity_at_hand +=1
-            #     order_item.delete()
-            #     item.save()
             return redirect('/pos/personal_order_list/'+ str(order.id))
         else:
             return redirect('/pos/personal_order_list/'+ str(order.id))
@@ -471,6 +469,12 @@ def remove_single_item_from_cart(request, slug):
         messages.info(request, "Item not in order")
     # return redirect('/pos/personal_order_list/'+ str(order.id))
     return redirect('/pos/personal_order_list/'+ str(order_id))
+
+def remove_payment(request, id):
+    payment = get_object_or_404(Payment, id=id)
+    order_id = Order.objects.get(code = str(payment.order_id))
+    payment.delete()
+    return redirect('/pos/personal_order_list/'+ str(order_id.id))
 
 @login_required
 def receipt(request):
