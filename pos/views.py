@@ -304,7 +304,7 @@ def personal_order_list(request, id):
     item_search_form = SearchForm()
 
    
-    this_order_payments = Payment.objects.filter(order_id = order.get_code())
+    this_order_payments = Payment.objects.filter(order_id = order.get_code()).order_by('-created_at')
     
 
     context = {

@@ -513,26 +513,7 @@
 </div>
 <!-- COnfirm refund Modal -->
 
-<!--Confirm Delete Payment-->
-<div class="modal fade" id="deletePaymentModal">
-  <div class="modal-dialog modal-dialog-centered modal-lg">
-      <div class="modal-content">
-      <div class="modal-header">
-          <h4 class="modal-title">Delete Payment?</h4>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-          </button>
-      </div>
-      <div class="modal-body">  
-          <div class="modal-footer justify-content-between">
-          <a href="{% url 'save_bill' %}"> <button type="button" class="btn btn-dark modal_btns">NO</button> </a>
-          <a href="{% url 'remove_payment' payment.id %}"> <button type="submit" class="btn btn-primary modal_btns">YES</button></a>
-          </div>
-      </div>
-  </div>
-  </div>
-  </div>
-  <!--End Save Confirm delete Payment-->
+
 
 
 <script>
