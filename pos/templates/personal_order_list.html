@@ -44,6 +44,9 @@
     #other_payments{
       display: none;
     }
+    .cart_button{
+      width: 150px;
+    }
   </style>
     {% endif %}
 
@@ -152,14 +155,14 @@
                     {% endif %}
                     {% if order.items and order.order_total_due > order.total_paid_amount%}
                       <a data-toggle="modal" data-target="#produceReceiptSavedBillModal"><button class="btn btn-warning mr-2 ml-2 posoption_button" style="float: left;"><i class="fas fa-save"></i> Save Bill</button> </a>
-                      <a data-toggle="modal" data-target="#cashModal"><button class="btn btn-success mr-2 ml-2 posoption_button" style="float: right;"><i class="fas fa-money-bill-alt"></i> Pay Cash</button> </a>
                     {% endif %}
                 </div>
                 {% if order.items and order.order_total_due > order.total_paid_amount%}
-                <div class="btn-group mt-2" style="float: right;">
-                  <a data-toggle="modal" data-target="#airtelModal"><button class="btn btn-danger mr-2 ml-2 posoption_button"><i class="fas fa-save"></i> Airtel Money</button> </a>
-                  <a data-toggle="modal" data-target="#bankModal"><button class="btn btn-primary mr-2 ml-2 posoption_button"><i class="fas fa-save"></i> Bank</button> </a>
-                  <a data-toggle="modal" data-target="#mpambaModal"><button class="btn btn-success mr-2 ml-2 posoption_button"><i class="fas fa-save"></i> Mpamba</button> </a>
+                <div class="border-top btn-group col-12 mt-2">
+                  <a data-toggle="modal" data-target="#airtelModal"><button class="btn btn-danger mr-2 ml-0  mt-2 posoption_button"><i class="fas fa-save"></i> Airtel Money</button> </a>
+                  <a data-toggle="modal" data-target="#bankModal"><button class="btn btn-primary mr-2 ml-2 mt-2 posoption_button"><i class="fas fa-save"></i> Bank</button> </a>
+                  <a data-toggle="modal" data-target="#mpambaModal"><button class="btn btn-success mr-4 ml-2 mt-2 posoption_button "><i class="fas fa-save"></i> Mpamba</button> </a>
+                  <a data-toggle="modal" data-target="#cashModal"><button class="btn btn-info mr-2 ml-4 mt-2 posoption_button " style="width: 250px !important ;"><i class="fas fa-money-bill-alt ml-4"></i> Pay Cash</button> </a>
                 </div>
                 {% endif %}
 
@@ -314,7 +317,7 @@
                         <td tabindex="0" class="sorting_1">{{order.customer}}</td>
       
                         <td>{{order.order_total_cost}}</td>
-                        <td>{{order.order_date}}</td>
+                        <td>{{order.created_at}}</td>
                         <td>{{order.user.full_name}}</td>
                         </tr>
                       {% endfor %}
