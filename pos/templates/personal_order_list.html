@@ -19,17 +19,17 @@
       
         <ul class="nav navbar-nav flex-row justify-content-md-center justify-content-start flex-nowrap"> 
             <li class="nav-item">
-              <form class="q" action="../personal_order_list/{{order.id}}" method="GET">
+              <form class="q" method="POST">
                   <div class="input-group searchform" name ="q">
+                      {% csrf_token %}
                       {{item_search_form.barcode}}
                       <div class="input-group-append">
-                          <button type="submit" class="btn btn-info show-form" style="width: 90px;"><i class="fa fa-search"></i></button>
+                          <button type="submit" class="btn btn-secondary show-form" style="width: 90px;"><i class="fa fa-barcode"></i></button>
                       </div>
                   </div>
-                  
               </form>
           </li>
-      </ul>     
+        </ul> 
     </div>
   </nav>
 

@@ -75,7 +75,7 @@ class SearchForm(forms.ModelForm):
          model = Item
          fields = ('barcode',)
          widgets = {
-                  'barcode': forms.TextInput(attrs={'class': 'form-control pos_form','placeholder':'Search Item by Name or Barcode','id':'search-form',
+                  'barcode': forms.TextInput(attrs={'autofocus': True, 'class': 'form-control pos_form','placeholder':'Enter Barcode','id':'barcode-input',
                   })
           }
 

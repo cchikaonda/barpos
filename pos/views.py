@@ -266,6 +266,7 @@ def customers_list(request):
 
 @login_required
 def personal_order_list(request, id):
+    item_search_form = SearchForm()
     order_type_form = OrderTypeForm(initial={"order_type":'Cash'})
     cash_payment_form = AddPaymentForm(initial={"paid_amount":[''],})
     mpamba_payment_form = AddPaymentForm(initial={"paid_amount":[''],"payment_mode":'Mpamba',})
@@ -298,10 +299,19 @@ def personal_order_list(request, id):
     category = ItemCategory.objects.filter(id=item_cat_id)
 
 
-    query = request.GET.get("barcode", None)
+    query = request.POST.get("barcode", None)
     if query is not None:
-        items = (items.filter(barcode__startswith  = query) | items.filter(item_name__startswith  = query))|items.filter(item_name__icontains = query)
-    item_search_form = SearchForm()
+        # items = (items.filter(barcode__startswith  = query) | items.filter(item_name__startswith  = query))|items.filter(item_name__icontains = query)
+        # if items.exists:
+        item_exist = Item.objects.filter(barcode = query)
+        if item_exist.exists():
+            item = Item.objects.get(barcode = query)
+            slug = item.slug
+            add_to_cart(request, slug)
+        else:
+            messages.info(request, "Item not found")
+            return redirect('/pos/personal_order_list/'+ str(order.id))
+    
 
    
     this_order_payments = Payment.objects.filter(order_id = order.get_code()).order_by('-created_at')
@@ -379,7 +389,6 @@ def get_items_in_order(order):
 def add_to_cart(request, slug):
     item = get_object_or_404(Item, slug=slug)
     order_id =request.session['opened_order']
-    # Order_qs = Order.objects.filter(user=request.user, ordered= False, active=True)
     Order_qs = Order.objects.filter(id = order_id)
     if Order_qs.exists():
         order = Order_qs[0]
