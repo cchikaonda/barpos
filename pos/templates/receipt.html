@@ -187,7 +187,7 @@
             <div style="margin: auto">
               {{ svg|safe }}
             </div>
-            <p class="border-bottom"><strong>User: {{user.full_name|title}} </br>
+            <p class="border-bottom"><strong>Cashier: {{user.full_name|title}} </br>
               OrderID: {{order.get_code}}</strong>  
             </p>
             <p class="legal"><strong>THANK YOU!</strong>  
@@ -235,10 +235,15 @@
 <!--End View Bill Modal-->
 
   
-  <script type="text/javascript"> 
+  <!-- <script type="text/javascript"> 
     window.addEventListener("load", window.print());
+  </script> -->
+
+  <script type="text/javascript"> 
+    $(document).ready(function() {
+      window.print();
+      history.go(-1); 
+    });
   </script>
   <script src="{% static '/custom_js/current_date_time.js' %}"></script>
-  
-  <div class="col-6"><a href="{% url 'pos_dashboard' %}"> <button class="btn btn-success posoption_button">OK</button></a></div>
   </body></html>
