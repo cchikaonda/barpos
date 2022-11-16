@@ -151,7 +151,7 @@ def add_payment(request):
                 order.save()
                 order = Order.objects.get(id = order_id)
                 request.session['opened_order'] = order.id
-                messages.info(request, "Payment Added! " + str(paid_amount))
+                messages.success(request, "Payment Added! " + str(paid_amount))
             return redirect('/pos/personal_order_list/'+ str(order.id))
         except ObjectDoesNotExist:
             messages.info(request, "You do not have an active order")
@@ -309,7 +309,7 @@ def personal_order_list(request, id):
             slug = item.slug
             add_to_cart(request, slug)
         else:
-            messages.info(request, "Item not found")
+            messages.error(request, "Item with barcode " + query + " is not found")
             return redirect('/pos/personal_order_list/'+ str(order.id))
     
 

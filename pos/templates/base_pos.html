@@ -22,7 +22,6 @@
 
   </head>
   <body class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed layout-footer-fixed" onload="realtimeClock()">
-
     <!--Wrapper-->
     <div class="wrapper">
 
@@ -50,11 +49,26 @@
 
     <script>
       {% for msg in messages %}
-          Swal.fire(
-          '{{msg}}',
-          '',
-          'success'
-        );
+        {% if msg.tags == 'info' %}
+            Swal.fire(
+            '{{msg}}',
+            '',
+            'info'
+          );
+        {% elif msg.tags == 'error' %}
+            Swal.fire(
+                '{{msg}}',
+                '',
+                'error'
+              );
+        {% elif msg.tags == 'success' %}
+            Swal.fire(
+                '{{msg}}',
+                '',
+                'success'
+              );
+        {% endif %}
+
       {% endfor %}
     </script>
 

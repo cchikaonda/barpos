@@ -15,6 +15,7 @@ from accounts.models import CustomUser
 from phonenumber_field.modelfields import PhoneNumberField
 from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
+from datetime import date
 
 class Supplier(models.Model):
     name = models.CharField(unique=True, max_length=120)
@@ -146,6 +147,25 @@ class Item(models.Model):
     def get_remove_from_cart_quotation_url(self):
         return reverse('remove_from_cart_quotation', kwargs={'slug': self.slug})
 
+    def get_total_sold_yesterday(self):
+        date_yester_day = date.today()-timedelta(days = 1)
+        shop_open_time = get_shop_open_time()
+        from_date = datetime.combine(date_yester_day,shop_open_time)
+        to_date = date_yester_day + timedelta(hours=23) + timedelta(minutes = 59)
+        ordered_items = OrderItem.objects.filter(ordered=True).filter(ordered_time__gte = date_yester_day).filter(ordered_time__lte = to_date)
+
+        sum_sold_items_count = 0
+        for ordered_items_count in ordered_items:
+            sum_ordered_items_count += ordered_items_count.quantity
+            total_cost_items_ordered += ordered_items_count.ordered_items_total
+            total_value_items_ordered += ordered_items_count.quantity * ordered_items_count.item.cost_price
+        # for each item in items:
+
+        return total_sold_yesterday
+
+    def get_initial_quantity(self):
+        initial_quantity = 0
+        return initial_quantity
 
 class BatchNumber(models.Model):
     batch_number = models.CharField(max_length=50)
