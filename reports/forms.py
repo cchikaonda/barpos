@@ -16,7 +16,8 @@ from crispy_forms.bootstrap import AppendedText, PrependedText, PrependedAppende
 class SearchBetweenTwoDatesForm(forms.Form):
     start_date_time = forms.DateTimeField(input_formats=['%Y-%m-%dT%H:%M'],widget = forms.DateTimeInput(attrs={'class': 'form-control','type': 'datetime-local'}, format = '%Y-%m-%dT%H:%M'))
     end_date_time = forms.DateTimeField(input_formats=['%Y-%m-%dT%H:%M'],widget = forms.DateTimeInput(attrs={'class': 'form-control','type': 'datetime-local'}, format = '%Y-%m-%dT%H:%M'))
-
+class  FilterDatesForm(forms.Form):
+    balancing_date = forms.DateField(input_formats=['%Y-%m-%d'],widget = forms.DateInput(attrs={'class': 'form-control','type': 'date'}, format = '%Y-%m-%d'))
 CHOICES = [
         ('TDAY','Today'),
         ('YDAY', 'Yesterday'),

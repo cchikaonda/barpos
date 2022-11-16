@@ -20,6 +20,18 @@ from django.dispatch import receiver
 
 from . import mpamba_service_bill, airtel_service_bill
 
+class OpeningTime(models.Model):
+    description = models.CharField(unique=True, max_length=120)
+    open_time = models.TimeField()
+    def __str__(self):
+        return '{0}'.format(self.description)
+
+class ClosingTime(models.Model):
+    description = models.CharField(unique=True, max_length=120)
+    closing_time = models.TimeField()
+    def __str__(self):
+        return '{0}'.format(self.description)
+
 
 class Customer(models.Model):
     name = models.CharField(unique=True, max_length=120)

@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+
+{% block title %}
+
+{% endblock title %}
+
+{% block content %}
+
+<div id="spinner-box" class="text-center mt-3"> 
+    <div class="fa fa-spinner fa-spin fa-fw" role="status">
+    </div>
+    <span v-if="progress">Loading...</span>
+</div>
+
+<!-- /.card-header -->
+
+
+<div id="page-content" class="card-body not-visible">
+  <div class="card-body">
+    {% include "balance_reports/date_time_filter.html" %}
+    <table class="table table-bordered table-striped mb-4">
+      <tbody>
+      <tr>
+          <td class="text-right">TOTAL EXPECTED REVENUE</td>
+          <td class="text-right">{{expected_sum_items_cost}}</td>
+      </tr>
+      <tr>
+        <td class="text-right">COST OF GOODS(COG)</td>
+        <td class="text-right">{{sum_cost_of_goods}}</td>
+      </tr>
+      <tr>
+        <td class="text-right">EXPECTED PROFIT/LOSS</td>
+        {% if expected_profit.amount > 0.0 %}
+        <td class="text-right">
+          <span class="text-success">
+            <i class="fas fa-arrow-up"></i> {{expected_profit}}
+          </span>
+        </td>
+        {% else %}
+        <td class="text-right">
+          <span class="text-danger">
+            <i class="fas fa-arrow-down"></i> {{expected_profit}}
+          </span>
+        </td>
+        {% endif %}
+      </tr>
+      </tbody>
+    </table>
+    <table class="table table-bordered table-striped" id="inventory_quantity_table">
+      <thead >
+        <tr>
+            <th>ID</th>
+            <th >Item</th>
+            <th class="text-center">Opening Balance</th>
+            <th class="text-center">Purchases</th>
+            <th class="text-center">Total</th>
+            <th class="text-center">Closing Balance</th>
+            <th class="text-center">Sold</th>
+            <th class="text-right">Price</th>
+            <th class="text-right">Amount</th>
+        </tr>
+      </thead>
+      <tbody>
+          {% for items in items %}
+          <tr>
+              <td>{{ forloop.counter }}</td>
+              <td>{{ items.item_name }}</td>
+              <td class="text-center">{{ items.get_total_items_purchased }}</td>
+              <td class="text-center">{{ items.get_total_items_purchased }}</td>
+              <td class="text-center">{{ items.get_total_items_purchased }}</td>
+              <td class="text-center">{{ items.quantity_at_hand }}</td>
+              <td class="text-center">{{ items.get_items_sold }}</td>
+              <td class="text-right">{{ items.price }}</td>
+              <td class="text-right">{{items.get_expected_revenue}}</td>
+          </tr>
+          {% endfor %}
+          <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td class="text-right">TOTAL EXPECTED REVENUE</td>
+            <td class="text-right">{{expected_sum_items_cost}}</td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          <td class="text-right">COST OF GOODS(COG)</td>
+          <td class="text-right">{{sum_cost_of_goods}}</td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          <td class="text-right">EXPECTED PROFIT/LOSS</td>
+          {% if expected_profit.amount > 0.0 %}
+          <td class="text-right">
+            <span class="text-success">
+              <i class="fas fa-arrow-up"></i> {{expected_profit}}
+            </span>
+          </td>
+          {% else %}
+          <td class="text-right">
+            <span class="text-danger">
+              <i class="fas fa-arrow-down"></i> {{expected_profit}}
+            </span>
+          </td>
+          {% endif %}
+        </tr>
+      </tbody>
+    </table>  
+  </div> 
+  <!-- /.card-body -->
+</div>
+
+{% endblock content %}

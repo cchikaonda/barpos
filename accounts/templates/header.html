@@ -1,4 +1,5 @@
 {% load static %}
+{% load inventory_template_tags %}
 <nav class="navbar navbar-light navbar-expand-md bg-light justify-content-md-center justify-content-start border-bottom mb-2" style="font-size: x-large;">
   <a class="nav-item" href="{% url 'system_dashboard' %}">{{config.SHOP_NAME}}</a> 
    
@@ -19,8 +20,7 @@
         </a>
       </li>
     </ul>
-
-
+   
       <ul class="navbar-nav mx-auto text-md-center text-left"> 
         <!--current time-->
         <li class="nav-item">

@@ -16,7 +16,7 @@
             <div class="form-group mt-2 ml-1">
               {{form.end_date_time|as_crispy_field}}
             </div>
-            <div class="mt-2 ml-2 ">
+            <div class="mt-2 ml-2 mb-2">
               <div class="ml-2 mt-1">
                 <label for="date-rage">Category</label>
                   <div class="input-group-prepend " >
@@ -29,17 +29,14 @@
                   </div>
                   <script type="text/javascript">
                     document.getElementById('item_categories_option').value = "<?php echo $_GET['item_categories_option'];?>";
-                </script>
+                  </script>
                 
               </div>
               
             </div>
           </div>
-        
-          
         <div class="ml-4 mt-2 mb-4" >
-          <label for="custom-rage text-right" >****</label>
-          <div>
+          <div class="mt-4">
            <button  type="submit" name="button" class=" btn btn-success mt-2 mb-4">Submit</button>
           </div>   
         </div> 

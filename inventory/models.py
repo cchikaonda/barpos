@@ -95,17 +95,32 @@ class Item(models.Model):
     @property
     def get_cost_price(self):
         stock = Stock.objects.filter(item = self.id)
-        print(stock)
         if stock:
             return stock.last().ordered_price
         else:
-            return self.price * 0.7
+            return self.price * 0.0
+    
+    def get_total_items_purchased(self):
+        stocks = Stock.objects.filter(item = self.id)
+        total_stock = 0
+        for each_stock in stocks:
+            total_stock += each_stock.stock_in
+        return total_stock
+    
+
+    
+    def get_items_sold(self):
+        if self.get_total_items_purchased() < 0 or self.get_total_items_purchased() == 0:
+            return 0
+        else:
+            return self.get_total_items_purchased() - self.quantity_at_hand
+
+
     
     @property
     def get_total_cost_price(self):
         return self.get_cost_price * self.quantity_at_hand
     
-
 
     
     @staticmethod
@@ -179,7 +194,7 @@ class Stock(models.Model):
 
     @property
     def get_total_cost_of_items(self):
-        return self.stock_in * self.get_one_item_ordered_price() * self.unit_quantity
+        return self.stock_in * self.get_one_item_ordered_price()
 
     @staticmethod
     def get_all_stocks():
