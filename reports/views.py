@@ -1441,23 +1441,16 @@ def balance_report(request):
     if request.method == "POST":
         if form.is_valid:
             balancing_date = request.POST.get('balancing_date')
+            datef_balancing_date = datetime.strptime(balancing_date, "%Y-%m-%d").date()
             shop_open_time = get_shop_open_time()
-            from_date = balancing_date + " " + str(shop_open_time)
-            print(from_date)
-            to_date = timezone.now()
-            print(to_date)
-        
-            item_cat = request.POST.get('item_categories_option')
+            from_date = datetime.combine(datef_balancing_date,shop_open_time)
+            to_date = from_date + timedelta(hours=23) + timedelta(minutes = 59)
 
         
         if is_valid_queryparam(from_date) and is_valid_queryparam(to_date):
-            category_id = item_cat
-            get_item_cat = ItemCategory.objects.filter(category_name = category_id)
-            if get_item_cat.exists():
-                ordered_items = ordered_items.filter(ordered_time__gte = from_date, ordered_time__lte = to_date, item__category__in = get_item_cat)
+            ordered_items = ordered_items.filter(ordered_time__gte = from_date, ordered_time__lte = to_date,)
             payments = Payment.objects.filter(updated_at__gte = from_date, updated_at__lte = to_date)
             ordered_items = ordered_items.filter(ordered_time__gte = from_date, ordered_time__lte = to_date)
-
 
             sum_total_vat = Money(0.0, 'MWK')
             orders = Order.objects.filter(ordered = True, updated_at__gte = from_date, updated_at__lte = to_date)
@@ -1465,22 +1458,9 @@ def balance_report(request):
                 sum_total_vat += order.vat_cost
         
             orders_r = Order.objects.filter(ordered = False, updated_at__gte = from_date, updated_at__lte = to_date)
-
-        lay_b_payments = Payment.objects.filter(order__id__in = orders_r, order_type = 'Lay By', updated_at__gte = from_date, updated_at__lte = to_date)
-
-        sum_layby_paid_amount = Money(0.0, 'MWK')
-        for lay_b_payments in lay_b_payments:
-            if str(lay_b_payments.paid_amount) != "None":
-                sum_layby_paid_amount += lay_b_payments.paid_amount
     else:
-        lay_b_payments = Payment.objects.filter(order_type = 'Lay By')
-        sum_layby_paid_amount = Money(0.0, 'MWK')
-        for lay_b_payments in lay_b_payments:
-            if str(lay_b_payments.paid_amount) != "None":
-                sum_layby_paid_amount += lay_b_payments.paid_amount
         payments = Payment.objects.all()
     
-
     cash_payments = payments.filter(payment_mode = 'Cash')
     total_cash_payments = Money(0.0, 'MWK')
     for cash_payemnt in cash_payments:
@@ -1524,7 +1504,6 @@ def balance_report(request):
         "sum_ordered_items_count":sum_ordered_items_count,
         "sum_total_vat":sum_total_vat,
         "net_total_sales":net_total_sales,
-        "sum_layby_paid_amount":sum_layby_paid_amount,
         "total_cash_in_hand":total_cash_in_hand,
         "report_time":report_time,
 
