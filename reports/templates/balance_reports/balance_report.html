@@ -19,8 +19,7 @@
 
 <div id="page-content" class="card-body not-visible">
   <div class="card-body">
-    {% include "balance_reports/date_time_filter.html" %}
-    <table class="table table-bordered table-striped mb-4">
+    <!-- <table class="table table-bordered table-striped mb-4">
       <tbody>
       <tr>
           <td class="text-right">TOTAL EXPECTED REVENUE</td>
@@ -67,7 +66,7 @@
           <tr>
               <td>{{ forloop.counter }}</td>
               <td>{{ items.item_name }}</td>
-              <td class="text-center">{{ items.get_total_items_purchased }}</td>
+              <td class="text-center">{{ items.get_total_sold_yesterday }}</td>
               <td class="text-center">{{ items.get_total_items_purchased }}</td>
               <td class="text-center">{{ items.get_total_items_purchased }}</td>
               <td class="text-center">{{ items.quantity_at_hand }}</td>
@@ -122,7 +121,47 @@
           {% endif %}
         </tr>
       </tbody>
-    </table>  
+    </table>   -->
+    <div class="mb-4">
+      <table class="table table-bordered table-striped">
+        <thead>
+          <tr class="text-center">
+            <th class="text-left">
+              Item
+            </th>
+            <th>
+              Open
+            </th>
+            <th>
+              Purchases
+            </th>
+            <th>
+              Total
+            </th>
+            <th>
+              Sold
+            </th>
+            <th>
+              Closing
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for b in balances %}
+          <tr class="text-center">
+              <td class="text-left">{{b.item}}</td>
+              <td>{{b.opening}}</td>
+              <td>{{b.purchased}}</td>
+              <td>{{b.total}}</td>
+              <td>{{b.sold}}</td>
+              <td>{{b.closing}}</td>
+          </tr>
+      
+          {% endfor %}
+        </tbody>
+      </table>
+      
+    </div>
   </div> 
   <!-- /.card-body -->
 </div>

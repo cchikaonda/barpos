@@ -7,7 +7,6 @@ from django.contrib.auth.models import (
 )
 from django.shortcuts import reverse
 from constance import config
-from datetime import date
 
 from pymysql import NULL
 
@@ -15,7 +14,7 @@ from accounts.models import CustomUser
 from phonenumber_field.modelfields import PhoneNumberField
 from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
-from datetime import date
+from datetime import date, timedelta, datetime, time
 
 class Supplier(models.Model):
     name = models.CharField(unique=True, max_length=120)
@@ -80,7 +79,7 @@ class Item(models.Model):
 
     def __str__(self):
         return self.item_name
-
+    
     def selling_price(self):
         if self.discount_price:
             return self.discount_price
@@ -147,25 +146,20 @@ class Item(models.Model):
     def get_remove_from_cart_quotation_url(self):
         return reverse('remove_from_cart_quotation', kwargs={'slug': self.slug})
 
-    def get_total_sold_yesterday(self):
-        date_yester_day = date.today()-timedelta(days = 1)
-        shop_open_time = get_shop_open_time()
-        from_date = datetime.combine(date_yester_day,shop_open_time)
-        to_date = date_yester_day + timedelta(hours=23) + timedelta(minutes = 59)
-        ordered_items = OrderItem.objects.filter(ordered=True).filter(ordered_time__gte = date_yester_day).filter(ordered_time__lte = to_date)
+    def get_shop_open_time(self):
+        qs = OpeningTime.objects.all().last()
+        return qs.open_time
 
-        sum_sold_items_count = 0
-        for ordered_items_count in ordered_items:
-            sum_ordered_items_count += ordered_items_count.quantity
-            total_cost_items_ordered += ordered_items_count.ordered_items_total
-            total_value_items_ordered += ordered_items_count.quantity * ordered_items_count.item.cost_price
-        # for each item in items:
-
-        return total_sold_yesterday
-
-    def get_initial_quantity(self):
-        initial_quantity = 0
-        return initial_quantity
+    # def get_opening_balance(self):
+    #     opening_bal = 0
+    #     items = OrderItem.objects.filter(item = self.item)
+    #     print(items)
+    #     for item in items:
+    #         opening_bal += item.quantity
+    #     return opening_bal
+    
+    # def get_closing_balance(self):
+    #     return self.quantity_at_hand
 
 class BatchNumber(models.Model):
     batch_number = models.CharField(max_length=50)

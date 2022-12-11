@@ -11,6 +11,7 @@ from djmoney.forms.widgets import MoneyWidget
 from django.contrib.auth import authenticate, login, logout, get_user_model
 from pos.models import Customer, LayByOrders, Payment, Order, RefundOrder, RefundOrderItem, RefundPayment
 from inventory.models import Item
+from django.core.validators import RegexValidator
 
 class CustomMoneyWidget(MoneyWidget):
     def format_output(self, rendered_widgets):
@@ -71,13 +72,11 @@ class OrderTypeForm(forms.ModelForm):
 
 
 class SearchForm(forms.ModelForm):
-     class Meta:
-         model = Item
-         fields = ('barcode',)
-         widgets = {
-                  'barcode': forms.TextInput(attrs={'autofocus': True, 'class': 'form-control pos_form','placeholder':'Enter Barcode','id':'barcode-input',
-                  })
-          }
+    barcode = forms.CharField(max_length=5, validators=[RegexValidator(r'^[0-9]', 'Only digit characters.')], widget = forms.TextInput(attrs={'autofocus': True, 'class': 'form-control pos_form','placeholder':'Enter Barcode','id':'barcode-input','type':'number'}) )   
+    class Meta:
+        model = Item
+        fields = ('barcode',)
+
 
 class AddCustomerForm(forms.ModelForm):
     class Meta:

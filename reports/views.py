@@ -1423,95 +1423,121 @@ def get_profit(expenses, sales_total, cost_of_sales):
 
 
 def balance_report(request):
-    items = Item.get_all_items()
-        
+    items = Item.get_all_items()  
+ 
     form = FilterDatesForm()
-    total_items_ordered = 0
-    total_cost_items_ordered = Money('0.0', 'MWK')
+
 
     ordered_items = all_days_sales(0)
 
-    sum_total_vat = Money(0.0, 'MWK')
-    orders = Order.objects.filter(ordered = True)
-    for order in orders:
-        sum_total_vat += order.vat_cost
+
 
     report_time = timezone.now()
 
-    if request.method == "POST":
-        if form.is_valid:
-            balancing_date = request.POST.get('balancing_date')
-            datef_balancing_date = datetime.strptime(balancing_date, "%Y-%m-%d").date()
-            shop_open_time = get_shop_open_time()
-            from_date = datetime.combine(datef_balancing_date,shop_open_time)
-            to_date = from_date + timedelta(hours=23) + timedelta(minutes = 59)
-
-        
-        if is_valid_queryparam(from_date) and is_valid_queryparam(to_date):
-            ordered_items = ordered_items.filter(ordered_time__gte = from_date, ordered_time__lte = to_date,)
-            payments = Payment.objects.filter(updated_at__gte = from_date, updated_at__lte = to_date)
-            ordered_items = ordered_items.filter(ordered_time__gte = from_date, ordered_time__lte = to_date)
-
-            sum_total_vat = Money(0.0, 'MWK')
-            orders = Order.objects.filter(ordered = True, updated_at__gte = from_date, updated_at__lte = to_date)
-            for order in orders:
-                sum_total_vat += order.vat_cost
-        
-            orders_r = Order.objects.filter(ordered = False, updated_at__gte = from_date, updated_at__lte = to_date)
-    else:
-        payments = Payment.objects.all()
-    
-    cash_payments = payments.filter(payment_mode = 'Cash')
-    total_cash_payments = Money(0.0, 'MWK')
-    for cash_payemnt in cash_payments:
-        total_cash_payments += cash_payemnt.paid_amount
-    
-    bank_payments = payments.filter(payment_mode = 'Bank')
-    total_bank_payments = Money(0.0, 'MWK')
-    for bank_payment in bank_payments:
-        total_bank_payments += bank_payment.paid_amount
-
-    
-    airtel_money_payments = payments.filter(payment_mode = 'Airtel Money')
-    total_airtel_payments = Money(0.0, 'MWK')
-    for airtel_money_payment in airtel_money_payments:
-        total_airtel_payments += airtel_money_payment.paid_amount
-
-
-    mpamba_payments = payments.filter(payment_mode = 'Mpamba')
-    total_mpamba_payments = Money(0.0, 'MWK')
-    for mpamba_payment in mpamba_payments:
-        total_mpamba_payments += mpamba_payment.paid_amount
-
+    balancing_date = str(timezone.now().date())
+    datef_balancing_date = datetime.strptime(balancing_date, "%Y-%m-%d").date()
+    shop_open_time = get_shop_open_time()
+    from_date = datetime.combine(datef_balancing_date, shop_open_time)
+    to_date = from_date + timedelta(hours=23) + timedelta(minutes = 59)
  
-    sum_ordered_items_count = 0
-    total_cost_items_ordered = Money(0.0, 'MWK') 
-    for ordered_items_count in ordered_items:
-        sum_ordered_items_count += ordered_items_count.quantity
-        total_cost_items_ordered += ordered_items_count.ordered_items_total
+    for item in items:
+        total_rem = items = get_opening_balance(item, from_date, to_date)
+    
+        sum_sold_items_count = 0
+        for ordered_items_count in ordered_items:
+            sum_sold_items_count += ordered_items_count.quantity
+        
+        balances = []
+        
+            
+        # bal = OrderItem.objects.filter(item__item_name=i).filter(ordered_time__range=[from_date, to_date])
+        bal = Item.objects.all()
+        for item in bal:
+            dict = {}
+            dict['purchased'] = get_total_purchased(item, from_date, to_date)
+    
+            dict['item']=item.item_name
+            dict['opening']=  item.quantity_at_hand - get_total_sold(item, from_date, to_date) - get_total_purchased(item, from_date, to_date)
+            dict['closing']= item.quantity_at_hand
+            dict['total']= get_total_purchased(item, from_date, to_date) + item.quantity_at_hand - get_total_sold(item, from_date, to_date) - get_total_purchased(item, from_date, to_date)
+            dict['sold']= get_total_sold(item, from_date, to_date)
 
-    net_total_sales =  total_cost_items_ordered - sum_total_vat
-    total_cash_in_hand = total_mpamba_payments + total_airtel_payments + total_bank_payments + total_cash_payments
+            balances.append(dict)
+
 
     context = {
         "header": 'sales report',
         "items":items,
         "form":form,
         "ordered_items":ordered_items,
-        "total_items_ordered":total_items_ordered,
-        "total_cost_items_ordered":total_cost_items_ordered,
         "config":config,
-        "sum_ordered_items_count":sum_ordered_items_count,
-        "sum_total_vat":sum_total_vat,
-        "net_total_sales":net_total_sales,
-        "total_cash_in_hand":total_cash_in_hand,
-        "report_time":report_time,
-
-        "total_mpamba_payments":total_mpamba_payments,
-        "total_cash_payments":total_cash_payments,
-        "total_airtel_payments":total_airtel_payments,
-        "total_bank_payments":total_bank_payments,
+        
+        "to_date":to_date,
+        "from_date":from_date,
+        "balances":balances,
+        "total_rem":total_rem,
     }
     return render (request, 'balance_reports/balance_report.html', context)
+
+def get_total_sold_yesterday(item, from_date, to_date):
+        ordered_items = OrderItem.objects.filter(item = item, ordered_time__range = [from_date, to_date])
+        sum_sold_items_count = 0
+        for ordered_items_count in ordered_items:
+            sum_sold_items_count += ordered_items_count.quantity
+        return sum_sold_items_count
+
+def get_total_sold(item, from_date, to_date):
+        ordered_items = OrderItem.objects.filter(item = item, ordered_time__range = [from_date, to_date])
+        sum_sold_items_count = 0
+        for ordered_items_count in ordered_items:
+            sum_sold_items_count += ordered_items_count.quantity
+        return sum_sold_items_count
+
+def get_total_purchased(item, from_date, to_date):
+        stocked_items = Stock.objects.filter(item = item, created_at__range = [from_date, to_date])
+        sum_stocked_items = 0
+        for stocked_item in stocked_items:
+            sum_stocked_items += stocked_item.stock_in
+        return sum_stocked_items
+
+def get_open_stock_if_purchesed(item, from_date, to_date):
+    stocked_items = Stock.objects.filter(item = item, created_at__range = [from_date, to_date]).last()
+    return stocked_items.previous_quantity
+
+def get_open_stock_if_not_purchased(item):
+    stocked_items = Stock.objects.filter(item = item).last()
+    if stocked_items:
+        return stocked_items.previous_quantity
+    else:
+        return 0
+
+
+def get_opening_balance(item_searched, from_date, to_date):
+
+    balances = []
+    
+    items = Item.objects.all()
+    for item in items:
+        dict = {}
+        item_searched = item_searched
+        dict['item'] = item_searched.item_name,
+        dict['yesterday_sale'] = get_total_sold_yesterday(item, from_date, to_date)
+        ordered_items = OrderItem.objects.filter(item = item_searched).filter(ordered_time__range=[from_date, to_date])
+        total_item = 0
+        if ordered_items.exists():
+            for ordered_item in ordered_items:
+                total_item += ordered_item.quantity
+            dict['total_item'] = total_item,
+            balances.append(dict)
+            return balances
+        else:
+            dict['total_item'] = total_item,
+            balances.append(dict)
+            return balances
+
+
+        
+
+
 
 

@@ -20,6 +20,16 @@ from django.dispatch import receiver
 
 from . import mpamba_service_bill, airtel_service_bill
 
+class OpeningQuantity(models.Model):
+    item_name = models.ForeignKey(Item, on_delete = models.CASCADE)
+    opening_quantity = models.IntegerField(default=0)
+    sale_date = models.DateTimeField(auto_now_add=True, null = True)
+
+
+    def __str__(self):
+        return '{1} {0}'.format(self.item_name, self.opening_quantity)
+
+
 class OpeningTime(models.Model):
     description = models.CharField(unique=True, max_length=120)
     open_time = models.TimeField()
@@ -56,6 +66,7 @@ class OrderItem(models.Model):
     @property
     def price(self):
         return self.item.selling_price()
+    
 
     @property
     def amount(self):

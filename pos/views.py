@@ -311,9 +311,7 @@ def personal_order_list(request, id):
         else:
             messages.error(request, "Item with barcode " + query + " is not found")
             return redirect('/pos/personal_order_list/'+ str(order.id))
-    
-
-   
+            
     this_order_payments = Payment.objects.filter(order_id = order.get_code()).order_by('-created_at')
     
 
