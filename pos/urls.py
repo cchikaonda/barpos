@@ -11,6 +11,10 @@ urlpatterns = [
     path('customers_list/', customers_list, name = 'customers_list'),
     path('personal_order_list/<int:id>', personal_order_list, name = 'personal_order_list'),
 
+    path('clock_in', clock_in, name = 'clock_in'),
+    path('clock_out', clock_out, name = 'clock_out'),
+    
+
     path('add_to_cart/<slug>/', add_to_cart, name = 'add_to_cart'),
     path('remove_single_item_from_cart/<slug>/', remove_single_item_from_cart, name = 'remove_single_item_from_cart'),
     path('remove_from_cart/<slug>/', remove_from_cart, name = 'remove_from_cart'),

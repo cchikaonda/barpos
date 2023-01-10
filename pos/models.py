@@ -20,27 +20,25 @@ from django.dispatch import receiver
 
 from . import mpamba_service_bill, airtel_service_bill
 
+class SessionTime(models.Model):
+    open_time = models.DateTimeField(null = True)
+    closing_time = models.DateTimeField(null = True)
+
+    def __str__(self):
+        return 'Open time: {0} and Closing time: {1}'.format(self.open_time, self.closing_time)
+
+
 class OpeningQuantity(models.Model):
     item_name = models.ForeignKey(Item, on_delete = models.CASCADE)
+    session_time = models.ForeignKey(SessionTime, on_delete = models.CASCADE)
     opening_quantity = models.IntegerField(default=0)
+    closing_quantity = models.IntegerField(default=0)
     sale_date = models.DateTimeField(auto_now_add=True, null = True)
 
 
     def __str__(self):
         return '{1} {0}'.format(self.item_name, self.opening_quantity)
 
-
-class OpeningTime(models.Model):
-    description = models.CharField(unique=True, max_length=120)
-    open_time = models.TimeField()
-    def __str__(self):
-        return '{0}'.format(self.description)
-
-class ClosingTime(models.Model):
-    description = models.CharField(unique=True, max_length=120)
-    closing_time = models.TimeField()
-    def __str__(self):
-        return '{0}'.format(self.description)
 
 
 class Customer(models.Model):

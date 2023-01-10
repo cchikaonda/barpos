@@ -7,7 +7,7 @@ from django.contrib.auth.models import Group
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from constance.admin import ConstanceAdmin, ConstanceForm, Config
 
-from pos.models import Customer, OrderItem, Order, Payment,  LayByOrders, RefundOrder, RefundOrderItem, RefundPayment, OpeningTime, ClosingTime, OpeningQuantity
+from pos.models import Customer, OrderItem, Order, Payment,  LayByOrders, RefundOrder, RefundOrderItem, RefundPayment, OpeningQuantity, SessionTime
 from accounts.models import CustomUser
 
 # Register your models here.
@@ -74,6 +74,6 @@ class RefundPaymentAdmin(admin.ModelAdmin):
         model = RefundPayment
 admin.site.register(RefundPayment, RefundPaymentAdmin)
 
-admin.site.register(OpeningTime)
-admin.site.register(ClosingTime)
 admin.site.register(OpeningQuantity)
+admin.site.register(SessionTime)
+

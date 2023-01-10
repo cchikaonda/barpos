@@ -1,6 +1,6 @@
 from django.shortcuts import render,redirect, get_object_or_404
 from inventory.models import ItemCategory, Unit, Item, Supplier
-from pos.models import Customer, LayByOrders, OrderItem, Order, Payment, RefundOrder
+from pos.models import Customer, LayByOrders, OrderItem, Order, Payment, RefundOrder, SessionTime, OpeningQuantity
 from django.contrib import messages
 from constance import config
 from django.utils import timezone
@@ -29,6 +29,7 @@ import qrcode
 import qrcode.image.svg
 from io import BytesIO
 from django.db.models.query import *
+from datetime import datetime
 
 @login_required
 def index(request):
@@ -774,3 +775,28 @@ def customer_delete_pos(request, id):
         context = {'customer': customer}
         data['html_form'] = render_to_string('customers/customer_delete_pos.html', context, request=request)
     return JsonResponse(data)
+
+def clock_in(request):
+    clock_in_time = timezone.now()
+    SessionTime.objects.create(open_time = clock_in_time )
+    session_time = SessionTime.objects.last()
+    items = Item.objects.all()
+    for item in items:
+        opening_quantity = item.quantity_at_hand
+        OpeningQuantity.objects.create(item_name = item, opening_quantity = opening_quantity, session_time = session_time)
+    messages.success(request, "Clocked in at " + datetime.now().strftime('%H:%M %p') + ' on ' + datetime.now().strftime('%d/%m/%Y'))
+    return redirect('system_dashboard')
+
+def clock_out(request):
+    session_time = SessionTime.objects.last()
+    clock_out = timezone.now()
+    session_time.closing_time = clock_out
+    items = Item.objects.all()
+    for item in items:
+        closing_quantity = item.quantity_at_hand
+        item_qty = OpeningQuantity.objects.filter(item_name = item).last()
+        item_qty.closing_quantity = closing_quantity
+        item_qty.save()
+    session_time.save()
+    messages.success(request, "Clocked out at " + datetime.now().strftime('%H:%M %p') + ' on ' + datetime.now().strftime('%d/%m/%Y'))
+    return redirect('system_dashboard')

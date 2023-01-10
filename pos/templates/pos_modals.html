@@ -511,7 +511,28 @@
   </div>
 </div>
 </div>
-<!-- COnfirm refund Modal -->
+<!-- COnfirm refund Modal -->'
+
+<!-- Confirm clockout Modal-->
+<div id="clockoutModal" class="modal fade" role="dialog">
+  <div class="modal-dialog modal-lg">
+  <!-- Modal content-->
+  <div class="modal-content">
+  <div class="modal-header">
+  <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+      <span aria-hidden="true">×</span>
+  </button>
+  </div>
+  <div class="modal-body text-center"><b><h3>Are you sure you want to clockout at {{clock_out|date:'H:i A'}} on {{clock_out|date:'d/m/Y'}}?</h3></b></div>
+  <div class="modal-footer">
+  <button class="btn btn-primary confirm_button" data-dismiss="modal" type="button">NO</button>
+  <a href="{% url 'clock_out' %}" ><button class="btn btn-danger confirm_button" type="button">YES</button></a>
+  
+  </div>
+  </div>
+</div>
+</div>
+<!-- COnfirm clockout Modal -->
 
 
 

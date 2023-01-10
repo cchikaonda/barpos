@@ -5,15 +5,21 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.shortcuts import render,redirect, get_object_or_404
 from inventory.models import ItemCategory, Supplier, Unit, Item
-from pos.models import Customer, OrderItem, Order, RefundOrder
+from pos.models import Customer, OrderItem, Order, RefundOrder, SessionTime
 from constance import config
 from django.db.models import Count
 from quotations.models import Quotation
 from .import decorators
+from django.utils import timezone
+from datetime import datetime
 
 # Create your views here.
 @login_required
 def system_dashboard(request):
+    session_time = SessionTime.objects.last()
+    if session_time:
+        open_time = session_time.open_time
+        closing_time = session_time.closing_time
     suppliers_count = Supplier.objects.all().count()
     my_invoices_count = Order.objects.filter(user = request.user).count()
     all_invoices_count = Order.objects.all().count()
@@ -23,7 +29,7 @@ def system_dashboard(request):
 
     refunds_count = RefundOrder.objects.all().count()
     
-    # filter(user = request.user, ordered = False).count(distinct = True)
+    clock_out = timezone.now()
     context={
         'home':'Home',
         'header':'Home', 
@@ -36,6 +42,8 @@ def system_dashboard(request):
         'quotations_count':quotations_count,
         'count_customers':count_customers,
         'refunds_count':refunds_count,
+        'session_time':session_time,
+        'clock_out':clock_out,
         }
     return render(request, 'system_dashboard.html', context)
 

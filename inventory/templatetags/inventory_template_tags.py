@@ -3,7 +3,7 @@ from accounts.models import CustomUser
 from inventory.models import *
 from quotations.models import Quotation
 from expenses.models import Expense, ExpenseCategory
-from pos.models import Customer, OpeningTime, ClosingTime
+from pos.models import Customer
 
 register = template.Library()
 
@@ -84,15 +84,3 @@ def get_all_items_by_category_id(category_id):
         return Expense.objects.filter(category=category_id).order_by('expense_name')
     else:
         return Expense.get_all_expense()
-
-@register.filter
-def get_opening_time(user):
-    if user.is_authenticated:
-        qs = OpeningTime.objects.all().last()
-    return qs.open_time
-
-@register.filter
-def get_closing_time(user):
-    if user.is_authenticated:
-        qs = ClosingTime.objects.all().last()
-    return qs.closing_time

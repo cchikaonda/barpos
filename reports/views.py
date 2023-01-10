@@ -5,14 +5,12 @@ from django.shortcuts import render,redirect, get_object_or_404
 from rest_framework.serializers import Serializer
 from expenses.models import Expense, ExpenseCategory
 from inventory.models import ItemCategory, Unit, Item, Stock
-from pos.models import Customer, OrderItem, Order, Payment, MoneyOutput, OpeningTime, ClosingTime
+from pos.models import *
 from django.contrib import messages
 from constance import config
 from django.utils import timezone
 from datetime import date, timedelta, datetime, time
-from django.core.exceptions import ObjectDoesNotExist
-from pos.forms import AddCustomerForm
-from pos.forms import AddPaymentForm, CashPaymentForm, SearchForm
+from django.core.exceptions import ObjectDoesNotExist 
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 
@@ -42,12 +40,15 @@ from inventory import views as inventory_views
 from django.db.models.functions import Greatest
 
 def get_shop_open_time():
-    qs = OpeningTime.objects.all().last()
+    qs = SessionTime.objects.all().last()
     return qs.open_time
 
 def get_shop_close_time():
-    qs = ClosingTime.objects.all().last()
-    return qs.closing_time
+    qs = SessionTime.objects.all().last()
+    if qs.closing_time == None:
+        return timezone.now()
+    else:
+        return qs.closing_time
 
 @login_required
 def reports_dashboard(request):
@@ -1437,8 +1438,8 @@ def balance_report(request):
     balancing_date = str(timezone.now().date())
     datef_balancing_date = datetime.strptime(balancing_date, "%Y-%m-%d").date()
     shop_open_time = get_shop_open_time()
-    from_date = datetime.combine(datef_balancing_date, shop_open_time)
-    to_date = from_date + timedelta(hours=23) + timedelta(minutes = 59)
+    from_date = shop_open_time
+    to_date = get_shop_close_time()
  
     for item in items:
         total_rem = items = get_opening_balance(item, from_date, to_date)
@@ -1452,14 +1453,21 @@ def balance_report(request):
             
         # bal = OrderItem.objects.filter(item__item_name=i).filter(ordered_time__range=[from_date, to_date])
         bal = Item.objects.all()
+        session_time = SessionTime.objects.last()
+        
+
         for item in bal:
+            opening_quantity = OpeningQuantity.objects.get(session_time = session_time, item_name = item)
+          
+        
+
             dict = {}
             dict['purchased'] = get_total_purchased(item, from_date, to_date)
     
             dict['item']=item.item_name
-            dict['opening']=  item.quantity_at_hand - get_total_sold(item, from_date, to_date) - get_total_purchased(item, from_date, to_date)
+            dict['opening']=  opening_quantity.opening_quantity
             dict['closing']= item.quantity_at_hand
-            dict['total']= get_total_purchased(item, from_date, to_date) + item.quantity_at_hand - get_total_sold(item, from_date, to_date) - get_total_purchased(item, from_date, to_date)
+            dict['total']= get_total_purchased(item, from_date, to_date) + opening_quantity.opening_quantity
             dict['sold']= get_total_sold(item, from_date, to_date)
 
             balances.append(dict)
@@ -1512,6 +1520,28 @@ def get_open_stock_if_not_purchased(item):
         return 0
 
 
+# def get_opening_balance(item_searched, from_date, to_date):
+
+#     balances = []
+    
+#     items = Item.objects.all()
+#     for item in items:
+#         dict = {}
+#         item_searched = item_searched
+#         dict['item'] = item_searched.item_name,
+#         dict['yesterday_sale'] = get_total_sold_yesterday(item, from_date, to_date)
+#         ordered_items = OrderItem.objects.filter(item = item_searched).filter(ordered_time__range=[from_date, to_date])
+#         total_item = 0
+#         if ordered_items.exists():
+#             for ordered_item in ordered_items:
+#                 total_item += ordered_item.quantity
+#             dict['total_item'] = total_item,
+#             balances.append(dict)
+#             return balances
+#         else:
+#             dict['total_item'] = total_item,
+#             balances.append(dict)
+#             return balances
 def get_opening_balance(item_searched, from_date, to_date):
 
     balances = []
@@ -1534,6 +1564,7 @@ def get_opening_balance(item_searched, from_date, to_date):
             dict['total_item'] = total_item,
             balances.append(dict)
             return balances
+
 
 
         
