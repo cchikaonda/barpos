@@ -1455,7 +1455,7 @@ def balance_report(request):
         bal = Item.objects.all()
         session_time = SessionTime.objects.last()
         
-
+        total = 0
         for item in bal:
             opening_quantity = OpeningQuantity.objects.get(session_time = session_time, item_name = item)
           
@@ -1469,6 +1469,9 @@ def balance_report(request):
             dict['closing']= item.quantity_at_hand
             dict['total']= get_total_purchased(item, from_date, to_date) + opening_quantity.opening_quantity
             dict['sold']= get_total_sold(item, from_date, to_date)
+            dict['price'] = get_sold_price(item, from_date, to_date)
+            dict['amount'] = get_total_sold(item, from_date, to_date) * get_sold_price(item, from_date, to_date)
+            total += get_total_sold(item, from_date, to_date) * get_sold_price(item, from_date, to_date)
 
             balances.append(dict)
 
@@ -1484,6 +1487,7 @@ def balance_report(request):
         "from_date":from_date,
         "balances":balances,
         "total_rem":total_rem,
+        "total":total,
     }
     return render (request, 'balance_reports/balance_report.html', context)
 
@@ -1507,6 +1511,17 @@ def get_total_purchased(item, from_date, to_date):
         for stocked_item in stocked_items:
             sum_stocked_items += stocked_item.stock_in
         return sum_stocked_items
+
+def get_sold_price(item, from_date, to_date):
+    ordered_items = OrderItem.objects.filter(item = item, ordered_time__range = [from_date, to_date])
+    if ordered_items:
+        item_price = ordered_items.last().price
+        print(item_price)
+        return item_price
+    else:
+        return item.price
+
+
 
 def get_open_stock_if_purchesed(item, from_date, to_date):
     stocked_items = Stock.objects.filter(item = item, created_at__range = [from_date, to_date]).last()
