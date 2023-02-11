@@ -30,6 +30,7 @@ def system_dashboard(request):
     refunds_count = RefundOrder.objects.all().count()
     
     clock_out = timezone.now()
+
     context={
         'home':'Home',
         'header':'Home', 
@@ -44,6 +45,7 @@ def system_dashboard(request):
         'refunds_count':refunds_count,
         'session_time':session_time,
         'clock_out':clock_out,
+        'open_time':open_time,
         }
     return render(request, 'system_dashboard.html', context)
 

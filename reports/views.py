@@ -1450,10 +1450,9 @@ def balance_report(request):
         
         balances = []
         
-            
-        # bal = OrderItem.objects.filter(item__item_name=i).filter(ordered_time__range=[from_date, to_date])
         bal = Item.objects.all()
         session_time = SessionTime.objects.last()
+        
         
         total = 0
         for item in bal:
@@ -1475,9 +1474,8 @@ def balance_report(request):
 
             balances.append(dict)
 
-
     context = {
-        "header": 'sales report',
+        "header": 'Closing Balance Report ' ,
         "items":items,
         "form":form,
         "ordered_items":ordered_items,
@@ -1516,7 +1514,6 @@ def get_sold_price(item, from_date, to_date):
     ordered_items = OrderItem.objects.filter(item = item, ordered_time__range = [from_date, to_date])
     if ordered_items:
         item_price = ordered_items.last().price
-        print(item_price)
         return item_price
     else:
         return item.price

@@ -13,8 +13,6 @@
       visibility: hidden;
     }
   </style>
- 
-
     <!-- Content Wrapper. Contains page content -->
     <div class="content ml-2 mr-2 mt-2" style="max-height: 500px;">
         <!-- Small Box (Stat card) -->
@@ -183,11 +181,13 @@
         <div class="col-lg-3 col-6">
           <!-- small card -->
           <!-- href="{% url 'clock_out' %}" -->
-          <a  data-target="#clockoutModal" data-toggle="modal">
+          <a href="#"  data-target="#clockoutModal" data-toggle="modal">
             <div class="small-box bg-light dashboard_menu_item">
               <div class="inner text-secondary">
                 <p> <h3>Clock Out<sup style="font-size: 20px"></sup></h3> </p>
               </div>
+              <p class="ml-4">Clocked in at:  {{open_time}}</p>
+              
               <div class="icon">
                 <i class="far fa-clock"></i>
               </div>
@@ -200,7 +200,6 @@
     </div>
     <!-- /.row -->
     <!-- Small Box (Stat card) -->
-
 {% endblock %}
 
 

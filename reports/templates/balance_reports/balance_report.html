@@ -18,9 +18,13 @@
 
 
 <div id="page-content" class="card-body not-visible">
+  <div class="ml-4">
+   <strong>From: <span class="badge badge-primary">{{from_date| date:"H:i A"}} {{from_date| date:"d/m/Y"}}</span> To: <span class="badge badge-success">{{to_date| date:"H:i A"}} {{to_date| date:"d/m/Y"}}</span></strong> 
+  </div>
   <div class="card-body mb-4">
     <table class="table table-bordered table-striped mt-4" id="inventory_quantity_table">
       <thead >
+        
         <tr>
             <th>ID</th>
             <th >Item</th>

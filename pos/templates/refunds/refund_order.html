@@ -151,7 +151,9 @@
                     <tr>
                       <td>{{forloop.counter}}</td>
                       {% if refund_order %}
+                  
                       <td><a href="{% url 'add_to_refund' ordered_item.id %}">{{ordered_item.item}}</a></td>
+                     
                       {% else %}
                       <td>{{ordered_item.item}}</td>
                       {% endif %}

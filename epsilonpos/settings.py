@@ -31,7 +31,7 @@ DEBUG_TOOLBAR_CONFIG = {
     # '...
 }
 
-ALLOWED_HOSTS = ['0.0.0.0','localhost','127.0.0.1']
+ALLOWED_HOSTS = ['*']
 
 INTERNAL_IPS = [
     # ...
