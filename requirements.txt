@@ -22,6 +22,7 @@ Levenshtein==0.21.1
 phonenumbers==8.13.16
 Pillow==10.0.0
 py-moneyed==3.0
+PyMySQL==1.1.0
 pypng==0.20220715.0
 python-Levenshtein==0.21.1
 pytz==2023.3

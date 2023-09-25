@@ -102,12 +102,12 @@ AUTH_USER_MODEL = 'accounts.CustomUser' # changes the built user model to ours
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+#     }
+# }
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.postgresql',
@@ -118,16 +118,16 @@ DATABASES = {
 #         'PORT': 5432,
 #     }
 # }
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.mysql', 
-#         'NAME': 'bar_pos',
-#         'USER': 'root',
-#         'PASSWORD': 'root',
-#         'HOST': 'localhost',   # Or an IP Address that your DB is hosted on
-#         'PORT': '3306',
-#     }
-# }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql', 
+        'NAME': 'bar_pos',
+        'USER': 'root',
+        'PASSWORD': 'michelle@2018',
+        'HOST': 'localhost',   # Or an IP Address that your DB is hosted on
+        'PORT': '3306',
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
@@ -196,7 +196,7 @@ CONSTANCE_ADDITIONAL_FIELDS = {
 }
 
 CONSTANCE_CONFIG = {
-'SHOP_NAME':('EPSILON BAR','You are Home!!' ),
+'SHOP_NAME':('MCA SPORTS BAR','Where people, sports and drinks meet!!' ),
 'TAG_LINE':('The best in Town!!', 'The best Shop in Town'),
 'ADDRESS':('P.O. Box 418','Address' ),
 'LOCATION':('Lilongwe','Lilongwe' ),

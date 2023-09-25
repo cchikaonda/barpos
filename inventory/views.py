@@ -133,7 +133,7 @@ def get_items_running_out_of_stock():
 
 @login_required
 def item_list(request):
-    items = Item.get_all_items()
+    items = Item.get_all_items().order_by('item_name').values()
     item_cats = ItemCategory.get_all_item_categories()
     item_cat_id = request.GET.get('category')
     print(item_cat_id)
