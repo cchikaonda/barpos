@@ -1,0 +1,12 @@
+README.rst
+setup.cfg
+setup.py
+barcode/__init__.py
+barcode/barcode.py
+barcode/cli.py
+barcode.egg-info/PKG-INFO
+barcode.egg-info/SOURCES.txt
+barcode.egg-info/dependency_links.txt
+barcode.egg-info/entry_points.txt
+barcode.egg-info/requires.txt
+barcode.egg-info/top_level.txt
