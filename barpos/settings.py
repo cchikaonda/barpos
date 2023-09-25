@@ -59,7 +59,11 @@ INSTALLED_APPS = [
     'qrcode',
     'barcode',
     'phonenumber_field',
+    'crispy_bootstrap4',
 ]
+
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
