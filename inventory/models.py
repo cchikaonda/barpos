@@ -74,7 +74,7 @@ class Item(models.Model):
     quantity_at_hand = models.IntegerField(default=0)
     reorder_level = models.IntegerField()
     active = models.BooleanField(default=True)
-    slug = models.SlugField()
+    slug = models.SlugField(unique=True)
 
     def __str__(self):
         return self.item_name

@@ -133,7 +133,7 @@ def get_items_running_out_of_stock():
 
 @login_required
 def item_list(request):
-    items = Item.get_all_items().order_by('item_name').values()
+    items = Item.get_all_items()
     item_cats = ItemCategory.get_all_item_categories()
     item_cat_id = request.GET.get('category')
     print(item_cat_id)
@@ -154,7 +154,7 @@ def save_all_items(request, form, template_name):
         if form.is_valid():
             form.save()
             data['form_is_valid'] = True
-            items =  Item.objects.all()
+            items =  Item.get_all_items()
             data['item_list'] = render_to_string('items/items_list_2.html',{'items': items,})
             print(data)
         else:
