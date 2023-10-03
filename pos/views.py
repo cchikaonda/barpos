@@ -86,7 +86,7 @@ def add_customer_to_order(request):
                 return redirect('/pos/personal_order_list/'+ str(check_order.id))
         except ObjectDoesNotExist:
             order = Order.objects.create(user = request.user, customer = customer)
-            order.paid_amount.add(default_paid_amount)
+            # order.paid_amount.add(default_paid_amount)
             order.save()
         return redirect('/pos/personal_order_list/'+ str(order.id))
     else:
@@ -102,7 +102,6 @@ def add_customer_to_order(request):
             order.paid_amount.add(default_paid_amount)
             order.save()
             return redirect('/pos/personal_order_list/'+ str(order.id))
-
 
 
 @login_required
@@ -134,24 +133,13 @@ def add_payment(request):
             if form.is_valid():
                 paid_amount = form.cleaned_data.get('paid_amount')
                 payment_mode = request.POST.get('payment_mode')
+                reference = request.POST.get('reference')
                 print(payment_mode)
                 
                 payment = Payment()
                 payment.payment_mode = payment_mode
                 payment.paid_amount = paid_amount
-            
-                if str(payment_mode).lower() == str('Cash').lower():
-                    reference = 'CASH'
-                    payment.payment_mode = reference
-                    payment.reference = reference
-                elif str(payment_mode).lower() == str('Lay By').lower():
-                    reference = 'Lay By'
-                    order.payment_mode = reference
-                    payment.payment_mode = reference
-                    payment.reference = reference
-                else:
-                    reference = form.cleaned_data.get('reference') 
-                    payment.reference = reference
+                payment.reference = reference
                 
                 payment.save()
                 order.paid_amount.add(payment)
@@ -183,10 +171,11 @@ def complete_order_only(order, request):
     order.vat_p = order.vat_rate
     order.vat_cost = order.get_vat_value
     payment = Payment()
-    payment.paid_amount = order.order_total_cost
+    payment.paid_amount = order.calculate_paid_amount
     payment.save()
-    order.paid_amount.clear()
-    order.paid_amount.add(payment)
+    # order.paid_amount.clear()
+    # order.paid_amount.add(payment)
+    order.change = order.calculate_change
     order.save()
     request.session['opened_order'] = order.id
 
@@ -207,11 +196,7 @@ def complete_order(request):
     order.ordered = True
     order.vat_p = order.vat_rate
     order.vat_cost = order.get_vat_value
-    payment = Payment()
-    payment.paid_amount = order.order_total_cost
-    payment.save()
-    order.paid_amount.clear()
-    order.paid_amount.add(payment)
+    order.change = order.get_change()
     order.save()
     return redirect("pos_dashboard")
 
@@ -259,6 +244,7 @@ def personal_order_list(request, id):
     payment_form = AddPaymentForm(initial={"payment_mode":'Cash', "paid_amount":[''],})
     airtel_money_payment_form = AddPaymentForm(initial={"payment_mode":'Airtel Money', "paid_amount":['']})
     mpamba_payment_form = AddPaymentForm(initial={"payment_mode":'Mpamba', "paid_amount":['']})
+    bank_payment_form = AddPaymentForm(initial={"payment_mode":'Bank', "paid_amount":['']})
     order = get_object_or_404(Order,id=id)
     request.session['opened_order'] = order.id
     # all_order_related = Order.objects.prefetch_related('customer','items','user',).all()
@@ -298,6 +284,7 @@ def personal_order_list(request, id):
         'payment_form':payment_form,
         'airtel_money_payment_form':airtel_money_payment_form,
         'mpamba_payment_form':mpamba_payment_form,
+        'bank_payment_form':bank_payment_form,
         'category':category,
         'unsettled_orders':unsettled_orders,
         'item_search_form':item_search_form,

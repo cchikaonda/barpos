@@ -78,7 +78,7 @@ class Payment(models.Model):
         ('Cash','Cash'),
         ('Mpamba', 'Mpamba'),
         ('Airtel Money', 'Airtel Money'),
-        ('Lay By', 'Lay By'),
+        ('Bank', 'Bank'),
         
     )
     customer = models.ForeignKey(Customer, on_delete = models.SET_NULL, null = True)
@@ -106,17 +106,20 @@ class Order(models.Model):
     order_date = models.DateTimeField(auto_now_add=True)
     ordered = models.BooleanField(default=False)
     paid_amount = models.ManyToManyField(Payment)
+    change = MoneyField(max_digits=14, decimal_places=2, default_currency='MWK', default=0.0)
     order_total_cost = MoneyField(max_digits=14, decimal_places=2, default_currency='MWK', default= 0.0)
     vat_p = models.FloatField(default=config.TAX_NAME)
     vat_cost = MoneyField(max_digits=14, decimal_places=2, default_currency='MWK', default= 0.0)
     created_at = models.DateTimeField(auto_now_add=True)
-    payment_mode = models.CharField(max_length=50, null=True, default="Cash")
-    # updated_at = models.DateTimeField(auto_now=True)
 
-    # def __init__(self, *args, **kwargs):
-    #     super(Order, self).__init__(*args, **kwargs)
-    #     self.original_paid_amount = self.paid_amount
-
+    @property
+    def calculate_paid_amount(self):
+        return sum(payment.paid_amount for payment in self.paid_amount.all())
+    
+    def calculate_change(self):
+        paid_amount = self.calculate_paid_amount()
+        self.change = paid_amount - self.order_total_cost
+        self.save()
     
 
     def __str__(self):
@@ -191,12 +194,6 @@ class Order(models.Model):
             total += payment.paid_amount
         return total
     
-    @property
-    def sum_lay_by_payments(self):
-        total = Money(0.0, 'MWK')
-        for payment in self.paid_amount.filter(payment_mode = 'Lay By'):
-            total += payment.paid_amount
-        return total
     
     def get_change(self):
         change = self.sum_paid_amount - self.order_total_due()

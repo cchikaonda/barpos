@@ -347,94 +347,6 @@
 <!--End Cash Payment Modal-->
 
 
-<!--Cash Payment Modal-->
-<div class="modal fade" id="laybyModal">
-  <div class="modal-dialog modal-dialog-centered modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h4 class="modal-title">Lay By Payment</h4>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        
-        <form action="{% url 'add_payment' %}" method="post" >
-          {% csrf_token %}
-          
-          
-          <label for="topay">TO PAY</label>
-          <div class="form-group" >
-              <input id="topay" class="form-control text-right pos_form" name="" value="{{order.order_total_due}}" style="background-color: rgb(62, 74, 89); font-size: 200%; font-family: monospace; color: chartreuse;" disabled/>
-          </div>
-          <br>
-          <div class="form-group">
-            <!-- <label for="payment_mode">Payment Mode</label> -->
-            <div style="display: none;">
-            {{layby_payment_form.payment_mode}}
-            </div>
-            <div >
-              <table class="table table-striped" >
-                {% if layb_order.payments.all %}
-                <thead>
-                  <tr>
-                    <th>#</th>
-                    <th>Date</th>
-                    <th class="text-right">Paid Amount</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {% for payment in layb_order.payments.all%}
-                  <tr>
-                    <td>{{forloop.counter}}</td>
-                    <td >{{payment.created_at|date:'d/m/Y H:i' }}</td>
-                    <td class="text-right">{{payment}}</td>
-                  </tr>
-                  {% endfor %}
-                {% endif %}
-                <tr class="">
-                  <td colspan="2" class="text-right">
-                    <h5><b>TOTAL PAID</b></h5>
-                  </td>
-                  <td class="text-right bg-info">
-                    <h5><b>{{layb_order.get_sum_paid}}</b></h5> 
-                  </td>
-                </tr>
-                <tr>
-                  <td colspan="2" class="text-right">
-                   <h5><b>BALANCE</b></h5>   
-                  </td>
-                  <td class="text-right bg-warning">
-                    <h5><b>{{layb_order.get_order_balance}}</b></h5> 
-                  </td>
-                </tr>
-              </table>
-              </div>
-            <div class="mt-4 mb-4">
-              <label for="paid_amount">Received Amount</label>
-              {{layby_payment_form.paid_amount}}
-            </div>
-            <div class=" mt-4 mb-4 disabled">
-              {{layby_payment_form.reference.as_hidden}}
-              <input type="hidden" name="reference" value="300">
-            </div>
-            <div class="mt-4 mb-4 disabled">
-              <input type="hidden" name="customer" value="{{order.customer.id}}">
-            </div>
-
-          </div>
-      </div>
-      <div class="modal-footer justify-content-between">
-        <button type="button" class="btn btn-default btn-lg" data-dismiss="modal">CLOSE</button>
-        <button type="submit" class="btn btn-primary btn-lg">PROCESS</button>
-      </div>
-    </div>
-  </form>
-    <!-- /.modal-content -->
-  </div>
-</div>
-<!--End Cash Payment Modal-->
-
 <!--Airtel Money Payment Modal-->
 <div class="modal fade" id="airtelMoneyModal">
   <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -533,12 +445,12 @@
 </div>
 <!--End Mpamba Payment Modal-->
 
-<!--View Bill Modal-->
-<div class="modal fade" id="{unpaid_order.id}">
+<!--Bank Payment Modal-->
+<div class="modal fade" id="bankModal">
   <div class="modal-dialog modal-dialog-centered modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <h4 class="modal-title">Order: {{unpaid_order.get_code}}</h4>
+        <h4 class="modal-title">Bank Payment</h4>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -550,11 +462,56 @@
             
           <label for="topay">TO PAY</label>
           <div class="form-group" >
+              <input id="topay" class="form-control text-right pos_form" name="" value="{{order.order_total_due}}" style="background-color: rgb(62, 74, 89); font-size: 200%; font-family: monospace; color: chartreuse;" disabled/>
+          </div>
+          <br>
+          <div class="form-group">
+            <div class="mb-4">
+              <label for="topay">Payment Mode</label>
+              {{bank_payment_form.payment_mode}}
+            </div>
+            <div class=" mt-4 mb-4">
+              <label for="topay">Amount Received</label>
+              {{bank_payment_form.paid_amount}}
+            </div>
+            <div class=" mt-4 mb-4">
+              <label for="topay">Reference Number</label>
+              {{bank_payment_form.reference}}
+            </div>
+            <div class=" mt-4 mb-4 disabled">
+              <input type="hidden" name="customer" value="{{order.customer.id}}">
+            </div>
+          </div>
+      </div>
+      <div class="modal-footer justify-content-between">
+        <button type="button" class="btn btn-default" data-dismiss="modal">CLOSE</button>
+        <button type="submit" class="btn btn-primary">PROCESS</button>
+      </div>
+    </div>
+  </form>
+    <!-- /.modal-content -->
+  </div>
+</div>
+<!--End Mpamba Payment Modal-->
+
+<!--View Bill Modal-->
+<div class="modal fade" id="{unpaid_order.id}">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Order: {{unpaid_order.get_code}}</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form action="{% url 'add_payment' %}" method="post" >
+          {% csrf_token %}
+          <label for="topay">TO PAY</label>
+          <div class="form-group" >
               <input id="topay" class="form-control text-right payment_form" name="" value="{{order.order_mpamba_total_due}}" style="background-color: rgb(62, 74, 89); font-size: 200%; font-family: monospace; color: chartreuse;" disabled/>
           </div>
           <br>
-
-
           <div class="form-group">
             <div class="mb-4">
               <label for="topay">Payment Mode</label>
@@ -569,8 +526,6 @@
               {{mpamba_payment_form.reference}}
             </div>
           </div>
-          
-       
       </div>
       <div class="modal-footer justify-content-between">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
