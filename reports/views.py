@@ -323,18 +323,16 @@ def sales_report(request):
 
     total_items_ordered = 0
     total_cost_items_ordered = Money('0.0', 'MWK')
-
-    # today = timezone.now().date()
+    payments = Payment.objects.filter(created_at__gte=timezone.now() - timedelta(days=7))
     
     item_categories = ItemCategory.objects.all().order_by('category_name')
 
     ordered_items = all_days_sales(report_period)
     
-    # lay_by_orders = LayByOrders.objects.filter(order_id__ordered = False)
-
     today = timezone.now().date()
     report_time = timezone.now()
     yesterday = today -timedelta(days=1)
+
     
     if request.method == "POST":
         item_cat = request.POST.get('item_categories_option')
@@ -346,26 +344,27 @@ def sales_report(request):
         elif report_period == 1:
             ordered_items = todays_ordered_items(item_cat)
             report_period = "Today"
-            # lay_by_orders = LayByOrders.objects.filter(payments__created_at__gte = today)
+            payments = Payment.objects.filter(created_at__gte = today)
         elif report_period == 2:
             ordered_items = yesterday_ordered_items(item_cat)
             report_period = "Yesterday"
+            payments = Payment.objects.filter(created_at__date=yesterday)
         elif report_period == 3:
             ordered_items = last_7_days_ordered_items(item_cat)
             report_period = "Last 7 Days"
-            
+            payments = Payment.objects.filter(created_at__gte=timezone.now() - timedelta(days=7))
         elif report_period == 4:
             ordered_items= last_30_days_ordered_items(item_cat)
             report_period = "Last 30 Days"
-
+            payments = Payment.objects.filter(created_at__gte=timezone.now() - timedelta(days=7))
         elif report_period == 5:
             ordered_items = this_month_ordered_items(item_cat)
             report_period = "This Month"
-            
+            payments = Payment.objects.filter(created_at__gte=timezone.now() - timedelta(days=7))
         elif report_period == 6:
             ordered_items = last_month_ordered_items(item_cat)
             report_period = "Last Month"
-
+            payments = Payment.objects.filter(created_at__gte=timezone.now() - timedelta(days=7))
     sum_total_vat = Money(0.0, 'MWK')
    
 
@@ -378,31 +377,31 @@ def sales_report(request):
     )
     
     # Calculate the total change for all orders
-    total_change = orders_with_ordered_items.aggregate(total_change=Sum('change'))['total_change'] or Money(0, 'MWK')
+    total_change = orders_with_ordered_items.aggregate(total_change=Sum('change'))['total_change'] 
 
     # Retrieve the total cash amount (assuming you have a field named 'cash_amount' in your Payment model)
     total_cash = Payment.objects.filter(order__in=orders_with_ordered_items, payment_mode='Cash').aggregate(total_cash=Sum('paid_amount'))['total_cash'] or Money(0, 'MWK')
     
     total_balance = orders_with_ordered_items.aggregate(total_balance=Sum('balance'))['total_balance'] or 0.0
     # Calculate the final cash amount after subtracting the total change
-    final_cash = Money(total_cash - total_change, 'MWK')
-
-    payment_sums = {
-        'Cash': 0.0,
-        'Bank': 0.0,
-        'Airtel Money': 0.0,
-        'Mpamba': 0.0,
-        }
+    
+    if total_cash is not None and total_change is not None:
+        final_cash = total_cash - total_change
+    else:
+        # Handle the case where either total_cash or total_change is None
+        final_cash = Money(0.0, 'MWK')  # Provide a default value or handle the case as appropriate
+    
+    payment_sums = {}
+    # Loop through payment modes and initialize their sums to zero
+    for mode_display, _ in Payment.payment_options:
+        payment_sums[mode_display] = 0.0
     # Now, you can access the payments for each order in the queryset
-    for order in orders_with_ordered_items:
-        for payment in order.paid_amount.all():
-            mode = payment.payment_mode  # Assuming you have a field named 'payment_mode' in your Payment model
-            amount = payment.paid_amount  # Assuming you have a field named 'paid_amount' in your Payment model
-
-            # Update the payment sum for the corresponding mode
-            payment_sums[mode] += amount
-    for mode, amount in payment_sums.items():
-        print(f"Payment Mode: {mode}, Total Amount: {amount}")
+    # for order in orders_with_ordered_items:
+    for payment in payments:
+        mode = payment.payment_mode  # Assuming you have a field named 'payment_mode' in your Payment model
+        amount = payment.paid_amount  # Assuming you have a field named 'paid_amount' in your Payment model
+        # Update the payment sum for the corresponding mode
+        payment_sums[mode] += amount
 
     for order in orders_with_ordered_items:
         sum_total_vat += order.vat_cost
@@ -415,10 +414,7 @@ def sales_report(request):
 
     net_total_sales = total_cost_items_ordered-sum_total_vat
 
-    
-    # total_cash_in_hand = sum_layby_paid_amount + total_cost_items_ordered
-    total_cash_in_hand = total_cost_items_ordered
-
+    total_revenue = final_cash
     context = {
         "item_cat":item_cat,
         "report_period":report_period,
@@ -430,12 +426,11 @@ def sales_report(request):
         "sum_ordered_items_count":sum_ordered_items_count,
         "sum_total_vat":sum_total_vat,
         "net_total_sales":net_total_sales,
-        # "sum_layby_paid_amount":sum_layby_paid_amount,
-        "total_cash_in_hand":total_cash_in_hand,
         "report_time":report_time,
         "payment_sums":payment_sums,
         "final_cash":final_cash,
         "total_balance":total_balance,
+        'total_revenue':total_revenue,
     }
     return render(request, 'sales_report.html',context)
 

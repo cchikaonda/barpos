@@ -224,27 +224,27 @@
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <div class="text-right">
-        <div class="mb-4">
-          <table class="table table-striped">
-            <tbody style="font-size: x-large;">
-              <tr>
-                <td>AMOUNT TENDERED</td>
-                <td>{{order.paid_amount}}</td>
-              </tr>
-              <tr>
-                <td>BALANCE</td>
-                <td>{{order.get_balance}}</td>
-              </tr>
-              <tr>
-                <td>CHANGE</td>
-                <td class="bg-dark">{{order.get_change}}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-      <div class="modal-body">  
+      <div class="modal-body"> 
+        <div class="text-right">
+          <div class="mb-4">
+            <table class="table table-striped">
+              <tbody style="font-size: x-large;">
+                <tr>
+                  <td>AMOUNT TENDERED</td>
+                  <td>{{order.calculate_paid_amount}}</td>
+                </tr>
+                <tr>
+                  <td>TOTAL BILL</td>
+                  <td>{{order.order_total_cost}}</td>
+                </tr>
+                <tr>
+                  <td>CHANGE</td>
+                  <td class="bg-dark">{{order.get_change}}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div> 
         <div class="modal-footer justify-content-between">
           <a href="{% url 'complete_order' %}"> <button type="button" class="btn btn-dark modal_btns">NO</button> </a>
          <a href="{% url 'final_receipt' %}"> <button type="submit" class="btn btn-primary modal_btns">YES</button></a>
@@ -265,27 +265,28 @@
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <div class="text-right">
-        <div class="mb-4">
-          <table class="table table-striped">
-            <tbody style="font-size: x-large;">
-              <tr>
-                <td>AMOUNT TENDERED</td>
-                <td>{{order.paid_amount}}</td>
-              </tr>
-              <tr>
-                <td>BALANCE</td>
-                <td>{{order.get_balance}}</td>
-              </tr>
-              <tr>
-                <td>CHANGE</td>
-                <td class="bg-dark">{{order.get_change}}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
+      
       <div class="modal-body">  
+        <div class="text-right">
+          <div class="mb-4">
+            <table class="table table-striped">
+              <tbody style="font-size: x-large;">
+                <tr>
+                  <td>TOTAL BILL</td>
+                  <td>{{order.order_total_cost}}</td>
+                </tr>
+                <tr>
+                  <td>AMOUNT TENDERED</td>
+                  <td>{{order.calculate_paid_amount}}</td>
+                </tr>
+                <tr>
+                  <td>BALANCE</td>
+                  <td>{{order.get_balance}}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
         <div class="modal-footer justify-content-between">
          <a href="{% url 'save_bill' %}"> <button type="button" class="btn btn-dark modal_btns">NO</button> </a>
          <a href="{% url 'print_receipt_only' %}"> <button type="submit" class="btn btn-primary modal_btns">YES</button></a>
@@ -313,7 +314,7 @@
             
           <label for="topay">TO PAY</label>
           <div class="form-group" >
-              <input id="topay" class="form-control text-right pos_form" name="" value="{{order.order_total_due}}" style="background-color: rgb(62, 74, 89); font-size: 200%; font-family: monospace; color: chartreuse;" disabled/>
+              <input id="topay" class="form-control text-right pos_form" name="" value="{{order.get_balance}}" style="background-color: rgb(62, 74, 89); font-size: 200%; font-family: monospace; color: chartreuse;" disabled/>
           </div>
           <br>
           <div class="form-group ">
@@ -327,7 +328,7 @@
             </div>
             <div class=" mt-4 mb-4 disabled">
               {{payment_form.reference.as_hidden}}
-              <input type="hidden" name="reference" value="300">
+              <input type="hidden" name="reference" value="CASH">
             </div>
             <div class=" mt-4 mb-4 disabled">
               <input type="hidden" name="customer" value="{{order.customer.id}}">
@@ -364,7 +365,7 @@
             
           <label for="topay">TO PAY</label>
           <div class="form-group" >
-              <input id="topay" class="form-control text-right pos_form" name="" value="{{order.order_airtel_money_total_due}}" style="background-color: rgb(62, 74, 89); font-size: 200%; font-family: monospace; color: chartreuse;" disabled/>
+              <input id="topay" class="form-control text-right pos_form" name="" value="{{order.get_balance}}" style="background-color: rgb(62, 74, 89); font-size: 200%; font-family: monospace; color: chartreuse;" disabled/>
           </div>
           <br>
           <div class="form-group">
@@ -413,7 +414,7 @@
             
           <label for="topay">TO PAY</label>
           <div class="form-group" >
-              <input id="topay" class="form-control text-right pos_form" name="" value="{{order.order_mpamba_total_due}}" style="background-color: rgb(62, 74, 89); font-size: 200%; font-family: monospace; color: chartreuse;" disabled/>
+              <input id="topay" class="form-control text-right pos_form" name="" value="{{order.get_balance}}" style="background-color: rgb(62, 74, 89); font-size: 200%; font-family: monospace; color: chartreuse;" disabled/>
           </div>
           <br>
           <div class="form-group">
@@ -462,7 +463,7 @@
             
           <label for="topay">TO PAY</label>
           <div class="form-group" >
-              <input id="topay" class="form-control text-right pos_form" name="" value="{{order.order_total_due}}" style="background-color: rgb(62, 74, 89); font-size: 200%; font-family: monospace; color: chartreuse;" disabled/>
+              <input id="topay" class="form-control text-right pos_form" name="" value="{{order.get_balance}}" style="background-color: rgb(62, 74, 89); font-size: 200%; font-family: monospace; color: chartreuse;" disabled/>
           </div>
           <br>
           <div class="form-group">
@@ -474,9 +475,9 @@
               <label for="topay">Amount Received</label>
               {{bank_payment_form.paid_amount}}
             </div>
-            <div class=" mt-4 mb-4">
-              <label for="topay">Reference Number</label>
-              {{bank_payment_form.reference}}
+            <div class=" mt-4 mb-4 disabled">
+              {{bank_payment_form.reference.as_hidden}}
+              <input type="hidden" name="reference" value="BANK">
             </div>
             <div class=" mt-4 mb-4 disabled">
               <input type="hidden" name="customer" value="{{order.customer.id}}">

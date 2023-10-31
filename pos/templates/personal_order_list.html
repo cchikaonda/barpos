@@ -129,7 +129,7 @@
                       </tr>
                     {% else %}
                       <tr style="outline: none; border: none;">
-                        {% if order.sum_paid_amount == order.default_amount_paid %}
+                        {% if order.calculate_paid_amount == 0 %}
         
                         {% else %}
                         <td colspan="2"  style="text-align: right; outline: none;background-color: rgba(171, 213, 238, 0.6);" class="text-info font-size-h4 font-w600" >Amount Tendered is less than the Total Bill</td>

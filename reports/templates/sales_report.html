@@ -94,12 +94,10 @@
         </td>
       </tr>
       {% for mode, amount in payment_sums.items %}
-          {% if mode != 'Cash' %}
-            <tr class="text-bold">
-                <td class="text-right " colspan="5">{{ mode|upper }}</td>
-                <td class="text-right">{{ amount }}</td>
-            </tr>
-          {% endif %}
+          <tr class="text-bold">
+              <td class="text-right " colspan="5">{{ mode|upper }}</td>
+              <td class="text-right">{{ amount }}</td>
+          </tr>
       {% endfor %}
       <tr class="text-bold">
         
@@ -125,11 +123,11 @@
       <tr class="text-bold">
         
         <td class="text-right " colspan="5">
-         TOTAL CASH IN HAND
+         TOTAL REVENUE
         </td >
        
         <td class="text-right">
-          {{total_cash_in_hand}}
+          {{total_revenue}}
         </td>
         
       </tr>

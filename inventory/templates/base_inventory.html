@@ -297,6 +297,20 @@
       });
 
       $(function () {
+          $('#items_out_of_stock_table').DataTable({
+              "paging": true,
+              "lengthChange": true,  // Enable length change
+              "lengthMenu": [5, 10, 15, 20], // Specify the number of items per page options
+              "searching": true,
+              "ordering": true,
+              "info": true,
+              "autoWidth": false,
+              "responsive": true,
+          });
+      });
+      
+
+      $(function () {
         $('#user-table').DataTable({
           "paging": true,
           "lengthChange": false,

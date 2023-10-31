@@ -134,12 +134,12 @@ def add_payment(request):
                 paid_amount = form.cleaned_data.get('paid_amount')
                 payment_mode = request.POST.get('payment_mode')
                 reference = request.POST.get('reference')
-                print(payment_mode)
                 
                 payment = Payment()
                 payment.payment_mode = payment_mode
                 payment.paid_amount = paid_amount
                 payment.reference = reference
+                payment.customer = order.customer
                 
                 payment.save()
                 order.paid_amount.add(payment)

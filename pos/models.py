@@ -137,10 +137,6 @@ class Order(models.Model):
     @property
     def get_code(self):
         return self.gen_code
-    
-    # @property
-    # def reference(self):
-    #     return self.paid_amount.reference
 
     @property
     def get_vat_value(self):
@@ -166,7 +162,7 @@ class Order(models.Model):
         return self.order_total() +  self.get_vat_value + self.fee_value()
 
     def order_total(self):
-        total = Money('0.0', 'MWK')
+        total = Money(0.0, 'MWK')
         for order_item in self.items.all():
             total += order_item.amount
         return total 
@@ -193,14 +189,14 @@ class Order(models.Model):
         for payment in self.paid_amount.all():
             total += payment.paid_amount
         return total
-    
-    
+
     def get_change(self):
         change = self.sum_paid_amount - self.order_total_due()
         return change
     
-    
-
+    def default_amount_paid():
+        default_amount = Money(0.0, 'MWK')
+        return default_amount
     @property
     def get_balance(self):
         default_amount = Money(0.0, 'MWK')
@@ -209,12 +205,6 @@ class Order(models.Model):
         else:
             return default_amount
     
-    
-    def default_amount_paid(self):
-        default_money = Money(0.0, 'MWK')
-        # default_money = ("MWK", 0.0)
-        return default_money 
-
     # @property()
     def get_customer(self):
         return self.items.customer
@@ -222,30 +212,6 @@ class Order(models.Model):
 @receiver(post_save, sender=Payment)
 def update_ordered_date_if_payment_is_done(sender, instance, **kwargs):
     instance.paid_amount
-
-# @receiver(post_save, sender=Order)
-# def save_payments_in_order(sender, instance, **kwargs):
-    
-#         if instance.sum_paid_amount > instance.get_balance and instance.ordered == True:
-#             paid = Payment()
-#             paid.paid_amount = instance.get_balance
-#             paid.save()
-#         else:
-#             paid = Payment()
-#             paid.paid_amount = instance.sum_paid_amount
-#             paid.save()
-
-#         instance.paid_amount.add(paid)
-
-        # total = 0
-        # for payment in new_layby_order.payments.all():
-        #     total += payment.paid_amount
-        # LayByOrders.objects.filter(id = layby_order.id).update(sum_paid = total)
-        
-        # order_payment2 = Payment()
-        # order_payment2.paid_amount = total
-        # order_payment2.save()
-        # Order.objects.filter(id=instance.id).update(paid_amount=order_payment2)
 
 
 

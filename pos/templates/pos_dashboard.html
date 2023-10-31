@@ -18,7 +18,7 @@
               {% if unpaid_orders %}
               <div class="card mb-4">
                 <div class="card-header bg-secondary">
-                  <h3 class="card-title"><i class="fa fa-money-bill-wave"></i> UNPAID ORDERS/LAYBY ORDERS</h3>  <h5 class="text-right"><b>TOTAL: {{sum_unpaid_orders}}</b></h5>
+                  <h3 class="card-title"><i class="fa fa-money-bill-wave"></i> UNPAID ORDERS</h3>  <h5 class="text-right"><b>TOTAL: {{sum_unpaid_orders}}</b></h5>
                 </div>
                 <!-- /.card-header -->
                 <div class="card-body">
@@ -98,7 +98,7 @@
                                         </tr>
                                         <tr>
                                           <td colspan="4" class="text-right">PAID</td>
-                                          <td colspan="1" class="bg-success" style="font-size: x-large;">{{unpaid_order.paid_amount.paid_amount}}</td>
+                                          <td colspan="1" class="bg-success" style="font-size: x-large;">{{unpaid_order.calculate_paid_amount}}</td>
                                         </tr>
                                         <tr>
                                           <td colspan="4" class="text-right">BALANCE</td>
