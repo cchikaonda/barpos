@@ -254,7 +254,7 @@ def is_valid_queryparam(param):
 def get_todays_total_sales():
     today_date = timezone.now().date()
 
-    ordered_items = OrderItem.objects.filter(ordered = True, ordered_time__gte = today_date)
+    ordered_items = OrderItem.objects.filter( ordered_time__gte = today_date)
 
     sum_total_cost = Money(0.0, 'MWK')
     for ordered_item in ordered_items:
@@ -333,6 +333,7 @@ def sales_report(request):
     report_time = timezone.now()
     yesterday = today -timedelta(days=1)
 
+    orders_with_bill = None
     
     if request.method == "POST":
         item_cat = request.POST.get('item_categories_option')
@@ -340,33 +341,41 @@ def sales_report(request):
         report_period = int(report_period)
         if report_period == 777:
             ordered_items = all_days_sales(item_cat)
+            orders_with_bill = Order.objects.filter(ordered=False)
             report_period = "All Days"
         elif report_period == 1:
             ordered_items = todays_ordered_items(item_cat)
             report_period = "Today"
             payments = Payment.objects.filter(created_at__gte = today)
+            orders_with_bill = Order.objects.filter(ordered=False, created_at__gte = today)
         elif report_period == 2:
             ordered_items = yesterday_ordered_items(item_cat)
             report_period = "Yesterday"
             payments = Payment.objects.filter(created_at__date=yesterday)
+            orders_with_bill = Order.objects.filter(ordered=False, created_at__date=yesterday)
         elif report_period == 3:
             ordered_items = last_7_days_ordered_items(item_cat)
             report_period = "Last 7 Days"
             payments = Payment.objects.filter(created_at__gte=timezone.now() - timedelta(days=7))
+            orders_with_bill = Order.objects.filter(ordered=False, created_at__gte=timezone.now() - timedelta(days=7))
         elif report_period == 4:
             ordered_items= last_30_days_ordered_items(item_cat)
             report_period = "Last 30 Days"
             payments = Payment.objects.filter(created_at__gte=timezone.now() - timedelta(days=7))
+            orders_with_bill = Order.objects.filter(ordered=False, created_at__gte=timezone.now() - timedelta(days=7))
         elif report_period == 5:
             ordered_items = this_month_ordered_items(item_cat)
             report_period = "This Month"
             payments = Payment.objects.filter(created_at__gte=timezone.now() - timedelta(days=7))
+            orders_with_bill = Order.objects.filter(ordered=False, created_at__gte=timezone.now() - timedelta(days=7))
         elif report_period == 6:
             ordered_items = last_month_ordered_items(item_cat)
             report_period = "Last Month"
             payments = Payment.objects.filter(created_at__gte=timezone.now() - timedelta(days=7))
+            orders_with_bill = Order.objects.filter(ordered=False, created_at__gte=timezone.now() - timedelta(days=7))
     sum_total_vat = Money(0.0, 'MWK')
    
+
 
     orders_with_ordered_items = Order.objects.filter(items__in=ordered_items).prefetch_related(
     Prefetch('paid_amount', queryset=Payment.objects.all())
@@ -378,15 +387,27 @@ def sales_report(request):
     
     # Calculate the total change for all orders
     total_change = orders_with_ordered_items.aggregate(total_change=Sum('change'))['total_change'] 
+    if total_change is not None:
+       formated_change = Money(total_change, 'MWK')
+    else:
+        formated_change = Money(0.0, 'MWK')
 
     # Retrieve the total cash amount (assuming you have a field named 'cash_amount' in your Payment model)
-    total_cash = Payment.objects.filter(order__in=orders_with_ordered_items, payment_mode='Cash').aggregate(total_cash=Sum('paid_amount'))['total_cash'] or Money(0, 'MWK')
+    total_cash = payments.filter(order__in=orders_with_ordered_items, payment_mode='Cash').aggregate(total_cash=Sum('paid_amount'))['total_cash']
+    if total_cash is not None:
+        formated_total_cash = Money(total_cash, 'MWK')
+    else:
+        formated_total_cash = Money(0.0, 'MWK')
+
+    total_balance = Money(0.0, 'MWK')
+    print(orders_with_bill)
     
-    total_balance = orders_with_ordered_items.aggregate(total_balance=Sum('balance'))['total_balance'] or 0.0
-    # Calculate the final cash amount after subtracting the total change
-    
-    if total_cash is not None and total_change is not None:
-        final_cash = total_cash - total_change
+    if orders_with_bill is not None:
+        for order_with_balance in orders_with_bill:
+            total_balance += order_with_balance.get_balance
+
+    if formated_total_cash is not None and formated_change is not None:
+        final_cash = formated_total_cash - formated_change
     else:
         # Handle the case where either total_cash or total_change is None
         final_cash = Money(0.0, 'MWK')  # Provide a default value or handle the case as appropriate
@@ -394,7 +415,7 @@ def sales_report(request):
     payment_sums = {}
     # Loop through payment modes and initialize their sums to zero
     for mode_display, _ in Payment.payment_options:
-        payment_sums[mode_display] = 0.0
+        payment_sums[mode_display] = Money(0.0, 'MWK')
     # Now, you can access the payments for each order in the queryset
     # for order in orders_with_ordered_items:
     for payment in payments:
@@ -660,9 +681,9 @@ def yesterday_ordered_items(category):
     category_id = str(category)
     get_item_cat = ItemCategory.objects.filter(category_name = category_id)
     if get_item_cat.exists():
-        return OrderItem.objects.filter(ordered = True, item__category__in = get_item_cat, ordered_time__range = [yesterday, today])
+        return OrderItem.objects.filter(item__category__in = get_item_cat, ordered_time__range = [yesterday, today])
     else:
-        return OrderItem.objects.filter(ordered = True, ordered_time__range = [yesterday, today])
+        return OrderItem.objects.filter(ordered_time__range = [yesterday, today])
 
 def last_7_days_ordered_items(category):
     date_today = datetime.now().date()
@@ -672,27 +693,27 @@ def last_7_days_ordered_items(category):
     get_item_cat = ItemCategory.objects.filter(category_name = category_id)
 
     if get_item_cat.exists():
-        return OrderItem.objects.filter(ordered = True, item__category__in = get_item_cat, ordered_time__range = [seven_days_b4, date_today])
+        return OrderItem.objects.filter( item__category__in = get_item_cat, ordered_time__range = [seven_days_b4, date_today])
     else:
-        return OrderItem.objects.filter(ordered = True, ordered_time__range = [seven_days_b4, date_today])
+        return OrderItem.objects.filter( ordered_time__range = [seven_days_b4, date_today])
 def last_30_days_ordered_items(category):
     date_today = datetime.now().date()
     thirty_days_b4 = date_today-timedelta(days=30)
     category_id = str(category)
     get_item_cat = ItemCategory.objects.filter(category_name = category_id)
     if get_item_cat.exists():
-        return OrderItem.objects.filter(ordered = True, item__category__in = get_item_cat, ordered_time__range = [thirty_days_b4, date_today])
+        return OrderItem.objects.filter( item__category__in = get_item_cat, ordered_time__range = [thirty_days_b4, date_today])
     else:
-        return OrderItem.objects.filter(ordered = True, ordered_time__range = [thirty_days_b4, date_today])
+        return OrderItem.objects.filter( ordered_time__range = [thirty_days_b4, date_today])
 def this_month_ordered_items(category):
     today = datetime.now()
     this_month_firstday = datetime.now().date().replace(day=1)
     category_id = str(category)
     get_item_cat = ItemCategory.objects.filter(category_name = category_id)
     if get_item_cat.exists():
-        return OrderItem.objects.filter(ordered = True, item__category__in = get_item_cat, ordered_time__range = [this_month_firstday, today])
+        return OrderItem.objects.filter(item__category__in = get_item_cat, ordered_time__range = [this_month_firstday, today])
     else:
-       return OrderItem.objects.filter(ordered = True, ordered_time__range = [this_month_firstday, today])
+       return OrderItem.objects.filter( ordered_time__range = [this_month_firstday, today])
 def last_month_ordered_items(category):
     today = datetime.now().date()
     this_month_firstday = today.replace(day=1)
@@ -702,10 +723,10 @@ def last_month_ordered_items(category):
     category_id = str(category)
     get_item_cat = ItemCategory.objects.filter(category_name = category_id)
     if get_item_cat.exists():
-        return OrderItem.objects.filter(ordered = True, item__category__in = get_item_cat, ordered_time__range = [last_monthfirstday, last_monthlastday])
+        return OrderItem.objects.filter( item__category__in = get_item_cat, ordered_time__range = [last_monthfirstday, last_monthlastday])
         # return Item.objects.filter(category__category_name = category_id).filter(orderitem__ordered_time__range = [last_monthfirstday, last_monthlastday]).annotate(sum=Sum('orderitem__quantity')).annotate(total = Sum(F('orderitem__quantity')*F('orderitem__ordered_item_price'), output_field = FloatField())).annotate(default_item_price = Sum(F('price')*1)).annotate(item_price = Sum(F('orderitem__ordered_item_price')*1)).annotate(vat_value = Sum(F('orderitem__quantity')*F('orderitem__ordered_item_price')*vat, output_field = FloatField())).annotate(tota_vat_inclusive = Sum((F('orderitem__quantity')*F('orderitem__ordered_item_price')*vat) + (F('orderitem__quantity')*F('orderitem__ordered_item_price')), output_field = FloatField()))   
     else:
-        return OrderItem.objects.filter(ordered = True,ordered_time__range = [last_monthfirstday, last_monthlastday])
+        return OrderItem.objects.filter(ordered_time__range = [last_monthfirstday, last_monthlastday])
 
 def count_items_in_orders_by_item_using_range(from_date, to_date, category_id):
     from_d = from_date
