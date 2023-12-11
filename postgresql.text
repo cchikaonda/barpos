@@ -1,0 +1,3 @@
+export POSTGRES_NAME=bar_pos
+export POSTGRES_USER=postgres
+export POSTGRES_PASSWORD=michelle@2018
