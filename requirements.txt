@@ -23,6 +23,7 @@ numpy==1.26.1
 pandas==2.1.2
 phonenumbers==8.13.16
 Pillow==10.0.0
+psycopg2-binary==2.9.9
 py-moneyed==3.0
 PyMySQL==1.1.0
 pypng==0.20220715.0
