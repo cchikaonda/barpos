@@ -1,4 +1,4 @@
 from flaskwebgui import FlaskUI
-from barpos.wsgi import application
+from config.wsgi import application
 
 FlaskUI(application).run()

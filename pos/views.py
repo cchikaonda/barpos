@@ -17,7 +17,7 @@ import json
 from django.db.models import Count
 from django.contrib.auth.decorators import login_required
 from accounts.admin import CustomConfigForm
-from barpos import settings
+from config import settings
 import time
 from djmoney.money import Money
 

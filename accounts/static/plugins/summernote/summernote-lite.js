@@ -9703,7 +9703,7 @@ external_root_jQuery_commonjs2_jquery_commonjs_jquery_amd_jquery_default.a.summe
     buttons: {},
     lang: 'en-US',
     followingToolbar: false,
-    toolbarPosition: 'top',
+    toolconfigition: 'top',
     otherStaticBar: '',
     // toolbar
     toolbar: [['style', ['style']], ['font', ['bold', 'underline', 'clear']], ['fontname', ['fontname']], ['color', ['color']], ['para', ['ul', 'ol', 'paragraph']], ['table', ['table']], ['insert', ['link', 'picture', 'video']], ['view', ['fullscreen', 'codeview', 'help']]],
@@ -10638,7 +10638,7 @@ var ui = function ui(editorOptions) {
       return $dialog.find('.note-modal-body');
     },
     createLayout: function createLayout($note) {
-      var $editor = (editorOptions.airMode ? airEditor([editingArea([codable(), airEditable()])]) : editorOptions.toolbarPosition === 'bottom' ? editor([editingArea([codable(), editable()]), toolbar(), statusbar()]) : editor([toolbar(), editingArea([codable(), editable()]), statusbar()])).render();
+      var $editor = (editorOptions.airMode ? airEditor([editingArea([codable(), airEditable()])]) : editorOptions.toolconfigition === 'bottom' ? editor([editingArea([codable(), editable()]), toolbar(), statusbar()]) : editor([toolbar(), editingArea([codable(), editable()]), statusbar()])).render();
       $editor.insertAfter($note);
       return {
         note: $note,
